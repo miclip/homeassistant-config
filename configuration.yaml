@@ -35,6 +35,6 @@ sensor:
 tts:
   - platform: google
 
-group: !include groups.yaml
+group: !include_dir_merge_list group
 automation: !include_dir_merge_list automation
-script: !include scripts.yaml
+script: !include_dir_merge_list script

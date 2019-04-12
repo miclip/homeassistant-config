@@ -26,10 +26,14 @@ introduction:
 # Discover some devices automatically
 discovery:
 
+ios:
+map:
+
 # Sensors
 sensor:
   # Weather prediction
-  - platform: yr
+  - platform: darksky
+    api_key: !secret darksky_api_key
 
 # Text to speech
 tts:
@@ -45,7 +49,8 @@ climate:
 http:
   ssl_certificate: !secret ssl_certificate
   ssl_key: !secret ssl_key
-
+  login_attempts_threshold: 3
+  
 mqtt:
 
 device_tracker:

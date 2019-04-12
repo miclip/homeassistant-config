@@ -35,6 +35,13 @@ sensor:
 tts:
   - platform: google
 
+nest:
+  client_id: !secret nest_client_id
+  client_secret: !secret nest_client_secret
+
+climate:
+  platform: nest
+
 group: !include_dir_merge_list group
 automation: !include_dir_merge_list automation
 script: !include_dir_merge_list script

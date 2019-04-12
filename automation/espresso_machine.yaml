@@ -7,8 +7,8 @@
     - platform: time
       at: '15:00'
     - platform: time
-      at: '07:35:00'
+      at: '05:00:00'
 
   action:
-    service_template: "switch.turn_{{ 'on' if trigger.now.hour == 7 else 'off' }}"
+    service_template: "switch.turn_{{ 'on' if trigger.now.hour == 5 else 'off' }}"
     entity_id: switch.espresso_machine

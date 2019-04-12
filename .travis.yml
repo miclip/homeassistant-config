@@ -5,5 +5,7 @@ before_install:
   - mv travis_secrets.yaml secrets.yaml
 install:
   - pip3 install homeassistant
+  - pip3 install colorlog
+
 script:
-  - hass -c . --script check_config
+  - hass -c . --script check_config --info all

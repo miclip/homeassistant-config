@@ -2,13 +2,13 @@
 ###  Turn on the espresso machine at 5am and off at 3pm
 #####################################################################################
 
-- alias: 'Espresso Machine On - Espresso Machine Off'
-  trigger:
-    - platform: time
-      at: '15:00'
-    - platform: time
-      at: '05:00:00'
+# - alias: 'Espresso Machine On - Espresso Machine Off'
+#   trigger:
+#     - platform: time
+#       at: '15:00'
+#     - platform: time
+#       at: '05:00:00'
 
-  action:
-    service_template: "switch.turn_{{ 'on' if trigger.now.hour == 5 else 'off' }}"
-    entity_id: switch.espresso_machine
+#   action:
+#     service_template: "switch.turn_{{ 'on' if trigger.now.hour == 5 else 'off' }}"
+#     entity_id: switch.espresso_machine

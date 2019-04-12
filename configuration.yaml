@@ -45,3 +45,10 @@ climate:
 group: !include_dir_merge_list group
 automation: !include_dir_merge_list automation
 script: !include_dir_merge_list script
+
+http:
+  ssl_certificate: !secret ssl_certificate
+  ssl_key: !secret ssl_key
+
+device_tracker:
+  - platform: owntracks

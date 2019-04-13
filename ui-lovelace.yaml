@@ -28,16 +28,28 @@ views:
         cards:
           - entity: media_player.dinning_room
             type: custom:mini-media-player
+            info: short
+            artwork: cover
             hide:
+              mute: true
               icon: true
+              power_state: false
           - entity: media_player.living_room   
             type: custom:mini-media-player
+            info: short
+            artwork: cover
             hide:
+              mute: true
               icon: true
+              power_state: false
           - entity: media_player.hannah
             type: custom:mini-media-player
+            info: short
+            artwork: cover
             hide:
+              mute: true
               icon: true
+              power_state: false
 
   - icon: mdi:camera
     cards:

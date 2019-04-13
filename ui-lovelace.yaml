@@ -4,7 +4,7 @@ resources:
 
 title: Home
 views:
-  - icon: mdi:sonos
+  - icon: mdi:media
     cards:
       - type: custom:mini-media-player
         entity: media_player.living_room        
@@ -21,7 +21,11 @@ views:
   - icon: mdi:camera
     cards:
       - type: picture-glance
-        entities:
-          - camera.front_yard
-          - camera.driveway
-          - camera.driveway
+        title: Front Door
+        camera_image: camera.front_yard
+      - type: picture-glance
+        title: Driveway
+        camera_image: camera.driveway
+      - type: picture-glance
+        title: Backyard
+        camera_image: camera.backyard

@@ -2,9 +2,9 @@ resources:
   - url: /local/mini-media-player-bundle.js?v=1.0.4
     type: module
 
-title: Music
+title: Home
 views:
-  - badges: []
+  - icon: mdi:sonos
     cards:
       - type: custom:mini-media-player
         entity: media_player.living_room        
@@ -17,3 +17,11 @@ views:
             name: Sonos Master bedroom
           - entity_id: media_player.dinning_room
             name: Sonos Dining room
+
+  - icon: mdi:camera
+    cards:
+      - type: picture-glance
+        entities:
+          - camera.front_yard
+          - camera.driveway
+          - camera.driveway

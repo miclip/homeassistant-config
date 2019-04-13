@@ -29,11 +29,6 @@ discovery:
 ios:
 map:
 
-
-
- 
-
-
 # Text to speech
 tts:
   - platform: google
@@ -51,6 +46,7 @@ http:
   login_attempts_threshold: 3
 
 mqtt:
+  broker: 127.0.0.1
 
 device_tracker:
   - platform: owntracks

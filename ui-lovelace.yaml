@@ -6,17 +6,38 @@ title: Home
 views:
   - icon: mdi:music
     cards:
-      - type: custom:mini-media-player
-        entity: media_player.living_room        
-        artwork: cover
-        hide_power: true
-        sonos_grouping:
-          - entity_id: media_player.office
-            name: Sonos Office
-          - entity_id: media_player.master_bedroom
-            name: Sonos Master bedroom
-          - entity_id: media_player.dinning_room
-            name: Sonos Dining room
+      - type: horizontal-stack
+        cards:
+          - entity: media_player.office
+            type: custom:mini-media-player
+            info: short
+            artwork: cover
+            hide:
+              mute: true
+              icon: true
+              power_state: false
+          - entity: media_player.master_bedroom
+            type: custom:mini-media-player
+            info: short
+            artwork: cover
+            hide:
+              mute: true
+              icon: true
+              power_state: false
+      - type: horizontal-stack
+        cards:
+          - entity: media_player.dinning_room
+            type: custom:mini-media-player
+            hide:
+              icon: true
+          - entity: media_player.living_room   
+            type: custom:mini-media-player
+            hide:
+              icon: true
+          - entity: media_player.hannah
+            type: custom:mini-media-player
+            hide:
+              icon: true
 
   - icon: mdi:camera
     cards:

@@ -4,7 +4,7 @@ resources:
 
 title: Home
 views:
-  - icon: mdi:media
+  - icon: mdi:music
     cards:
       - type: custom:mini-media-player
         entity: media_player.living_room        
@@ -22,10 +22,28 @@ views:
     cards:
       - type: picture-glance
         title: Front Door
+        entities:
+          - binary_sensor.front_yard_camera_driveway_activity
+          - binary_sensor.front_yard_camera_motion_detected
+          - binary_sensor.front_yard_camera_online
+          - binary_sensor.front_yard_camera_person_detected
+          - binary_sensor.front_yard_camera_sound_detected
         camera_image: camera.front_yard
       - type: picture-glance
         title: Driveway
+        entities:
+          - binary_sensor.driveway_camera_driveway_activity
+          - binary_sensor.driveway_camera_motion_detected
+          - binary_sensor.driveway_camera_online
+          - binary_sensor.driveway_camera_person_detected
+          - binary_sensor.driveway_camera_sound_detected
         camera_image: camera.driveway
       - type: picture-glance
         title: Backyard
+        entities:
+          - binary_sensor.backyard_camera_driveway_activity
+          - binary_sensor.backyard_camera_motion_detected
+          - binary_sensor.backyard_camera_online
+          - binary_sensor.backyard_camera_person_detected
+          - binary_sensor.backyard_camera_sound_detected
         camera_image: camera.backyard

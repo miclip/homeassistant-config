@@ -7,7 +7,6 @@ homeassistant:
   time_zone: !secret time_zone
   customize: !include customize.yaml
 
-
   # Configure a default setup of Home Assistant (frontend, api, etc)
 default_config:
 

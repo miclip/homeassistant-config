@@ -29,11 +29,10 @@ discovery:
 ios:
 map:
 
-# Sensors
-sensor:
-  # Weather prediction
-  - platform: darksky
-    api_key: !secret darksky_api_key
+
+
+ 
+
 
 # Text to speech
 tts:
@@ -50,12 +49,13 @@ http:
   ssl_certificate: !secret ssl_certificate
   ssl_key: !secret ssl_key
   login_attempts_threshold: 3
-  
+
 mqtt:
 
 device_tracker:
   - platform: owntracks
 
+sensor: !include_dir_merge_list sensor
 group: !include_dir_merge_list group
 automation: !include_dir_merge_list automation
 script: !include_dir_merge_list script

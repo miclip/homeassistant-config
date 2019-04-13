@@ -1,0 +1,23 @@
+ # Weather prediction
+  - platform: darksky
+    api_key: !secret darksky_api_key
+    monitored_conditions: 
+     - summary
+     - icon
+     - precip_type
+     - precip_intensity
+     - precip_probability
+     - precip_accumulation
+     - temperature
+     - wind_speed
+     - wind_bearing
+     - cloud_cover
+     - humidity
+     - pressure
+     - temperature_high
+     - temperature_low
+     - sunrise_time
+     - sunset_time
+     - nearest_storm_distance
+     - nearest_storm_bearing
+     - uv_index

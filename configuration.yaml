@@ -55,6 +55,8 @@ mqtt:
 device_tracker:
   - platform: owntracks
 
+recorder: !include recorder.yaml
+
 sensor: !include_dir_merge_list sensor
 group: !include_dir_merge_list group
 automation: !include_dir_merge_list automation

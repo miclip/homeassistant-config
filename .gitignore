@@ -29,4 +29,3 @@ nest.conf
 ipchange.yaml
 ip_bans.yaml
 production_auth.json
-.HA_VERSION

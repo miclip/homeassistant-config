@@ -2,37 +2,16 @@ resources:
   - url: /local/mini-media-player-bundle.js?v=1.0.4
     type: module
 
-title: Home
+title: Music
 views:
   - badges: []
     cards:
-      - type: entities
-        entities:
-          - type: custom:mini-media-player
-            entity: media_player.media_players
-            group: true
-            source: icon
-            info: short
-            hide:
-              volume: true
-              power: true
-          - type: custom:mini-media-player
-            entity: media_player.dinning_room
-            group: true
-            hide:
-              controls: true
-          - type: custom:mini-media-player
-            entity: media_player.living_room
-            group: true
-            hide:
-              controls: true
-          - type: custom:mini-media-player
-            entity: media_player.master_bedroom
-            group: true
-            hide:
-              controls: true
-          - type: custom:mini-media-player
-            entity: media_player.office
-            group: true
-            hide:
-              controls: true
+      - entity: media_player.living_room
+        type: ‘custom:mini-media-player’
+        artwork: cover
+        hide_power: true
+        sonos_grouping:
+          - entity_id: media_player.office
+            name: Sonos Office
+          - entity_id: media_player.master_bedroom
+            name: Sonos Master bedroom

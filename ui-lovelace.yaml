@@ -6,8 +6,8 @@ title: Music
 views:
   - badges: []
     cards:
-      - entity: media_player.living_room
-        type: ‘custom:mini-media-player’
+      - type: custom:mini-media-player
+        entity: media_player.living_room        
         artwork: cover
         hide_power: true
         sonos_grouping:

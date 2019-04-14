@@ -27,7 +27,7 @@ views:
                 state_not: "off"
             card:
               type: custom:mini-media-player
-              entity: mgroup.media_players
+              entity: group.media_players
               icon: mdi:speaker-multiple
               artwork: cover
       - type: horizontal-stack
@@ -55,14 +55,14 @@ views:
       - type: vertical-stack
         cards:
           - type: custom:simple-weather-card
-            entity: weather.darksky
+            entity: weather.dark_sky
             name: " "
             secondary_info: humidity
             backdrop:
               day: "#2980b9"
               night: "#022F4C"
 #          - type: weather-forecast
-#            entity: weather.darksky
+#            entity: weather.dark_sky
           - type: horizontal-stack
             cards:
               - type: custom:mini-graph-card
@@ -74,7 +74,7 @@ views:
               - type: custom:mini-graph-card
                 name: Chance of Rain
                 entities:
-                  - sensor.darksky_precip_probability
+                  - sensor.dark_sky_precip_probability
                 line_color: '#2980b9'
                 line_width: 4
   - path: livingroom

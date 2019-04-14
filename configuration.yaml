@@ -58,6 +58,14 @@ device_tracker:
 lovelace:
   mode: yaml
 
+frontend:
+  themes: !include themes.yaml
+
+weather:
+  - platform: darksky
+    api_key: !secret darksky_api_key
+    mode: daily
+
 recorder: !include recorder.yaml
 logger: !include logger.yaml
 sensor: !include_dir_merge_list sensor

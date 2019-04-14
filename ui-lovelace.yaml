@@ -1,111 +1,140 @@
+title: Home
+
 resources:
-  - url: /local/mini-media-player-bundle.js?v=1.0.4
+  - url: /local/mini-graph-card-bundle.js?v=0.3.0
+    type: module
+  - url: /local/mini-media-player-bundle.js
+    type: module
+  - url: /local/simple-weather-card.bundle.js
+    type: module
+  - url: /local/simple-thermostat.js
     type: module
 
-title: Home
+
 views:
-  - icon: mdi:music
+  - path: default_view
+    title: Home
+    icon: 'mdi:home'
+    badges: []
     cards:
+      - type: vertical-stack
+        cards:
+          - type: conditional
+            conditions:
+              - entity: group.media_players
+                state_not: "off"
+            card:
+              type: custom:mini-media-player
+              entity: mgroup.media_players
+              icon: mdi:speaker-multiple
+              artwork: cover
       - type: horizontal-stack
         cards:
-          - entity: media_player.office
-            type: custom:mini-media-player
-            info: short
-            artwork: cover
-            hide:
-              mute: true
-              icon: true
-              power_state: false
-          - entity: media_player.master_bedroom
-            type: custom:mini-media-player
-            info: short
-            artwork: cover
-            hide:
-              mute: true
-              icon: true
-              power_state: false
-      - type: horizontal-stack
+          - type: entity-button
+            entity: switch.espresso_machine
+            name: Espresso Machine
+            icon: mdi:local_drink
+            tap_action:
+              action: toggle
+     
+      - type: vertical-stack
         cards:
-          - entity: media_player.dinning_room
-            type: custom:mini-media-player
-            info: short
-            artwork: cover
-            hide:
-              mute: true
-              icon: true
-              power_state: false
-          - entity: media_player.living_room   
-            type: custom:mini-media-player
-            info: short
-            artwork: cover
-            hide:
-              mute: true
-              icon: true
-              power_state: false
-          - entity: media_player.hannah
-            type: custom:mini-media-player
-            info: short
-            artwork: cover
-            hide:
-              mute: true
-              icon: true
-              power_state: false
-      - type: entities
-        entities:
-          - type: custom:mini-media-player
-            entity: group.media_players
-            group: true
-            source: icon
-            info: short
-            hide:
-              volume: true
-              power: true
-          - type: custom:mini-media-player
-            entity: media_player.dinning_room
-            group: true
-            hide:
-              controls: true
-          - type: custom:mini-media-player
-            entity: media_player.living_room
-            group: true
-            hide:
-              controls: true
-          - type: custom:mini-media-player
-            entity: media_player.office
-            group: true
-            hide:
-              controls: true
-          - type: custom:mini-media-player
-            entity: media_player.master_bedroom
-            group: true
-            hide:
-              controls: true
-          
-  - icon: mdi:camera
+          - type: thermostat
+            entity: climate.downstairs
+          - type: horizontal-stack
+            cards:
+              - type: custom:mini-graph-card
+                entities:
+                  - sensor.downstairs_thermostat_temperature
+                name: Downstairs
+                line_color: '#2980b9'
+                line_width: 6
+              
+      - type: vertical-stack
+        cards:
+          - type: custom:simple-weather-card
+            entity: weather.dark_sky
+            name: " "
+            secondary_info: humidity
+            backdrop:
+              day: "#2980b9"
+              night: "#022F4C"
+#          - type: weather-forecast
+#            entity: weather.dark_sky
+          - type: horizontal-stack
+            cards:
+              - type: custom:mini-graph-card
+                name: Sun Elevation
+                entities:
+                  - sensor.sun_elevation
+                line_color: '#b58e31'
+                line_width: 4
+              - type: custom:mini-graph-card
+                name: Chance of Rain
+                entities:
+                  - sensor.dark_sky_precip_probability
+                line_color: '#2980b9'
+                line_width: 4
+  - path: livingroom
+    title: Living Room
+    icon: 'mdi:sofa'
+    badges: []
     cards:
-      - type: picture-glance
-        title: Front Door
+      - type: 'custom:compact-custom-header'
+      - type: custom:mini-media-player
+        entity: media_player.living_room
+        icon: mdi:music
+        artwork: cover
+  
+  - path: bedroom
+    title: Bedroom
+    icon: 'mdi:hotel'
+    badges: []
+    cards:
+      - type: 'custom:compact-custom-header'
+      
+      - type: vertical-stack
+        cards:
+          - type: horizontal-stack
+            cards:
+              - type: glance
+                entities:
+                  - binary_sensor.motion_sensor_158d000237a64a
+                  - binary_sensor.bathroom_motion
+                  - sensor.bathroom_battery
+      - type: custom:mini-media-player
+        entity: media_player.master_bedroom
+        icon: mdi:music
+        artwork: cover
+  - path: office
+    title: Office
+    icon: 'mdi:keyboard'
+    badges: []
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: horizontal-stack
+            cards:
+              - type: glance
+                entities:
+                  # - binary_sensor.office_motion
+                  # - sensor.office_battery
+                  # - sensor.laptop_socket
+      - type: custom:mini-media-player
+        entity: media_player.office
+        icon: mdi:music
+        artwork: cover
+  
+  - path: auto
+    title: Automations
+    icon: 'mdi:creation'
+    badges: []
+    cards:
+      - type: 'custom:compact-custom-header'
+      - title: Home Automations
+        type: entities
         entities:
-          - binary_sensor.front_yard_camera_front_door_activity
-          - binary_sensor.front_yard_camera_motion_detected
-          - binary_sensor.front_yard_camera_online
-          - binary_sensor.front_yard_camera_person_detected
-          - binary_sensor.front_yard_camera_sound_detected
-        camera_image: camera.front_yard
-      - type: picture-glance
-        title: Driveway
-        entities:
-          - binary_sensor.driveway_camera_driveway_activity
-          - binary_sensor.driveway_camera_motion_detected
-          - binary_sensor.driveway_camera_online
-          - binary_sensor.driveway_camera_person_detected
-          - binary_sensor.driveway_camera_sound_detected
-        camera_image: camera.driveway
-      - type: picture-glance
-        title: Backyard
-        entities:
-          - binary_sensor.backyard_camera_motion_detected
-          - binary_sensor.backyard_camera_online
-          - binary_sensor.backyard_camera_person_detected
-          - binary_sensor.backyard_camera_sound_detected
-        camera_image: camera.backyard
+          - automation.espresso_machine_on
+          - automation.espresso_machine_off
+        show_header_toggle: true
+      

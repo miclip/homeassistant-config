@@ -82,7 +82,6 @@ views:
     icon: 'mdi:sofa'
     badges: []
     cards:
-      - type: 'custom:compact-custom-header'
       - type: custom:mini-media-player
         entity: media_player.living_room
         icon: mdi:music
@@ -92,9 +91,7 @@ views:
     title: Bedroom
     icon: 'mdi:hotel'
     badges: []
-    cards:
-      - type: 'custom:compact-custom-header'
-      
+    cards:      
       - type: vertical-stack
         cards:
           - type: horizontal-stack
@@ -132,7 +129,6 @@ views:
     icon: 'mdi:creation'
     badges: []
     cards:
-      - type: 'custom:compact-custom-header'
       - title: Home Automations
         type: entities
         entities:

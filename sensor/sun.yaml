@@ -1,0 +1,6 @@
+  - platform: template
+    sensors:
+      sun_elevation:
+        friendly_name: Sun Elevation
+        value_template: '{{states.sun.sun.attributes.elevation}}'
+        unit_of_measurement: '°'

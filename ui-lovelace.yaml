@@ -50,7 +50,7 @@ views:
               mute: true
               icon: true
               power_state: false
-
+          
   - icon: mdi:camera
     cards:
       - type: picture-glance

@@ -48,6 +48,9 @@ updater:
 
 mqtt:
   broker: 127.0.0.1
+  port: 1883
+  username: !secret MQTT_username
+  password: !secret MQTT_password
 
 device_tracker:
   - platform: owntracks
@@ -58,7 +61,7 @@ lovelace:
 recorder: !include recorder.yaml
 logger: !include logger.yaml
 sensor: !include_dir_merge_list sensor
-group: !include_dir_merge_list group
+group: !include_dir_merge_named group
 automation: !include_dir_merge_list automation
 script: !include_dir_merge_list script
 zone: !include_dir_merge_list zone

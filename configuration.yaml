@@ -55,11 +55,14 @@ mqtt:
 device_tracker:
   - platform: owntracks
 
+custom_updater:
+
 lovelace:
   mode: yaml
 
 frontend:
   themes: !include themes.yaml
+  javascript_version: latest
 
 weather:
   - platform: darksky

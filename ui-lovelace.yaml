@@ -23,11 +23,11 @@ views:
         cards:
           - type: conditional
             conditions:
-              - entity: group.media_players
+              - entity: media_player.living_room
                 state_not: "off"
             card:
               type: custom:mini-media-player
-              entity: group.media_players
+              entity: media_player.living_room
               icon: mdi:speaker-multiple
               artwork: cover
       - type: horizontal-stack

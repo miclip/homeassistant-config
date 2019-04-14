@@ -54,15 +54,15 @@ views:
               
       - type: vertical-stack
         cards:
-          - type: custom:simple-weather-card
+          # - type: custom:simple-weather-card
+          #   entity: weather.dark_sky
+          #   name: " "
+          #   secondary_info: humidity
+          #   backdrop:
+          #     day: "#2980b9"
+          #     night: "#022F4C"
+          - type: weather-forecast
             entity: weather.dark_sky
-            name: " "
-            secondary_info: humidity
-            backdrop:
-              day: "#2980b9"
-              night: "#022F4C"
-#          - type: weather-forecast
-#            entity: weather.dark_sky
           - type: horizontal-stack
             cards:
               - type: custom:mini-graph-card

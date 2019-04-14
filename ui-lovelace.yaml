@@ -61,7 +61,7 @@ views:
               volume: true
               power: true
           - type: custom:mini-media-player
-            entity: mmedia_player.dinning_room
+            entity: media_player.dinning_room
             group: true
             hide:
               controls: true

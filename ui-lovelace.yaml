@@ -50,36 +50,36 @@ views:
               mute: true
               icon: true
               power_state: false
-          - type: entities
-            entities:
-              - type: custom:mini-media-player
-                entity: group.media_players
-                group: true
-                source: icon
-                info: short
-                hide:
-                  volume: true
-                  power: true
-              - type: custom:mini-media-player
-                entity: mmedia_player.dinning_room
-                group: true
-                hide:
-                  controls: true
-              - type: custom:mini-media-player
-                entity: media_player.living_room
-                group: true
-                hide:
-                  controls: true
-              - type: custom:mini-media-player
-                entity: media_player.office
-                group: true
-                hide:
-                  controls: true
-              - type: custom:mini-media-player
-                entity: media_player.master_bedroom
-                group: true
-                hide:
-                  controls: true
+      - type: entities
+        entities:
+          - type: custom:mini-media-player
+            entity: group.media_players
+            group: true
+            source: icon
+            info: short
+            hide:
+              volume: true
+              power: true
+          - type: custom:mini-media-player
+            entity: mmedia_player.dinning_room
+            group: true
+            hide:
+              controls: true
+          - type: custom:mini-media-player
+            entity: media_player.living_room
+            group: true
+            hide:
+              controls: true
+          - type: custom:mini-media-player
+            entity: media_player.office
+            group: true
+            hide:
+              controls: true
+          - type: custom:mini-media-player
+            entity: media_player.master_bedroom
+            group: true
+            hide:
+              controls: true
           
   - icon: mdi:camera
     cards:

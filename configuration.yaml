@@ -55,6 +55,8 @@ mqtt:
 device_tracker:
   - platform: owntracks
 
+sun:
+
 custom_updater:
 
 lovelace:

@@ -29,6 +29,7 @@ views:
             state_image:
               "home": /local/images/michael_home.jpg
               "not_home": /local/images/michael_away.jpg
+            aspect_ratio: 16:9
             entity: device_tracker.echelon
           - type: picture-glance
             title: Room Location
@@ -38,6 +39,7 @@ views:
             state_image:
               "home": /local/images/jeanie_home.jpg
               "not_home": /local/images/jeanie_away.jpg
+            aspect_ratio: 16:9
             entity: device_tracker.iphone
       - type: vertical-stack
         cards:

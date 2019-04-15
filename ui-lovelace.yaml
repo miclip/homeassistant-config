@@ -19,6 +19,26 @@ views:
     icon: 'mdi:home'
     badges: []
     cards:
+      - type: horizontal-stack
+        cards:
+          - type: picture-glance
+            title: Room Location
+            entities:
+              #- sensor._room_status
+              - sensor.michael_phone_battery
+            state_image:
+              "home": /local/images/michael_home.jpg
+              "not_home": /local/images/michael_away.jpg
+            entity: device_tracker.echelon
+          - type: picture-glance
+            title: Room Location
+            entities:
+              #- sensor.jeanie_room_status
+              - sensor.jeanie_phone_battery
+            state_image:
+              "home": /local/images/jeanie_home.jpg
+              "not_home": /local/images/jeanie_away.jpg
+            entity: device_tracker.iphone
       - type: vertical-stack
         cards:
           - type: conditional

@@ -4,3 +4,17 @@
         friendly_name: Sun Elevation
         value_template: '{{states.sun.sun.attributes.elevation}}'
         unit_of_measurement: '°'
+
+  - platform: template
+    sensors:
+      michael_phone_battery:
+        friendly_name: 'Michael Phone Battery'
+        value_template: '{{states.device_tracker.echelon.attributes.battery}}'
+        unit_of_measurement: '%'
+
+  - platform: template
+    sensors:
+     jeanie_phone_battery:
+        friendly_name: 'Jeanie Phone Battery'
+        value_template: '{{states.device_tracker.iphone.attributes.battery}}'
+        unit_of_measurement: '%'

@@ -25,12 +25,19 @@ map:
 tts:
   - platform: google
 
-nest:
-  client_id: !secret nest_client_id
-  client_secret: !secret nest_client_secret
+
 
 climate:
-  platform: nest
+  - platform: honeywell
+    username: honeywell_username
+    password: honeywell_password
+    scan_interval: 600
+
+cover:
+  - platform: myq
+    username: myq_username
+    password: myq_password
+    type: chamberlain
 
 mopar:
   username: !secret mopar_user

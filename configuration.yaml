@@ -11,8 +11,7 @@ homeassistant:
   # Configure a default setup of Home Assistant (frontend, api, etc)
 default_config:
 
-# Show the introduction message on startup.
-introduction:
+
 
 # Discover some devices automatically
 discovery:

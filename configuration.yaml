@@ -43,6 +43,10 @@ mopar:
   password: !secret mopar_password
   pin: !secret uconnect_pin
 
+zwave:
+  usb_path: /dev/ttyACM0
+  device_config: !include zwave_device_config.yaml
+
 http:
   ssl_certificate: !secret ssl_certificate
   ssl_key: !secret ssl_key

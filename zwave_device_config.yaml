@@ -1,0 +1,1 @@
+network_key: !secret zwave_network_key

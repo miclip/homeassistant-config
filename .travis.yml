@@ -5,7 +5,7 @@ before_install:
   - touch fake_key.pem
   - mv travis_secrets.yaml secrets.yaml
 install:
-  - apt-get install libudev-dev
+  - sudo apt-get install libudev-dev
   - pip3 install homeassistant-pyozw==0.1.3
   - pip3 install homeassistant
   - pip3 install colorlog

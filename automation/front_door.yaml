@@ -1,0 +1,11 @@
+#####################################################################################
+###  Lock Front Door at 9pm
+#####################################################################################
+
+- alias: 'Front Door Locked'
+  trigger:
+    - platform: time
+      at: '15:10:00'
+  action:
+    service_template: "lock.lock"
+    entity_id: lock.schlage_allegion_unknown_type_0001_id_0468_locked

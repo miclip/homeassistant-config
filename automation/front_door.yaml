@@ -5,10 +5,15 @@
 - alias: 'Front Door Locked'
   trigger:
     - platform: time
-      at: '21:00:00'
+      at: '22:50:00'
   action:
-    service_template: "lock.lock"
-    entity_id: lock.schlage_allegion_unknown_type_0001_id_0468_locked
+    - service_template: "lock.lock"
+      entity_id: lock.schlage_allegion_unknown_type_0001_id_0468_locked
+    - service: media_player.alexa_tts
+      data:
+        entity_id: 
+          - media_player.michael_s_echo
+        message: "The front door has been locked." 
 - alias: 'Front Door Unlocked'
   trigger:
   action:

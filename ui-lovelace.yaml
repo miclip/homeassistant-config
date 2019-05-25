@@ -45,11 +45,11 @@ views:
         cards:
           - type: conditional
             conditions:
-              - entity: media_player.living_room
+              - entity: media_player.great_room
                 state_not: "off"
             card:
               type: custom:mini-media-player
-              entity: media_player.living_room
+              entity: media_player.great_room
               icon: mdi:speaker-multiple
               artwork: cover
       - type: horizontal-stack
@@ -99,13 +99,13 @@ views:
                   - sensor.dark_sky_precip_probability
                 line_color: '#2980b9'
                 line_width: 4
-  - path: livingroom
+  - path: greatroom
     title: Living Room
     icon: 'mdi:sofa'
     badges: []
     cards:
       - type: custom:mini-media-player
-        entity: media_player.living_room
+        entity: media_player.great_room
         icon: mdi:music
         artwork: cover
   
@@ -156,5 +156,7 @@ views:
         entities:
           - automation.espresso_machine_on
           - automation.espresso_machine_off
+          - automation.front_door_locked
+          - automation.front_door_unlocked
         show_header_toggle: true
       

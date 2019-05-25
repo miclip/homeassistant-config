@@ -64,12 +64,12 @@ views:
       - type: vertical-stack
         cards:
           - type: thermostat
-            entity: climate.downstairs
+            entity: climate.thermostat
           - type: horizontal-stack
             cards:
               - type: custom:mini-graph-card
                 entities:
-                  - sensor.downstairs_thermostat_temperature
+                  - climate.thermostat.current_temperature
                 name: Great Room
                 line_color: '#2980b9'
                 line_width: 6

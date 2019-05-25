@@ -16,3 +16,4 @@
   action:
     service_template: "switch.turn_off"
     entity_id: switch.espresso_machine
+    

@@ -1,0 +1,11 @@
+#####################################################################################
+###  Close Garage Door at 9pm
+#####################################################################################
+
+- alias: 'Garage Door Closed'
+  trigger:
+    - platform: time
+      at: '21:00:00'
+  action:
+    service_template: "cover.close_cover"
+    entity_id: cover.garage_door

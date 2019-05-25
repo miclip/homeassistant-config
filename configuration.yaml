@@ -31,13 +31,14 @@ climate:
     username: !secret honeywell_username
     password: !secret honeywell_password
     scan_interval: 600
+    region: us
 
 cover:
   - platform: myq
     username: !secret myq_username
     password: !secret myq_password
     type: liftmaster
-    
+
 zwave:
   usb_path: /dev/ttyACM0
   network_key: !secret zwave_network_key

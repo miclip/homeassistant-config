@@ -61,12 +61,6 @@ views:
             tap_action:
               action: toggle
           - type: entity-button
-            entity: automation.front_door_locked
-            name: Front Door
-            icon: mdi:door
-            tap_action:
-              action: toggle
-          - type: entity-button
             entity: lock.schlage_allegion_unknown_type_0001_id_0468_locked
             name: Front Door
             icon: mdi:door
@@ -80,12 +74,6 @@ views:
               service: lock.unlock
               service_data:
                 entity_id: lock.schlage_allegion_unknown_type_0001_id_0468_locked
-          - type: entity-button
-            entity: automation.front_door_locked
-            name: Front Door
-            icon: mdi:door
-            tap_action:
-              action: toggle
           - type: entity-button
             entity: cover.garage_door
             name: Garage Door

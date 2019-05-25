@@ -56,7 +56,7 @@ views:
         cards:
           - type: entity-button
             entity: switch.espresso_machine
-            name: Espresso Machine
+            name: Espresso
             icon: mdi:coffee
             tap_action:
               action: toggle

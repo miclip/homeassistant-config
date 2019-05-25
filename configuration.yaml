@@ -36,7 +36,7 @@ cover:
   - platform: myq
     username: myq_username
     password: myq_password
-    type: liftmaster
+    type: chamberlain
 
 mopar:
   username: !secret mopar_user

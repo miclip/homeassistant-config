@@ -33,6 +33,12 @@ climate:
     scan_interval: 600
     region: us
 
+alexa_media:
+  accounts:
+    - email: !secret amazon_user
+      password: !secret amazon_password
+      url: amazon.com
+
 cover:
   - platform: myq
     username: !secret myq_username

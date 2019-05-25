@@ -28,15 +28,15 @@ tts:
 
 climate:
   - platform: honeywell
-    username: honeywell_username
-    password: honeywell_password
+    username: !secret honeywell_username
+    password: !secret honeywell_password
     scan_interval: 600
 
 cover:
   - platform: myq
-    username: myq_username
-    password: myq_password
-    type: chamberlain
+    username: !secret myq_username
+    password: !secret myq_password
+    type: liftmaster
 
 mopar:
   username: !secret mopar_user

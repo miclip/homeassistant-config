@@ -5,7 +5,7 @@
 - alias: 'Front Door Locked'
   trigger:
     - platform: time
-      at: '23:00:00'
+      at: '21:00:00'
   action:
     - service_template: "lock.lock"
       entity_id: lock.schlage_allegion_unknown_type_0001_id_0468_locked

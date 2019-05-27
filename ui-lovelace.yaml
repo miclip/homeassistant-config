@@ -77,7 +77,7 @@ views:
           - type: entity-button
             entity: cover.garage_door
             name: Garage Door
-            icon: mdi:garage
+            
             tap_action:
               action: call-service
               service: cover.open_cover

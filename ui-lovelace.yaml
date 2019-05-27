@@ -63,7 +63,6 @@ views:
           - type: entity-button
             entity: lock.schlage_allegion_unknown_type_0001_id_0468_locked
             name: Front Door
-            icon: mdi:door
             tap_action:
               action: call-service
               service: lock.lock

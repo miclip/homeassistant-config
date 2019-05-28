@@ -1,0 +1,20 @@
+- alias: 'Heating off everyone away'
+  trigger: 
+      platform: state
+      entity_id: group.all_devices
+      to: 'not_home'
+  action:
+      service: climate.set_away_mode
+      entity_id: climate.thermostat
+      data:
+          away_mode: true
+- alias: 'Heating Normal someone at home'
+  trigger: 
+      platform: state
+      entity_id: group.all_devices
+      to: 'home'
+  action:
+      service: climate.set_away_mode
+      entity_id: climate.thermostat
+      data:
+          away_mode: false

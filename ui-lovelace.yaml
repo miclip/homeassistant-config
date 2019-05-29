@@ -28,7 +28,7 @@ views:
               - sensor.michael_phone_battery
             state_image:
               "home": /local/images/michael_home.jpg?v=1
-              "away": /local/images/michael_away.jpg?v=1
+              "not_home": /local/images/michael_away.jpg?v=1
             aspect_ratio: 16:9
             entity: person.michael_lipscombe
           - type: picture-glance
@@ -38,7 +38,7 @@ views:
               - sensor.jeanie_phone_battery
             state_image:
               "home": /local/images/jeanie_home.jpg?v=1
-              "away": /local/images/jeanie_away.jpg?v=1
+              "not_home": /local/images/jeanie_away.jpg?v=1
             aspect_ratio: 16:9
             entity: person.jeanie_lipscombe
       - type: vertical-stack

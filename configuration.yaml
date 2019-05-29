@@ -47,6 +47,12 @@ alexa_media:
         - "Michael's Alexa Apps"
         - "Office"
 
+notify:
+  - name: michael_jeanie_iphones
+    platform: group
+    services:
+      - service: notify.ios_echelon
+
 cover:
   - platform: myq
     username: !secret myq_username
@@ -92,7 +98,7 @@ weather:
     api_key: !secret darksky_api_key
     mode: daily
 
-notify: !include notify.yaml
+
 recorder: !include recorder.yaml
 logger: !include logger.yaml
 sensor: !include_dir_merge_list sensor

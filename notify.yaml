@@ -1,5 +1,0 @@
-notify:
-  - name: michael_jeanie_iphones
-    platform: group
-    services:
-      - service: notify.ios_echelon

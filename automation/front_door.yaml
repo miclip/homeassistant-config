@@ -6,6 +6,12 @@
   trigger:
     - platform: time
       at: '21:00:00'
+  condition:
+      condition: and
+      conditions:
+        - condition: state
+          entity_id: lock.schlage_allegion_unknown_type_0001_id_0468_locked
+          state: unlocked
   action:
     - service_template: "lock.lock"
       entity_id: lock.schlage_allegion_unknown_type_0001_id_0468_locked

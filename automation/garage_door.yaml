@@ -17,6 +17,12 @@
       entity_id: cover.garage_door
     - delay:
         seconds: 5
+    - service: notify.michael_jeanie_iphones
+      data:
+        title: "Smart Home Alerts"
+        message: "The Garage Door has been closed."
+        data:
+          subtitle: "Bed Time"
     - service: media_player.alexa_tts
       data:
         entity_id: 

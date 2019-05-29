@@ -16,6 +16,12 @@
         entity_id: 
           - media_player.michael_s_echo
         message: "The front door has been locked." 
+    - service: notify.michael_jeanie_iphones
+      data:
+        title: "Smart Home Alerts"
+        message: "The front door has been locked."
+        data:
+          subtitle: "Bed Time"
 - alias: 'Front Door Unlocked'
   trigger:
   action:

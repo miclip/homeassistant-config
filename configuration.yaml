@@ -53,6 +53,10 @@ notify:
     services:
       - service: ios_echelon
 
+ring:
+  username: !secret ring_username
+  password: !secret ring_password
+
 cover:
   - platform: myq
     username: !secret myq_username

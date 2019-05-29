@@ -50,6 +50,8 @@ notify:
     platform: group
     services:
       - service: ios_echelon
+      - service: ios_iphone
+
 
 ring:
   username: !secret ring_username

@@ -28,9 +28,9 @@ views:
               - sensor.michael_phone_battery
             state_image:
               "home": /local/images/michael_home.jpg
-              "not_home": /local/images/michael_away.jpg
+              "away": /local/images/michael_away.jpg
             aspect_ratio: 16:9
-            entity: device_tracker.echelon
+            entity: person.michael_lipscombe
           - type: picture-glance
             title: Room Location
             entities:
@@ -38,9 +38,9 @@ views:
               - sensor.jeanie_phone_battery
             state_image:
               "home": /local/images/jeanie_home.jpg
-              "not_home": /local/images/jeanie_away.jpg
+              "away": /local/images/jeanie_away.jpg
             aspect_ratio: 16:9
-            entity: device_tracker.iphone
+            entity: person.jeanie_lipscombe
       - type: vertical-stack
         cards:
           - type: conditional

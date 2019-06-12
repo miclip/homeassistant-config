@@ -68,6 +68,9 @@ zwave:
   network_key: !secret zwave_network_key
   device_config: !include zwave_device_config.yaml
 
+rachio:
+  api_key: !secret rachio_api_key
+
 http:
   ssl_certificate: !secret ssl_certificate
   ssl_key: !secret ssl_key

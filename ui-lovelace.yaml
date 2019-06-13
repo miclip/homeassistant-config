@@ -27,8 +27,8 @@ views:
               #- sensor._room_status
               - sensor.michael_phone_battery
             state_image:
-              "home": /local/images/michael_home.jpg?v=1
-              "not_home": /local/images/michael_away.jpg?v=1
+              "home": /local/images/michael_home.jpg
+              "not_home": /local/images/michael_away.jpg
             aspect_ratio: 16:9
             entity: person.michael_lipscombe
           - type: picture-glance
@@ -37,8 +37,8 @@ views:
               #- sensor.jeanie_room_status
               - sensor.jeanie_phone_battery
             state_image:
-              "home": /local/images/jeanie_home.jpg?v=1
-              "not_home": /local/images/jeanie_away.jpg?v=1
+              "home": /local/images/jeanie_home.jpg
+              "not_home": /local/images/jeanie_away.jpg
             aspect_ratio: 16:9
             entity: person.jeanie_lipscombe
       - type: vertical-stack

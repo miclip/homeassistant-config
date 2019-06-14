@@ -87,10 +87,9 @@ mqtt:
   username: !secret MQTT_username
   password: !secret MQTT_password
 
-device_tracker:
-  - platform: owntracks
-
 sun:
+
+wemo:
 
 custom_updater:
 

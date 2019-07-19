@@ -22,4 +22,19 @@
   action:
     service_template: "switch.turn_off"
     entity_id: switch.espresso_machine
+- alias: 'Espresso Machine Off When Away'
+  trigger:
+    - platform: time
+      at: '9:00:00'
+  condition:
+      condition: and
+      conditions:
+        - condition: state
+          entity_id: group.all_devices
+          state: 'away'
+          for:
+            hours: 1
+  action:
+    service_template: "switch.turn_off"
+    entity_id: switch.espresso_machine
     

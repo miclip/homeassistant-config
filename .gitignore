@@ -31,3 +31,4 @@ ip_bans.yaml
 production_auth.json
 .DS_Store
 .HA_VERSION
+.vscode/settings.json

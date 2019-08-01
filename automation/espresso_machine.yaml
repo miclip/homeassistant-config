@@ -31,7 +31,7 @@
       conditions:
         - condition: state
           entity_id: group.all_devices
-          state: 'away'
+          state: 'not_home'
           for:
             hours: 1
   action:

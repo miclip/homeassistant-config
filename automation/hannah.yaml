@@ -1,0 +1,15 @@
+#####################################################################################
+### Notify Hannah of nightly routines 
+#####################################################################################
+
+- alias: 'Hannah bedtime, 10 minute warning'
+  trigger:
+    - platform: time
+      at: '14:30:00'
+   action:
+   - service: media_player.alexa_tts
+      data:
+        entity_id: 
+          - media_player.michael_s_echo
+        message: "ding dong! hey Hannah, 10 minutes until bedtime, ok?" 
+

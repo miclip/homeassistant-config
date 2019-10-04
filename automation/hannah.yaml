@@ -5,7 +5,7 @@
 - alias: 'Hannah bedtime, 10 minute warning'
   trigger:
     - platform: time
-      at: '15:20:00'
+      at: '20:50:00'
   action:
     - service: media_player.alexa_tts
       data:

@@ -10,7 +10,7 @@
       condition: and
       conditions:
         - condition: state
-          entity_id: group.all_devices
+          entity_id: group.mobile_trackers
           state: 'home'
   action:
     service_template: "switch.turn_on"
@@ -30,11 +30,11 @@
       condition: and
       conditions:
         - condition: state
-          entity_id: group.all_devices
+          entity_id: group.mobile_trackers
           state: 'not_home'
           for:
             hours: 1
   action:
     service_template: "switch.turn_off"
     entity_id: switch.espresso_machine
-    
+

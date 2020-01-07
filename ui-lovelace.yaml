@@ -75,8 +75,7 @@ views:
                 entity_id: lock.schlage_allegion_unknown_type_0001_id_0468_locked
           - type: entity-button
             entity: cover.garage_door_main
-            name: Garage Door
-
+            name: Garage Door Main
             tap_action:
               action: call-service
               service: cover.open_cover
@@ -87,6 +86,19 @@ views:
               service: cover.close_cover
               service_data:
                 entity_id: cover.garage_door_main
+          - type: entity-button
+            entity: cover.garage_door_small
+            name: Garage Door Small
+            tap_action:
+              action: call-service
+              service: cover.open_cover
+              service_data:
+                entity_id: cover.garage_door_small
+            hold_action:
+              action: call-service
+              service: cover.close_cover
+              service_data:
+                entity_id: cover.garage_door_small
 
       - type: vertical-stack
         cards:

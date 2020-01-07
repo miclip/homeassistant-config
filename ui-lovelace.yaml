@@ -74,20 +74,20 @@ views:
               service_data:
                 entity_id: lock.schlage_allegion_unknown_type_0001_id_0468_locked
           - type: entity-button
-            entity: cover.garage_door
+            entity: cover.garage_door_main
             name: Garage Door
-            
+
             tap_action:
               action: call-service
               service: cover.open_cover
               service_data:
-                entity_id: cover.garage_door
+                entity_id: cover.garage_door_main
             hold_action:
               action: call-service
               service: cover.close_cover
               service_data:
-                entity_id: cover.garage_door
-     
+                entity_id: cover.garage_door_main
+
       - type: vertical-stack
         cards:
           - type: thermostat
@@ -100,7 +100,7 @@ views:
                 name: Great Room
                 line_color: '#2980b9'
                 line_width: 6
-              
+
       - type: vertical-stack
         cards:
           # - type: custom:simple-weather-card
@@ -135,12 +135,12 @@ views:
         entity: media_player.great_room
         icon: mdi:music
         artwork: cover
-  
+
   - path: bedroom
     title: Bedroom
     icon: 'mdi:hotel'
     badges: []
-    cards:      
+    cards:
       - type: vertical-stack
         cards:
           - type: horizontal-stack
@@ -172,7 +172,7 @@ views:
         entity: media_player.office
         icon: mdi:music
         artwork: cover
-  
+
   - path: auto
     title: Automations
     icon: 'mdi:creation'
@@ -186,4 +186,4 @@ views:
           - automation.front_door_locked
           - automation.front_door_unlocked
         show_header_toggle: true
-      
+

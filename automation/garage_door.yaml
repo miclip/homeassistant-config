@@ -10,11 +10,11 @@
       condition: and
       conditions:
         - condition: state
-          entity_id: cover.garage_door
+          entity_id: cover.garage_door_main
           state: open
   action:
     - service_template: "cover.close_cover"
-      entity_id: cover.garage_door
+      entity_id: cover.garage_door_main
     - delay:
         seconds: 5
     - service: notify.michael_jeanie_iphones
@@ -25,6 +25,6 @@
           subtitle: "Bed Time"
     - service: media_player.alexa_tts
       data:
-        entity_id: 
+        entity_id:
           - media_player.michael_s_echo
-        message: "The garage door has been closed." 
+        message: "The garage door has been closed."

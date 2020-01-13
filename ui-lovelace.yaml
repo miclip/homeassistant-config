@@ -99,7 +99,12 @@ views:
               service: cover.close_cover
               service_data:
                 entity_id: cover.garage_door_small
-
+          - type: entity-button
+            entity: switch.hannah_heater
+            name: Heater
+            icon: mdi:radiator
+            tap_action:
+              action: toggle
       - type: vertical-stack
         cards:
           - type: thermostat

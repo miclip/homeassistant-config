@@ -74,21 +74,6 @@ views:
               service_data:
                 entity_id: lock.schlage_allegion_unknown_type_0001_id_0468_locked
           - type: entity-button
-            entity: cover.garage_door_main
-            name: Garage Main
-            tap_action:
-              action: call-service
-              service: cover.open_cover
-              service_data:
-                entity_id: cover.garage_door_main
-            hold_action:
-              action: call-service
-              service: cover.close_cover
-              service_data:
-                entity_id: cover.garage_door_main
-      - type: horizontal-stack
-        cards:
-          - type: entity-button
             entity: cover.garage_door_small
             name: Garage Small
             tap_action:
@@ -101,6 +86,21 @@ views:
               service: cover.close_cover
               service_data:
                 entity_id: cover.garage_door_small
+      - type: horizontal-stack
+        cards:
+          - type: entity-button
+            entity: cover.garage_door_main
+            name: Garage Main
+            tap_action:
+              action: call-service
+              service: cover.open_cover
+              service_data:
+                entity_id: cover.garage_door_main
+            hold_action:
+              action: call-service
+              service: cover.close_cover
+              service_data:
+                entity_id: cover.garage_door_main
           - type: entity-button
             entity: switch.hannah_heater
             name: Heater

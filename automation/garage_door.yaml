@@ -2,7 +2,7 @@
 ###  Close Garage Door at 9pm
 #####################################################################################
 
-- alias: 'Garage Door Closed'
+- alias: 'Main Garage Door Closed'
   trigger:
     - platform: time
       at: '21:05:00'
@@ -20,11 +20,37 @@
     - service: notify.michael_jeanie_iphones
       data:
         title: "Smart Home Alerts"
-        message: "The Garage Door has been closed."
+        message: "The Main Garage Door has been closed."
         data:
           subtitle: "Bed Time"
     - service: media_player.alexa_tts
       data:
         entity_id:
           - media_player.michael_s_echo
-        message: "The garage door has been closed."
+        message: "The main garage door has been closed."
+- alias: 'Small Garage Door Closed'
+  trigger:
+    - platform: time
+      at: '21:08:00'
+  condition:
+      condition: and
+      conditions:
+        - condition: state
+          entity_id: cover.garage_door_small
+          state: open
+  action:
+    - service_template: "cover.close_cover"
+      entity_id: cover.garage_door_small
+    - delay:
+        seconds: 5
+    - service: notify.michael_jeanie_iphones
+      data:
+        title: "Smart Home Alerts"
+        message: "The Small Garage Door has been closed."
+        data:
+          subtitle: "Bed Time"
+    - service: media_player.alexa_tts
+      data:
+        entity_id:
+          - media_player.michael_s_echo
+        message: "The small garage door has been closed."

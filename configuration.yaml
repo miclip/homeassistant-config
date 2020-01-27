@@ -49,8 +49,8 @@ notify:
   - name: michael_jeanie_iphones
     platform: group
     services:
-      - service: notify.ios_echelon
-      - service: notify.ios_iphone
+      - service: ios_echelon
+      - service: ios_iphone
 
 
 ring:

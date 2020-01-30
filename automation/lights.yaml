@@ -1,0 +1,17 @@
+#####################################################################################
+###  Garage external lights
+#####################################################################################
+- alias: 'Garage External Lights On'
+  trigger:
+    - platform: time
+      at: '17:00:00'
+  action:
+    - service_template: "switch.turn_on"
+      entity_id: switch.jasco_products_unknown_type_4952_id_3231_switch
+- alias: 'Garage External Lights Off'
+  trigger:
+    - platform: time
+      at: '4:00:00'
+  action:
+    - service_template: "switch.turn_off"
+      entity_id: switch.jasco_products_unknown_type_4952_id_3231_switch

@@ -107,6 +107,22 @@ views:
             icon: mdi:radiator
             tap_action:
               action: toggle
+      - type: horizontal-stack
+        cards:
+          - type: entity-button
+            entity: switch.garage_external
+            icon: mdi:lightbulb
+            name: Garage Ext
+            tap_action:
+              action: call-service
+              service: switch.turn_on
+              service_data:
+                entity_id: switch.garage_external
+            hold_action:
+              action: call-service
+              service: switch.turn_off
+              service_data:
+                entity_id: switch.garage_external
       - type: vertical-stack
         cards:
           - type: thermostat

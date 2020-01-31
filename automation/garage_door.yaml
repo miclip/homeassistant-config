@@ -26,7 +26,7 @@
     - service: media_player.alexa_tts
       data:
         entity_id:
-          - media_player.michael_s_echo
+          - media_player.alexa_media_kitchen_dot
         message: "The main garage door has been closed."
 - alias: 'Small Garage Door Closed'
   trigger:
@@ -52,5 +52,5 @@
     - service: media_player.alexa_tts
       data:
         entity_id:
-          - media_player.michael_s_echo
+          - media_player.alexa_media_kitchen_dot
         message: "The small garage door has been closed."

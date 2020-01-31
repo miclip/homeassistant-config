@@ -19,9 +19,9 @@
         seconds: 5
     - service: media_player.alexa_tts
       data:
-        entity_id: 
-          - media_player.michael_s_echo
-        message: "The front door has been locked." 
+        entity_id:
+          - media_player.alexa_media_kitchen_dot
+        message: "The front door has been locked."
     - service: notify.michael_jeanie_iphones
       data:
         title: "Smart Home Alerts"

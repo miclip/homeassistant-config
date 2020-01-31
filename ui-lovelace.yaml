@@ -110,7 +110,7 @@ views:
       - type: horizontal-stack
         cards:
           - type: entity-button
-            entity: switch.garage_external
+            entity: switch.jasco_products_unknown_type_4952_id_3231_switch
             icon: mdi:lightbulb
             name: Garage Ext
             tap_action:

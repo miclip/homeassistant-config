@@ -20,8 +20,8 @@
     - service: media_player.alexa_tts
       data:
         entity_id:
-          - media_player.michael_s_echo
-        message: "ding dong! hey Hannah, it's bedtime."
+          - media_player.alexa_media_kitchen_dot
+        message: "ding dong! hey Hannah, it's your bedtime."
 - alias: 'Hannah Heater Off'
   trigger:
     - platform: time

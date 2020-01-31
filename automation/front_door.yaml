@@ -21,7 +21,7 @@
       data:
         entity_id:
           - media_player.alexa_media_kitchen_dot
-        message: "The front door has been locked."
+        message: "The front door was unlocked, I locked it."
     - service: notify.michael_jeanie_iphones
       data:
         title: "Smart Home Alerts"

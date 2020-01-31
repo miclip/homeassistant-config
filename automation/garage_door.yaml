@@ -27,7 +27,7 @@
       data:
         entity_id:
           - media_player.alexa_media_kitchen_dot
-        message: "The main garage door has been closed."
+        message: "The main garage door was open, I closed it."
 - alias: 'Small Garage Door Closed'
   trigger:
     - platform: time
@@ -53,4 +53,4 @@
       data:
         entity_id:
           - media_player.alexa_media_kitchen_dot
-        message: "The small garage door has been closed."
+        message: "The bike garage door was open, I closed it."

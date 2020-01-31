@@ -29,7 +29,7 @@
         data:
           subtitle: "Bed Time"
 - alias: 'Someone at Front Door'
-  trigger: binary_sensor.front_door_ding
+  trigger:
     - platform: state
       entity_id: sensor.motion_sensor
       to: 'on'

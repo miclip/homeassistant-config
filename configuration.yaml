@@ -38,12 +38,8 @@ alexa_media:
       url: amazon.com
       exclude_devices:
         - "This Device"
-        - "Kitchen"
         - "Jeanie's Alexa Apps"
-        - "Loft"
-        - "Master Bedroom"
         - "Michael's Alexa Apps"
-        - "Office"
 
 notify:
   - name: michael_jeanie_iphones

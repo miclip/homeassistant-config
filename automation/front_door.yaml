@@ -28,8 +28,15 @@
         message: "The front door has been locked."
         data:
           subtitle: "Bed Time"
-- alias: 'Front Door Unlocked'
-  trigger:
+- alias: 'Someone at Front Door'
+  trigger: binary_sensor.front_door_ding
+    - platform: state
+      entity_id: sensor.motion_sensor
+      to: 'on'
   action:
-    service_template: "lock.unlock"
-    entity_id: lock.schlage_allegion_unknown_type_0001_id_0468_locked
+    - service: media_player.alexa_tts
+      data:
+        entity_id:
+          - media_player.alexa_media_kitchen_dot
+          - media_player.alexa_media_master_bedroom_dot
+        message: "Someone is at the front door."

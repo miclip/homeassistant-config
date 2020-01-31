@@ -87,8 +87,6 @@ sun:
 
 wemo:
 
-custom_updater:
-
 lovelace:
   mode: yaml
 

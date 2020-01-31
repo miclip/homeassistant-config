@@ -110,7 +110,7 @@ views:
       - type: horizontal-stack
         cards:
           - type: entity-button
-            entity: switch.jasco_products_unknown_type_4952_id_3231_switch
+            entity: switch.garage_external
             icon: mdi:lightbulb
             name: Garage Ext
             tap_action:
@@ -122,7 +122,7 @@ views:
               action: call-service
               service: switch.turn_off
               service_data:
-                entity_id: switch.garage_external
+                entity_id: switch.jasco_products_unknown_type_4952_id_3231_switch
       - type: vertical-stack
         cards:
           - type: thermostat

@@ -1,0 +1,4 @@
+alexa_dots:
+  services:
+    - notify.alexa_media_kitchen_dot
+    - notify.alexa_media_master_bedroom_dot

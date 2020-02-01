@@ -18,12 +18,6 @@ ios:
 
 map:
 
-# Text to speech
-tts:
-  - platform: google_translate
-
-
-
 climate:
   - platform: honeywell
     username: !secret honeywell_username

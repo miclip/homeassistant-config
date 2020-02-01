@@ -29,10 +29,10 @@
           type: tts
     - service: notify.michael_jeanie_iphones
       data:
-        title: "smart home alerts"
-        message: "the front door has been locked."
+        title: "Home Assistant Alerts"
+        message: "The front door has been locked."
         data:
-          subtitle: "bed time"
+          subtitle: "Bed Time"
 - alias: 'Someone at Front Door'
   trigger:
     - platform: state

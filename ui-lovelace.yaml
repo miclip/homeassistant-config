@@ -161,7 +161,7 @@ views:
                   - sensor.dark_sky_precip_probability
                 line_color: '#2980b9'
                 line_width: 4
-          - camera_image: camera.driveway
+          - camera_image: reolinkcamera.driveway
             entities:
               #  - switch.camera_frontdoor_ir_lights
               #  - switch.camera_frontdoor_email

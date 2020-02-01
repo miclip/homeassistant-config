@@ -3,7 +3,7 @@ sensors:
   motion_driveway:
     friendly_name: Driveway Camera
     device_class: motion
-    entity_id: camera.driveway
-    value_template: "{{ is_state('camera.driveway', 'motion') }}"
+    entity_id: reokinkcamera.driveway
+    value_template: "{{ is_state('reolinkcamera.driveway', 'motion') }}"
     delay_off:
       seconds: 30

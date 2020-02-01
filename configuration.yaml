@@ -25,6 +25,14 @@ climate:
     scan_interval: 600
     region: us
 
+camera:
+- platform: reolink_dev
+  host: 192.168.2.2
+  username: !secret reolink_user
+  password: !secret reolink_password
+  stream: main
+  protocol: rtmp
+
 alexa_media:
   accounts:
     - email: !secret amazon_user
@@ -97,6 +105,7 @@ weather:
 recorder: !include recorder.yaml
 logger: !include logger.yaml
 sensor: !include_dir_merge_list sensor
+binary_sensor: !include_dir_merge_named binary_sensor
 group: !include_dir_merge_named group
 automation: !include_dir_merge_list automation
 script: !include_dir_merge_list script

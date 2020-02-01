@@ -14,7 +14,8 @@
 
   - platform: template
     sensors:
-     jeanie_phone_battery:
+      jeanie_phone_battery:
         friendly_name: 'Jeanie Phone Battery'
         value_template: '{{states.device_tracker.iphone.attributes.battery}}'
         unit_of_measurement: '%'
+

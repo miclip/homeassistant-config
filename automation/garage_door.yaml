@@ -19,7 +19,7 @@
         seconds: 5
     - service: notify.michael_jeanie_iphones
       data:
-        title: "Smart Home Alerts"
+        title: "Home Assistant Alerts"
         message: "The Main Garage Door has been closed."
         data:
           subtitle: "Bed Time"
@@ -50,7 +50,7 @@
         seconds: 5
     - service: notify.michael_jeanie_iphones
       data:
-        title: "Smart Home Alerts"
+        title: "Home Assistant Alerts"
         message: "The Small Garage Door has been closed."
         data:
           subtitle: "Bed Time"

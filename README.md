@@ -1,5 +1,5 @@
-# homeassistant-config
+# Home Assistant Configuration
 
 [![Build Status](https://travis-ci.org/miclip/homeassistant-config.svg?branch=master)](https://travis-ci.org/miclip/homeassistant-config)
 
-Home Assistant Configuration 
+https://www.home-assistant.io

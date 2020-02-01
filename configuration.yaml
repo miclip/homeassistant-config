@@ -28,10 +28,11 @@ climate:
 camera:
 - platform: reolink_dev
   host: 192.168.2.2
+  name: reolink_camera
   username: !secret reolink_user
   password: !secret reolink_password
   stream: main
-  protocol: rtmp
+  protocol: rtsp
 
 alexa_media:
   accounts:

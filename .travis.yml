@@ -6,7 +6,7 @@ before_install:
   - mv travis_secrets.yaml secrets.yaml
 install:
   - sudo apt-get install libudev-dev
-  - pip3 install homeassistant-pyozw==0.1.3
+  - pip3 install homeassistant-pyozw
   - pip3 install homeassistant
   - pip3 install colorlog
 

@@ -156,8 +156,6 @@ class ReolinkApi(object):
 
     def login(self, username, password):
         body = [{"cmd": "Login", "action": 0, "param": {"User": {"userName": username, "password": password}}}]
-
-        _LOGGER.info(f"body: {body}")
         param = {"cmd": "Login", "token": "null"}
 
         response = self.send(body, param)
@@ -166,7 +164,7 @@ class ReolinkApi(object):
             json_data = json.loads(response.text)
         except:
             _LOGGER.error(f"Error translating login response to json")
-            _LOGGER.info(f"json_data: {json_data}")
+            _LOGGER.info(f"json_data: {response.text}")
             return
 
         if json_data is not None:

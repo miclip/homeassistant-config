@@ -26,14 +26,14 @@ climate:
     region: us
 
 camera:
-- platform: reolink_dev
-  host: 192.168.2.2
-  name: driveway
-  channel: 3
-  username: !secret reolink_user
-  password: !secret reolink_password
-  stream: main
-  protocol: rtsp
+  - platform: reolink_dev
+    host: 192.168.2.2
+    name: driveway
+    channel: 3
+    username: !secret reolink_user
+    password: !secret reolink_password
+    stream: main
+    protocol: rtsp
 
 alexa_media:
   accounts:

@@ -2,26 +2,6 @@
 ### Notify Hannah of nightly routines
 #####################################################################################
 
-- alias: 'Hannah bedtime, 10 minute warning'
-  trigger:
-    - platform: time
-      at: '20:50:00'
-  action:
-    - service: media_player.alexa_tts
-      data:
-        entity_id:
-          - media_player.michael_s_echo
-        message: "ding dong! hey Hannah, 10 minutes until bedtime, please go brush your teeth."
-- alias: 'Hannah bedtime'
-  trigger:
-    - platform: time
-      at: '21:00:00'
-  action:
-    - service: media_player.alexa_tts
-      data:
-        entity_id:
-          - media_player.alexa_media_kitchen_dot
-        message: "ding dong! hey Hannah, it's your bedtime."
 - alias: 'Hannah Heater Off'
   trigger:
     - platform: time

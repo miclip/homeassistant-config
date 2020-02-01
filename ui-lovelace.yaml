@@ -161,6 +161,14 @@ views:
                   - sensor.dark_sky_precip_probability
                 line_color: '#2980b9'
                 line_width: 4
+          - camera_image: camera.driveway
+            entities:
+              #  - switch.camera_frontdoor_ir_lights
+              #  - switch.camera_frontdoor_email
+              #  - switch.camera_frontdoor_ftp
+              - binary_sensor.motion_driveway
+            title: driveway
+            type: picture-glance
   - path: greatroom
     title: Living Room
     icon: 'mdi:sofa'

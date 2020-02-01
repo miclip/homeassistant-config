@@ -24,19 +24,18 @@
         message: "The front door was unlocked, I locked it."
     - service: notify.michael_jeanie_iphones
       data:
-        title: "Smart Home Alerts"
-        message: "The front door has been locked."
+        title: "smart home alerts"
+        message: "the front door has been locked."
         data:
-          subtitle: "Bed Time"
+          subtitle: "bed time"
 - alias: 'Someone at Front Door'
   trigger:
     - platform: state
-      entity_id: sensor.motion_sensor
+      entity_id: binary_sensor.front_door_ding
       to: 'on'
   action:
-    - service: media_player.alexa_tts
+    - service: notify.alexa_media_kitchen_dot
       data:
-        entity_id:
-          - media_player.alexa_media_kitchen_dot
-          - media_player.alexa_media_master_bedroom_dot
-        message: "Someone is at the front door."
+        message: "Someone is at the front door!"
+        data:
+          type: tts

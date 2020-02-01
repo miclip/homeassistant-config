@@ -23,11 +23,16 @@
         message: "The Main Garage Door has been closed."
         data:
           subtitle: "Bed Time"
-    - service: media_player.alexa_tts
+    - service: notify.alexa_media_master_bedroom_dot
       data:
-        entity_id:
-          - media_player.alexa_media_kitchen_dot
-        message: "The main garage door was open, I closed it."
+        message: "the main garage door was open, i closed it."
+        data:
+          type: tts
+    - service: notify.alexa_media_kitchen_dot
+      data:
+        message: "the main garage door was open, i closed it."
+        data:
+          type: tts
 - alias: 'Small Garage Door Closed'
   trigger:
     - platform: time
@@ -49,8 +54,13 @@
         message: "The Small Garage Door has been closed."
         data:
           subtitle: "Bed Time"
-    - service: media_player.alexa_tts
+    - service: notify.alexa_media_kitchen_dot
       data:
-        entity_id:
-          - media_player.alexa_media_kitchen_dot
-        message: "The bike garage door was open, I closed it."
+        message: "the bike garage door was open, i closed it."
+        data:
+          type: tts
+    - service: notify.alexa_media_master_bedroom_dot
+      data:
+        message: "the bike garage door was open, i closed it."
+        data:
+          type: tts

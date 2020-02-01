@@ -17,11 +17,16 @@
       entity_id: lock.schlage_allegion_unknown_type_0001_id_0468_locked
     - delay:
         seconds: 5
-    - service: media_player.alexa_tts
+    - service: notify.alexa_media_master_bedroom_dot
       data:
-        entity_id:
-          - media_player.alexa_media_kitchen_dot
         message: "The front door was unlocked, I locked it."
+        data:
+          type: tts
+    - service: notify.alexa_media_kitchen_dot
+      data:
+        message: "The front door was unlocked, I locked it."
+        data:
+          type: tts
     - service: notify.michael_jeanie_iphones
       data:
         title: "smart home alerts"
@@ -34,6 +39,11 @@
       entity_id: binary_sensor.front_door_ding
       to: 'on'
   action:
+    - service: notify.alexa_media_master_bedroom_dot
+      data:
+        message: "Someone is at the front door!"
+        data:
+          type: tts
     - service: notify.alexa_media_kitchen_dot
       data:
         message: "Someone is at the front door!"

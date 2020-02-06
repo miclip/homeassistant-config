@@ -15,3 +15,20 @@
   action:
     - service_template: "switch.turn_off"
       entity_id: switch.jasco_products_unknown_type_4952_id_3231_switch
+#####################################################################################
+###  Front Patio Lights
+#####################################################################################
+- alias: 'Front Patio Lights On'
+  trigger:
+    - platform: sun
+      event: sunset
+  action:
+    - service_template: "switch.turn_on"
+      entity_id: switch.jasco_products_unknown_type_4952_id_3231_switch_2
+- alias: 'Front Patio Lights Off'
+  trigger:
+    - platform: sun
+      event: sunrise
+  action:
+    - service_template: "switch.turn_off"
+      entity_id: switch.jasco_products_unknown_type_4952_id_3231_switch_2

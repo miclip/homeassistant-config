@@ -123,6 +123,20 @@ views:
               service: switch.turn_off
               service_data:
                 entity_id: switch.jasco_products_unknown_type_4952_id_3231_switch
+          - type: entity-button
+            entity: switch.jasco_products_unknown_type_4952_id_3231_switch_2
+            icon: mdi:lightbulb
+            name: Front Patio
+            tap_action:
+              action: call-service
+              service: switch.turn_on
+              service_data:
+                entity_id: switch.jasco_products_unknown_type_4952_id_3231_switch_2
+            hold_action:
+              action: call-service
+              service: switch.turn_off
+              service_data:
+                entity_id: switch.jasco_products_unknown_type_4952_id_3231_switch_2
       - type: vertical-stack
         cards:
           - type: thermostat

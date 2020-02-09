@@ -183,6 +183,22 @@ views:
               - binary_sensor.motion_driveway
             title: driveway
             type: picture-glance
+          - camera_image: camera.garage
+            entities:
+              #  - switch.camera_frontdoor_ir_lights
+              #  - switch.camera_frontdoor_email
+              #  - switch.camera_frontdoor_ftp
+              - binary_sensor.motion_garage
+            title: garage
+            type: picture-glance
+          - camera_image: camera.basement
+            entities:
+              #  - switch.camera_frontdoor_ir_lights
+              #  - switch.camera_frontdoor_email
+              #  - switch.camera_frontdoor_ftp
+              - binary_sensor.motion_basement
+            title: basement
+            type: picture-glance
   - path: greatroom
     title: Living Room
     icon: 'mdi:sofa'

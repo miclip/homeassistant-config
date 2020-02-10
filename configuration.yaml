@@ -42,7 +42,7 @@ camera:
     protocol: rtsp
   - platform: reolink_dev
     host: 192.168.2.2
-    name: driveway
+    name: garage
     channel: 1
     username: admin
     password: !secret reolink_password
@@ -50,7 +50,7 @@ camera:
     protocol: rtsp
   - platform: reolink_dev
     host: 192.168.2.2
-    name: garage
+    name: driveway
     channel: 2
     username: admin
     password: !secret reolink_password

@@ -39,7 +39,6 @@ camera:
     password: !secret reolink_password
     stream: main
     protocol: rtsp
-camera:
   - platform: reolink_dev
     host: 192.168.2.2
     name: driveway
@@ -48,7 +47,6 @@ camera:
     password: !secret reolink_password
     stream: sub
     protocol: rtsp
-camera:
   - platform: reolink_dev
     host: 192.168.2.2
     name: garage
@@ -57,7 +55,6 @@ camera:
     password: !secret reolink_password
     stream: main
     protocol: rtsp
-camera:
   - platform: reolink_dev
     host: 192.168.2.2
     name: basement

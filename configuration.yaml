@@ -33,6 +33,15 @@ remote:
 camera:
   - platform: reolink_dev
     host: 192.168.2.2
+    name: gym
+    channel: 04
+    username: admin
+    password: !secret reolink_password
+    stream: main
+    protocol: rtsp
+camera:
+  - platform: reolink_dev
+    host: 192.168.2.2
     name: driveway
     channel: 02
     username: admin

@@ -46,7 +46,7 @@ camera:
     channel: 02
     username: admin
     password: !secret reolink_password
-    stream: main
+    stream: sub
     protocol: rtsp
 camera:
   - platform: reolink_dev

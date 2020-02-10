@@ -1,3 +1,4 @@
+---
 homeassistant:
   name: Home
   latitude: !secret home_latitude
@@ -34,7 +35,7 @@ camera:
   - platform: reolink_dev
     host: 192.168.2.2
     name: gym
-    channel: 04
+    channel: 01
     username: admin
     password: !secret reolink_password
     stream: main
@@ -50,7 +51,7 @@ camera:
   - platform: reolink_dev
     host: 192.168.2.2
     name: garage
-    channel: 01
+    channel: 03
     username: admin
     password: !secret reolink_password
     stream: main
@@ -58,7 +59,7 @@ camera:
   - platform: reolink_dev
     host: 192.168.2.2
     name: basement
-    channel: 03
+    channel: 04
     username: admin
     password: !secret reolink_password
     stream: main

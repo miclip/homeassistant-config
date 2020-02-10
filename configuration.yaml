@@ -48,6 +48,15 @@ camera:
     password: !secret reolink_password
     stream: main
     protocol: rtsp
+camera:
+  - platform: reolink_dev
+    host: 192.168.2.2
+    name: basement
+    channel: 03
+    username: admin
+    password: !secret reolink_password
+    stream: main
+    protocol: rtsp
 
 alexa_media:
   accounts:

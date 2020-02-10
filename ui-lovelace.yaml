@@ -181,7 +181,7 @@ views:
               #  - switch.camera_frontdoor_email
               #  - switch.camera_frontdoor_ftp
               - binary_sensor.motion_driveway
-            title: driveway
+            title: Driveway
             type: picture-glance
           - camera_image: camera.garage
             entities:
@@ -189,7 +189,7 @@ views:
               #  - switch.camera_frontdoor_email
               #  - switch.camera_frontdoor_ftp
               - binary_sensor.motion_garage
-            title: garage
+            title: Garage
             type: picture-glance
           - camera_image: camera.basement
             entities:
@@ -197,7 +197,7 @@ views:
               #  - switch.camera_frontdoor_email
               #  - switch.camera_frontdoor_ftp
               - binary_sensor.motion_basement
-            title: basement
+            title: Basement
             type: picture-glance
           - camera_image: camera.gym
             entities:
@@ -205,7 +205,7 @@ views:
               #  - switch.camera_frontdoor_email
               #  - switch.camera_frontdoor_ftp
               - binary_sensor.motion_gym
-            title: gym
+            title: Gym
             type: picture-glance
   - path: greatroom
     title: Living Room

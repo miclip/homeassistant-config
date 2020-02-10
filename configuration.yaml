@@ -31,40 +31,6 @@ remote:
     host: !secret broadlink_ip
     mac: !secret broadlink_mac
 
-camera:
-  - platform: reolink_dev
-    host: 192.168.2.2
-    name: gym
-    channel: 0
-    username: admin
-    password: !secret reolink_password
-    stream: main
-    protocol: rtsp
-  - platform: reolink_dev
-    host: 192.168.2.2
-    name: garage
-    channel: 1
-    username: admin
-    password: !secret reolink_password
-    stream: sub
-    protocol: rtsp
-  - platform: reolink_dev
-    host: 192.168.2.2
-    name: driveway
-    channel: 2
-    username: admin
-    password: !secret reolink_password
-    stream: main
-    protocol: rtsp
-  - platform: reolink_dev
-    host: 192.168.2.2
-    name: basement
-    channel: 3
-    username: admin
-    password: !secret reolink_password
-    stream: main
-    protocol: rtsp
-
 alexa_media:
   accounts:
     - email: !secret amazon_user
@@ -133,7 +99,7 @@ weather:
     api_key: !secret darksky_api_key
     mode: daily
 
-
+camera: !include_dir_merge_named camera
 recorder: !include recorder.yaml
 logger: !include logger.yaml
 sensor: !include_dir_merge_list sensor

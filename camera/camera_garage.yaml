@@ -1,0 +1,8 @@
+platform: reolink_dev
+host: 192.168.2.2
+name: garage
+channel: 1
+username: admin
+password: !secret reolink_password
+stream: main
+protocol: rtsp

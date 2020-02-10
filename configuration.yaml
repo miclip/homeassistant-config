@@ -34,7 +34,7 @@ camera:
   - platform: reolink_dev
     host: 192.168.2.2
     name: driveway
-    channel: 2
+    channel: 02
     username: admin
     password: !secret reolink_password
     stream: main
@@ -43,7 +43,7 @@ camera:
   - platform: reolink_dev
     host: 192.168.2.2
     name: garage
-    channel: 1
+    channel: 01
     username: admin
     password: !secret reolink_password
     stream: main
@@ -124,5 +124,5 @@ sensor: !include_dir_merge_list sensor
 binary_sensor: !include_dir_merge_named binary_sensor
 group: !include_dir_merge_named group
 automation: !include_dir_merge_list automation
-script: !include_dir_merge_list script
+script: !include_dir_merge_named script
 zone: !include_dir_merge_list zone

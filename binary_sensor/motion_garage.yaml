@@ -1,6 +1,6 @@
 platform: template
 sensors:
-  motion_driveway:
+  motion_garage:
     friendly_name: Garage Camera
     device_class: motion
     entity_id: camera.garage

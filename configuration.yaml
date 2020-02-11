@@ -99,7 +99,7 @@ weather:
     api_key: !secret darksky_api_key
     mode: daily
 
-camera: !include_dir_merge_named camera
+camera: !include_dir_merge_list camera
 recorder: !include recorder.yaml
 logger: !include logger.yaml
 sensor: !include_dir_merge_list sensor

@@ -4,7 +4,7 @@
   channel: 0
   username: admin
   password: !secret reolink_password
-  stream: main
+  stream: sub
   protocol: rtsp
 - platform: reolink_dev
   host: 192.168.2.2
@@ -12,7 +12,7 @@
   channel: 1
   username: admin
   password: !secret reolink_password
-  stream: main
+  stream: sub
   protocol: rtsp
 - platform: reolink_dev
   host: 192.168.2.2
@@ -20,7 +20,7 @@
   channel: 2
   username: admin
   password: !secret reolink_password
-  stream: main
+  stream: sub
   protocol: rtsp
 - platform: reolink_dev
   host: 192.168.2.2
@@ -28,5 +28,5 @@
   channel: 3
   username: admin
   password: !secret reolink_password
-  stream: main
+  stream: sub
   protocol: rtsp

@@ -1,4 +1,4 @@
 mobile_trackers:
   entities:
     - device_tracker.iphone
-    - device_tracker.echelon
+    - device_tracker.echelon_4

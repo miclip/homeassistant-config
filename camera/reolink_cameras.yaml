@@ -1,5 +1,5 @@
 - platform: reolink_dev
-  host: 192.168.2.2
+  host: 192.168.2.41
   name: gym
   channel: 0
   username: admin

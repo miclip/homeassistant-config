@@ -25,6 +25,9 @@ class ReolinkApi(object):
         self._rtmpport = None
         self._ptzpresets = dict()
 
+    def session_active(self):
+        return self._token is not None
+
     def status(self):
         if self._token is None:
             return
@@ -44,11 +47,12 @@ class ReolinkApi(object):
             json_data = json.loads(response.text)
         except:
             _LOGGER.error(f"Error translating response to json")
+            self._token = None
             return
 
         for data in json_data:
             try:
-                if data["cmd"] == "GetDevInfo":
+                if data["cmd"] == "GetDevInfo": 
                     self._device_info = data
 
                 elif data["cmd"] == "GetNetPort":
@@ -56,7 +60,7 @@ class ReolinkApi(object):
                     self._rtspport = data["value"]["NetPort"]["rtspPort"]
                     self._rtmpport = data["value"]["NetPort"]["rtmpPort"]
 
-                elif data["cmd"] == "GetFtp":
+                elif data["cmd"] == "GetFtp": 
                     self._ftp_settings = data
                     if (data["value"]["Ftp"]["schedule"]["enable"] == 1):
                         self._ftp_state = True
@@ -69,7 +73,7 @@ class ReolinkApi(object):
                         self._email_state = True
                     else:
                         self._email_state = False
-
+                        
                 elif data["cmd"] == "GetIrLights":
                     self._ir_settings = data
                     if (data["value"]["IrLights"]["state"] == "Auto"):
@@ -88,13 +92,13 @@ class ReolinkApi(object):
                         else:
                             _LOGGER.debug(f"Preset is not enabled: {preset}")
             except:
-                continue
+                continue    
 
     @property
     def motion_state(self):
         body = [{"cmd": "GetMdState", "action": 0, "param":{"channel":self._channel}}]
         param = {"token": self._token}
-
+        
         response = self.send(body, param)
 
         try:
@@ -106,7 +110,7 @@ class ReolinkApi(object):
                 return self._motion_state
 
             if json_data[0]["value"]["state"] == 1:
-                self._motion_state = True
+                self._motion_state = True 
                 self._last_motion = datetime.datetime.now()
             else:
                 self._motion_state = False
@@ -114,16 +118,22 @@ class ReolinkApi(object):
             self._motion_state = False
 
         return self._motion_state
-
+    
     @property
     def still_image(self):
         response = self.send(None, f"?cmd=Snap&channel={self._channel}&token={self._token}", stream=True)
+        if response is None:
+            return
+
         response.raw.decode_content = True
         return response.raw
 
     @property
     def snapshot(self):
         response = self.send(None, f"?cmd=Snap&channel={self._channel}&token={self._token}", stream=False)
+        if response is None:
+            return
+
         return response.content
 
     @property
@@ -157,14 +167,13 @@ class ReolinkApi(object):
     def login(self, username, password):
         body = [{"cmd": "Login", "action": 0, "param": {"User": {"userName": username, "password": password}}}]
         param = {"cmd": "Login", "token": "null"}
-
+        
         response = self.send(body, param)
 
         try:
             json_data = json.loads(response.text)
         except:
             _LOGGER.error(f"Error translating login response to json")
-            _LOGGER.info(f"json_data: {response.text}")
             return
 
         if json_data is not None:
@@ -262,18 +271,17 @@ class ReolinkApi(object):
 
     def send(self, body, param, stream=False):
         try:
-            if (self._token is None and
+            if (self._token is None and 
                 (body is None or body[0]["cmd"] != "Login")):
                 _LOGGER.info(f"Reolink camera at IP {self._ip} is not logged in")
-                return
+                return                
 
             if body is None:
-                response = requests.get(self._url, params=param, stream=stream)
+                response = requests.get(self._url, params=param, stream=stream, timeout=10)
             else:
-                response = requests.post(self._url, data=json.dumps(body), params=param)
-
+                response = requests.post(self._url, data=json.dumps(body), params=param, timeout=10)
+            
             return response
-        except Exception:
+        except requests.exceptions.RequestException: 
             _LOGGER.error(f"Exception while calling Reolink camera API at ip {self._ip}")
             return None
-

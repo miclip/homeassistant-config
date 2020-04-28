@@ -8,7 +8,7 @@
   protocol: rtsp
 - platform: reolink_dev
   host: 192.168.2.41
-  name: basement
+  name: garage
   channel: 1
   username: admin
   password: !secret reolink_password
@@ -16,7 +16,7 @@
   protocol: rtsp
 - platform: reolink_dev
   host: 192.168.2.41
-  name: garage
+  name: driveway
   channel: 2
   username: admin
   password: !secret reolink_password
@@ -24,7 +24,7 @@
   protocol: rtsp
 - platform: reolink_dev
   host: 192.168.2.41
-  name: driveway
+  name: basement
   channel: 3
   username: admin
   password: !secret reolink_password

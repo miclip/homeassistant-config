@@ -14,3 +14,19 @@
   password: !secret reolink_password
   stream: main
   protocol: rtsp
+- platform: reolink_dev
+  host: 192.168.2.41
+  name: basement
+  channel: 2
+  username: admin
+  password: !secret reolink_password
+  stream: main
+  protocol: rtsp
+- platform: reolink_dev
+  host: 192.168.2.41
+  name: garage
+  channel: 3
+  username: admin
+  password: !secret reolink_password
+  stream: main
+  protocol: rtsp

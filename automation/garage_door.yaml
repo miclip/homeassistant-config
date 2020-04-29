@@ -6,6 +6,8 @@
   trigger:
     - platform: time
       at: '21:05:00'
+    - platform: time
+      at: '23:05:00'
   condition:
       condition: and
       conditions:
@@ -37,6 +39,8 @@
   trigger:
     - platform: time
       at: '21:08:00'
+    - platform: time
+      at: '23:08:00'
   condition:
       condition: and
       conditions:

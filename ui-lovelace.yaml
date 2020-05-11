@@ -55,7 +55,7 @@ views:
       - type: horizontal-stack
         cards:
           - type: entity-button
-            entity: switch.espresso_machine
+            entity: switch.jasco_products_28169_plug_in_one_outlet_smart_switch_switch
             name: Espresso
             icon: mdi:coffee
             tap_action:

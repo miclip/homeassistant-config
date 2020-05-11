@@ -72,6 +72,7 @@ http:
   ssl_key: !secret ssl_key
   login_attempts_threshold: 3
   base_url: !secret ha_url
+  ip_ban_enabled: false
 
 updater:
   include_used_components: true

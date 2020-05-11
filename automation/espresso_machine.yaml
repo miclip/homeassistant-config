@@ -14,14 +14,14 @@
           state: 'home'
   action:
     service_template: "switch.turn_on"
-    entity_id: switch.espresso_machine
+    entity_id: switch.jasco_products_28169_plug_in_one_outlet_smart_switch_switch
 - alias: 'Espresso Machine Off'
   trigger:
     - platform: time
       at: '16:00:00'
   action:
     service_template: "switch.turn_off"
-    entity_id: switch.espresso_machine
+    entity_id: switch.jasco_products_28169_plug_in_one_outlet_smart_switch_switch
 - alias: 'Espresso Machine Off When Away'
   trigger:
     - platform: time
@@ -36,7 +36,7 @@
             hours: 1
   action:
     - service_template: "switch.turn_off"
-      entity_id: switch.espresso_machine
+      entity_id: switch.jasco_products_28169_plug_in_one_outlet_smart_switch_switch
     - service: notify.michael_jeanie_iphones
       data:
         title: "Home Assistant Alerts"

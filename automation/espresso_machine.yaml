@@ -20,8 +20,13 @@
     - platform: time
       at: '16:00:00'
   action:
-    service_template: "switch.turn_off"
-    entity_id: switch.jasco_products_28169_plug_in_one_outlet_smart_switch_switch
+    - service_template: "switch.turn_off"
+      entity_id: switch.jasco_products_28169_plug_in_one_outlet_smart_switch_switch
+    - service: notify.alexa_media_kitchen_dot
+      data:
+        message: "The Espresso Machine was turned off"
+        data:
+          type: tts
 - alias: 'Espresso Machine Off When Away'
   trigger:
     - platform: time

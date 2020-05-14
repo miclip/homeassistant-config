@@ -68,3 +68,25 @@
         message: "the bike garage door was open, i closed it."
         data:
           type: tts
+- alias: 'Main Garage Door Obstructed'
+  trigger:
+    - platform: state
+      entity_id: sensor.garage_door_main_obs
+      to: obstruction-detected
+  action:
+    - service: notify.alexa_media_kitchen_dot
+      data:
+        message: "The main garage door has an obstruction preventing it from opening or closing"
+        data:
+          type: tts
+- alias: 'Small Garage Door Obstructed'
+  trigger:
+    - platform: state
+      entity_id: sensor.garage_door_small_obs
+      to: obstruction-detected
+  action:
+    - service: notify.alexa_media_kitchen_dot
+      data:
+        message: "The small garage door has an obstruction preventing it from opening or closing"
+        data:
+          type: tts

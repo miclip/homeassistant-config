@@ -74,6 +74,7 @@ http:
   base_url: !secret ha_url
   ip_ban_enabled: false
 
+
 updater:
   include_used_components: true
 

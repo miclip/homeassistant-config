@@ -3,6 +3,15 @@
       platform: state
       entity_id: group.all_devices
       to: 'not_home'
+  condition:
+      condition: and
+      conditions:
+          - condition: state
+            entity_id: sensor.jeanie_to_home_one_hour
+            state: true
+          - condition: state
+            entity_id: sensor.michael_to_home_one_hour
+            state: true
   action:
       service: climate.set_temperature
       entity_id: climate.thermostat

@@ -3,8 +3,10 @@
     name: Jeanie to Home
     origin: device_tracker.iphone
     destination: zone.home
+    scan_interval: 600
   - platform: google_travel_time
     api_key: !secret google_maps_api
     name: Michael to Home
     origin: device_tracker.echelon
     destination: zone.home
+    scan_interval: 600

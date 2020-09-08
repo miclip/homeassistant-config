@@ -1,20 +1,24 @@
-- alias: 'Heating off everyone away'
-  trigger: 
+- alias: 'Heating and Cooling set to away mode'
+  trigger:
       platform: state
       entity_id: group.all_devices
       to: 'not_home'
   action:
-      service: climate.set_away_mode
+      service: climate.set_temperature
       entity_id: climate.thermostat
       data:
-          away_mode: true
-- alias: 'Heating Normal someone at home'
-  trigger: 
+          target_temp_high: 82
+          target_temp_low: 63
+          hvac_mode: heat_cool
+- alias: 'Heating and Cooling set to home mode'
+  trigger:
       platform: state
       entity_id: group.all_devices
       to: 'home'
   action:
-      service: climate.set_away_mode
+      service: climate.set_temperature
       entity_id: climate.thermostat
       data:
-          away_mode: false
+          target_temp_high: 78
+          target_temp_low: 68
+          hvac_mode: heat_cool

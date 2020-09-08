@@ -30,3 +30,15 @@
       garage_door_small_obs:
         friendly_name: "Small Garage Obstruction"
         value_template: "{{ state_attr('cover.garage_door_small', 'obstruction-detected') }}"
+
+  - platform: template
+    sensors:
+      jeanie_to_home_one_hour:
+        friendly_name: "jeanie to home over one hour"
+        value_template: "{{ states.sensor.jeanie_to_home | float > 60 }}"
+
+  - platform: template
+    sensors:
+      michael_to_home_one_hour:
+        friendly_name: "Michael to home over one hour"
+        value_template: "{{ states.sensor.michael_to_home | float > 60 }}"

@@ -8,10 +8,10 @@
       conditions:
           - condition: state
             entity_id: sensor.jeanie_to_home_one_hour
-            state: "true"
+            state: "True"
           - condition: state
             entity_id: sensor.michael_to_home_one_hour
-            state: "true"
+            state: "True"
   action:
       service: climate.set_temperature
       entity_id: climate.thermostat

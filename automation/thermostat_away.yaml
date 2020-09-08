@@ -7,18 +7,16 @@
       service: climate.set_temperature
       entity_id: climate.thermostat
       data:
-          target_temp_high: 82
-          target_temp_low: 63
-          hvac_mode: heat_cool
+          away_mode: true
+          away_cool_temperature: 82
+          away_heat_temperature: 63
 - alias: 'Heating and Cooling set to home mode'
   trigger:
       platform: state
       entity_id: group.all_devices
       to: 'home'
   action:
-      service: climate.set_temperature
+      service: climate.set_away_mode
       entity_id: climate.thermostat
       data:
-          target_temp_high: 78
-          target_temp_low: 68
-          hvac_mode: heat_cool
+        away_mode: false

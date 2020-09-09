@@ -1,0 +1,44 @@
+#####################################################################################
+###  Alert when washing machine has completed a cycle.
+#####################################################################################
+- alias: 'Washing machine is completed a load'
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.washer_wash_completed
+      to: 'on'
+  condition:
+    condition: time
+    before: '22:00:00'
+  action:
+    - service: notify.alexa_media_kitchen_dot
+      data:
+        message: "The washing machine has completed a load."
+        data:
+          type: tts
+    - service: notify.alexa_media_master_bedroom_dot
+      data:
+        message: "The washing machine has completed a load."
+        data:
+          type: tts
+#####################################################################################
+###  Alert when dryer has completed a cycle.
+#####################################################################################
+- alias: 'Dryer is completed a load'
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.dryer_wash_completed
+      to: 'on'
+  condition:
+    condition: time
+    before: '22:00:00'
+  action:
+    - service: notify.alexa_media_kitchen_dot
+      data:
+        message: "The dryer has completed a load."
+        data:
+          type: tts
+    - service: notify.alexa_media_master_bedroom_dot
+      data:
+        message: "The dryer has completed a load."
+        data:
+          type: tts

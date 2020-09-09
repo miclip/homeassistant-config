@@ -33,6 +33,10 @@ SERVICE_ENABLE_EMAIL = 'enable_email'
 SERVICE_DISABLE_EMAIL = 'disable_email'
 SERVICE_ENABLE_IR_LIGHTS = 'enable_ir_lights'
 SERVICE_DISABLE_IR_LIGHTS = 'disable_ir_lights'
+SERVICE_ENABLE_RECORDING = 'enable_recording'
+SERVICE_DISABLE_RECORDING = 'disable_recording'
+SERVICE_ENABLE_MOTION_DETECTION = 'enable_motion_detection'
+SERVICE_DISABLE_MOTION_DETECTION = 'disable_motion_detection'
 
 DEFAULT_BRAND = 'Reolink'
 DOMAIN_DATA = 'reolink_devices'
@@ -51,7 +55,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
 )
 
 @asyncio.coroutine
-def async_setup_platform(hass, config, async_add_devices, discovery_info=None):
+async def async_setup_platform(hass, config, async_add_devices, discovery_info=None):
     """Set up a Reolink IP Camera."""
 
     host = config.get(CONF_HOST)
@@ -63,7 +67,7 @@ def async_setup_platform(hass, config, async_add_devices, discovery_info=None):
     name = config.get(CONF_NAME)
 
     session = ReolinkApi(host, channel)
-    session.login(username, password)
+    await session.login(username, password)
 
     async_add_devices([ReolinkCamera(hass, session, host, username, password, stream, protocol, channel, name)], update_before_add=True)
 
@@ -83,7 +87,6 @@ def async_setup_platform(hass, config, async_add_devices, discovery_info=None):
 
         if entity:
             entity.disable_ftp_upload()
-
     hass.services.async_register(DOMAIN, SERVICE_DISABLE_FTP, handler_disable_ftp)
 
 # Event enable email
@@ -102,7 +105,6 @@ def async_setup_platform(hass, config, async_add_devices, discovery_info=None):
 
         if entity:
             entity.disable_email()
-
     hass.services.async_register(DOMAIN, SERVICE_DISABLE_EMAIL, handler_disable_email)
 
 # Event enable ir lights
@@ -121,8 +123,43 @@ def async_setup_platform(hass, config, async_add_devices, discovery_info=None):
 
         if entity:
             entity.disable_ir_lights()
-
     hass.services.async_register(DOMAIN, SERVICE_DISABLE_IR_LIGHTS, handler_disable_ir_lights)
+
+# Event enable recording
+    def handler_enable_recording(call):
+        component = hass.data.get(DOMAIN)
+        entity = component.get_entity(call.data.get(ATTR_ENTITY_ID))
+
+        if entity:
+            entity.enable_recording()
+    hass.services.async_register(DOMAIN, SERVICE_ENABLE_RECORDING, handler_enable_recording)
+
+# Event disable recording
+    def handler_disable_recording(call):
+        component = hass.data.get(DOMAIN)
+        entity = component.get_entity(call.data.get(ATTR_ENTITY_ID))
+
+        if entity:
+            entity.disable_recording()
+    hass.services.async_register(DOMAIN, SERVICE_DISABLE_RECORDING, handler_disable_recording)
+
+# Event enable motion detection
+    def handler_enable_motion_detection(call):
+        component = hass.data.get(DOMAIN)
+        entity = component.get_entity(call.data.get(ATTR_ENTITY_ID))
+
+        if entity:
+            entity.enable_motion_detection()
+    hass.services.async_register(DOMAIN, SERVICE_ENABLE_MOTION_DETECTION, handler_enable_motion_detection)
+
+# Event disable motion detection
+    def handler_disable_motion_detection(call):
+        component = hass.data.get(DOMAIN)
+        entity = component.get_entity(call.data.get(ATTR_ENTITY_ID))
+
+        if entity:
+            entity.disable_motion_detection()
+    hass.services.async_register(DOMAIN, SERVICE_DISABLE_MOTION_DETECTION, handler_disable_motion_detection)
 
 
 class ReolinkCamera(Camera):
@@ -149,7 +186,9 @@ class ReolinkCamera(Camera):
         self._ftp_state = None
         self._email_state = None
         self._ir_state = None
+        self._recording_state = None
         self._ptzpresets = dict()
+        self._motion_detection_state = None
         self._state = STATE_IDLE
 
         self._hass.bus.async_listen(EVENT_HOMEASSISTANT_STOP, self.disconnect)
@@ -168,7 +207,9 @@ class ReolinkCamera(Camera):
         attrs["ftp_enabled"] = self._ftp_state
         attrs["email_enabled"] = self._email_state
         attrs["ir_lights_enabled"] = self._ir_state
+        attrs["recording_enabled"] = self._recording_state
         attrs["ptzpresets"] = self._ptzpresets
+        attrs["motion_detection_enabled"] = self._motion_detection_state
 
         return attrs
 
@@ -194,7 +235,7 @@ class ReolinkCamera(Camera):
 
     @property
     def ftp_state(self):
-        """Camera Motion recording Status."""
+        """Camera Motion FTP upload Status."""
         return self._ftp_state
 
     @property
@@ -203,9 +244,19 @@ class ReolinkCamera(Camera):
         return self._email_state
 
     @property
+    def recording_state(self):
+        """Camera recording status."""
+        return self._recording_state
+
+    @property
     def ptzpresets(self):
         """Camera PTZ presets list."""
         return self._ptzpresets
+
+    @property
+    def motion_detection_state(self):
+        """Camera motion detection setting status."""
+        return self._motion_detection_state
 
     async def stream_source(self):
         """Return the source of the stream."""
@@ -235,51 +286,77 @@ class ReolinkCamera(Camera):
         finally:
             await stream.close()
 
-    def camera_image(self):
+    async def camera_image(self):
         """Return bytes of camera image."""
         return self._reolinkSession.still_image
 
     async def async_camera_image(self):
         """Return a still image response from the camera."""
-        return self._reolinkSession.snapshot
+        return await self._reolinkSession.snapshot
 
     def enable_ftp_upload(self):
         """Enable motion ftp recording in camera."""
-        if self._reolinkSession.set_ftp(True):
+        if asyncio.run_coroutine_threadsafe(self._reolinkSession.set_ftp(True), self.hass.loop).result():
             self._ftp_state = True
             self._hass.states.set(self.entity_id, self.state, self.state_attributes)
 
     def disable_ftp_upload(self):
         """Disable motion ftp recording."""
-        if self._reolinkSession.set_ftp(False):
+        if asyncio.run_coroutine_threadsafe(self._reolinkSession.set_ftp(False), self.hass.loop).result():
             self._ftp_state = False
             self._hass.states.set(self.entity_id, self.state, self.state_attributes)
 
     def enable_email(self):
         """Enable email motion detection in camera."""
-        if self._reolinkSession.set_email(True):
+        if asyncio.run_coroutine_threadsafe(self._reolinkSession.set_email(True), self.hass.loop).result():
             self._email_state = True
             self._hass.states.set(self.entity_id, self.state, self.state_attributes)
 
     def disable_email(self):
         """Disable email motion detection."""
-        if self._reolinkSession.set_email(False):
+        if asyncio.run_coroutine_threadsafe(self._reolinkSession.set_email(False), self.hass.loop).result():
             self._email_state = False
             self._hass.states.set(self.entity_id, self.state, self.state_attributes)
 
     def enable_ir_lights(self):
         """Enable IR lights."""
-        if self._reolinkSession.set_ir_lights(True):
+        if asyncio.run_coroutine_threadsafe(self._reolinkSession.set_ir_lights(True), self.hass.loop).result():
             self._ir_state = True
             self._hass.states.set(self.entity_id, self.state, self.state_attributes)
 
     def disable_ir_lights(self):
         """Disable IR lights."""
-        if self._reolinkSession.set_ir_lights(False):
+        if asyncio.run_coroutine_threadsafe(self._reolinkSession.set_ir_lights(False), self.hass.loop).result():
             self._ir_state = False
-            self._hass.states.set(self.entity_id, self.state, self.state_attributes)   
+            self._hass.states.set(self.entity_id, self.state, self.state_attributes)
 
+    def enable_recording(self):
+        """Enable recording."""
+        if asyncio.run_coroutine_threadsafe(self._reolinkSession.set_recording(True), self.hass.loop).result():
+            self._recording_state = True
+            self._hass.states.set(self.entity_id, self.state, self.state_attributes)
+
+    def disable_recording(self):
+        """Disable recording."""
+        if asyncio.run_coroutine_threadsafe(self._reolinkSession.set_recording(False), self.hass.loop).result():
+            self._recording_state = False
+            self._hass.states.set(self.entity_id, self.state, self.state_attributes)
+
+    def enable_motion_detection(self):
+        """Enable motion_detecion."""
+        if asyncio.run_coroutine_threadsafe(self._reolinkSession.set_motion_detection(True), self.hass.loop).result():
+            self._motion_detection_state = True
+            self._hass.states.set(self.entity_id, self.state, self.state_attributes)
+
+    def disable_motion_detection(self):
+        """Disable motion detecion."""
+        if asyncio.run_coroutine_threadsafe(self._reolinkSession.set_motion_detection(False), self.hass.loop).result():
+            self._motion_detection_state = False
+            self._hass.states.set(self.entity_id, self.state, self.state_attributes)
+    
     async def update_motion_state(self):
+        await self._reolinkSession.get_motion_state()
+
         if self._reolinkSession.motion_state == True:
             self._state = STATE_MOTION
             self._last_motion = self._reolinkSession.last_motion
@@ -287,20 +364,23 @@ class ReolinkCamera(Camera):
             self._state = STATE_NO_MOTION
     
     async def update_status(self):
-        self._reolinkSession.status()
+        await self._reolinkSession.get_settings()
 
         self._last_update = datetime.datetime.now()
         self._ftp_state = self._reolinkSession.ftp_state
         self._email_state = self._reolinkSession.email_state
         self._ir_state = self._reolinkSession.ir_state
+        self._recording_state = self._reolinkSession.recording_state
         self._ptzpresets = self._reolinkSession.ptzpresets
+        self._motion_detection_state = self._reolinkSession.motion_detection_state
 
-    def update(self):
+    async def async_update(self):
         """Update the data from the camera."""
         if not self._reolinkSession.session_active():
             if (self._last_update == 0 or
                (datetime.datetime.now() - self._last_update).total_seconds() >= 60):
-                self._reolinkSession.login(self._username, self._password)
+                #asyncio.run_coroutine_threadsafe(self._reolinkSession.login(self._username, self._password), self.hass.loop).result()
+                await self._reolinkSession.login(self._username, self._password)
             else:
                 return
         
@@ -309,15 +389,18 @@ class ReolinkCamera(Camera):
             self._last_update = datetime.datetime.now()
 
         try:
-            self._hass.loop.create_task(self.update_motion_state())
+            #asyncio.run_coroutine_threadsafe(self.update_motion_state(), self.hass.loop).result()
+            await self.update_motion_state()
 
             if (self._last_update == 0 or
                (datetime.datetime.now() - self._last_update).total_seconds() >= 30):
-                self._hass.loop.create_task(self.update_status())
+                #asyncio.run_coroutine_threadsafe(self.update_status(), self.hass.loop)
+                await self.update_status()
 
         except Exception as ex:
             _LOGGER.error(f"Got exception while fetching the state: {ex}")
+            self._reolinkSession.clear_token()
 
-    def disconnect(self, event):
+    async def disconnect(self, event):
         _LOGGER.info("Disconnecting from Reolink camera")
-        self._reolinkSession.logout()
+        await self._reolinkSession.logout()

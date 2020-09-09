@@ -1,7 +1,7 @@
 #####################################################################################
 ###  Alert when washing machine has completed a cycle.
 #####################################################################################
-- alias: 'Washing machine is completed a load'
+- alias: 'Washing machine has completed a load'
   trigger:
     - platform: state
       entity_id: binary_sensor.washer_wash_completed
@@ -23,7 +23,7 @@
 #####################################################################################
 ###  Alert when dryer has completed a cycle.
 #####################################################################################
-- alias: 'Dryer is completed a load'
+- alias: 'Dryer has completed a load'
   trigger:
     - platform: state
       entity_id: binary_sensor.dryer_wash_completed

@@ -43,11 +43,11 @@
   action:
     - service: notify.alexa_media_kitchen_dot
       data:
-        message: "ding dong! Someone is at the front door!"
+        message: "Someone is at the front door!"
         data:
           type: tts
     - service: notify.alexa_media_master_bedroom_dot
       data:
-        message: "ding dong! Someone is at the front door!"
+        message: "Someone is at the front door!"
         data:
           type: tts

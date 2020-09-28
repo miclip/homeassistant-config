@@ -19,6 +19,12 @@
   trigger:
     - platform: time
       at: '16:00:00'
+  condition:
+      condition: and
+      conditions:
+        - condition: state
+          entity_id: switch.jasco_products_28169_plug_in_one_outlet_smart_switch_switch
+          state: 'on'
   action:
     - service_template: "switch.turn_off"
       entity_id: switch.jasco_products_28169_plug_in_one_outlet_smart_switch_switch

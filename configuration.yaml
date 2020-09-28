@@ -38,15 +38,7 @@ alexa_media:
       url: amazon.com
       exclude_devices:
         - "This Device"
-        - "Jeanie's Alexa Apps"
         - "Michael's Alexa Apps"
-
-notify:
-  - name: michael_jeanie_iphones
-    platform: group
-    services:
-      - service: ios_echelon
-      - service: ios_iphone
 
 
 ring:

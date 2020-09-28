@@ -34,13 +34,13 @@ views:
           - type: picture-glance
             title: Room Location
             entities:
-              #- sensor.jeanie_room_status
-              - sensor.jeanie_phone_battery
+              #- sensor.hannah_room_status
+              - sensor.hannah_phone_battery
             state_image:
-              "home": /local/images/jeanie_home.jpg
-              "not_home": /local/images/jeanie_away.jpg
+              "home": /local/images/hannah_home.jpg
+              "not_home": /local/images/hannah_away.jpg
             aspect_ratio: 16:9
-            entity: person.jeanie_lipscombe
+            entity: person.hannah_lipscombe
       - type: vertical-stack
         cards:
           - type: conditional

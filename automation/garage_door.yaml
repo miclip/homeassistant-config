@@ -19,7 +19,7 @@
       entity_id: cover.garage_door_main
     - delay:
         seconds: 5
-    - service: notify.michael_jeanie_iphones
+    - service: notify.mobile_app_echelon
       data:
         title: "Home Assistant Alerts"
         message: "The Main Garage Door has been closed."

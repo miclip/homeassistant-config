@@ -74,6 +74,19 @@ views:
               service_data:
                 entity_id: lock.schlage_allegion_unknown_type_0001_id_0468_locked
           - type: entity-button
+            entity: lock.schlage_allegion_unknown_type_0001_id_0468_locked
+            name: Garage Door
+            tap_action:
+              action: call-service
+              service: lock.lock
+              service_data:
+                entity_id: lock.schlage_allegion_be469zp_connect_smart_deadbolt_locked
+            hold_action:
+              action: call-service
+              service: lock.unlock
+              service_data:
+                entity_id: lock.schlage_allegion_be469zp_connect_smart_deadbolt_locked
+          - type: entity-button
             entity: cover.garage_door_small
             name: Garage Small
             tap_action:

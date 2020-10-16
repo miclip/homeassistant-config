@@ -1,0 +1,37 @@
+#####################################################################################
+###  Lock Garage Entry Door at 9pm
+#####################################################################################
+
+- alias: 'Garage Entry Door Locked'
+  trigger:
+    - platform: time
+      at: '21:00:00'
+    - platform: time
+      at: '23:00:00'
+  condition:
+      condition: and
+      conditions:
+        - condition: state
+          entity_id: lock.schlage_allegion_be469zp_connect_smart_deadbolt_locked
+          state: unlocked
+  action:
+    - service_template: "lock.lock"
+      entity_id: lock.schlage_allegion_be469zp_connect_smart_deadbolt_locked
+    - delay:
+        seconds: 5
+    - service: notify.alexa_media_kitchen_dot
+      data:
+        message: "The garage entry door was unlocked, I locked it."
+        data:
+          type: tts
+    - service: notify.alexa_media_master_bedroom_dot
+      data:
+        message: "The garage entry door was unlocked, I locked it."
+        data:
+          type: tts
+    - service: notify.mobile_app_echelon
+      data:
+        title: "Home Assistant Alerts"
+        message: "The garage entry door has been locked."
+        data:
+          subtitle: "Bed Time"

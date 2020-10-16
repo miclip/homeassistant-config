@@ -62,7 +62,7 @@ views:
               action: toggle
           - type: entity-button
             entity: lock.schlage_allegion_unknown_type_0001_id_0468_locked
-            name: Front Door
+            name: Front
             tap_action:
               action: call-service
               service: lock.lock
@@ -74,8 +74,8 @@ views:
               service_data:
                 entity_id: lock.schlage_allegion_unknown_type_0001_id_0468_locked
           - type: entity-button
-            entity: lock.schlage_allegion_unknown_type_0001_id_0468_locked
-            name: Garage Door
+            entity: lock.schlage_allegion_be469zp_connect_smart_deadbolt_locked
+            name: Garage
             tap_action:
               action: call-service
               service: lock.lock

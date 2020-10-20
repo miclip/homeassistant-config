@@ -14,13 +14,6 @@
 
   - platform: template
     sensors:
-      jeanie_phone_battery:
-        friendly_name: 'Jeanie Phone Battery'
-        value_template: '{{states.device_tracker.iphone.attributes.battery}}'
-        unit_of_measurement: '%'
-
-  - platform: template
-    sensors:
       garage_door_main_obs:
         friendly_name: "Main Garage Obstruction"
         value_template: "{{ state_attr('cover.garage_door_main', 'obstruction-detected') }}"
@@ -30,12 +23,6 @@
       garage_door_small_obs:
         friendly_name: "Small Garage Obstruction"
         value_template: "{{ state_attr('cover.garage_door_small', 'obstruction-detected') }}"
-
-  - platform: template
-    sensors:
-      jeanie_to_home_one_hour:
-        friendly_name: "jeanie to home over one hour"
-        value_template: "{{ states.sensor.jeanie_to_home | float > 60 }}"
 
   - platform: template
     sensors:

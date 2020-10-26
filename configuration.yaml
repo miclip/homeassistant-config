@@ -79,6 +79,14 @@ mqtt:
 
 sun:
 
+device_tracker:
+  - platform: netgear
+    host: 192.168.2.1
+    username: !secret netgear_user
+    password: !secret netgear_password
+    new_device_defaults:
+      track_new_devices: true
+
 wemo:
 
 lovelace:

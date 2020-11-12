@@ -49,7 +49,6 @@ cover:
   - platform: myq
     username: !secret myq_username
     password: !secret myq_password
-    type: liftmaster
 
 zwave:
   usb_path: /dev/ttyACM0

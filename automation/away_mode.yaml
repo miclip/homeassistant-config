@@ -13,6 +13,14 @@
           - condition: state
             entity_id: sensor.michael_to_home_five_minutes
             state: "True"
+          - condition: or
+            conditions:
+                - condition: state
+                  entity_id: lock.schlage_allegion_unknown_type_0001_id_0468_locked
+                  state: "unlocked"
+                - condition: state
+                  entity_id: lock.schlage_allegion_be469zp_connect_smart_deadbolt_locked
+                  state: "unlocked"
   action:
     - service_template: "lock.lock"
       entity_id: lock.schlage_allegion_unknown_type_0001_id_0468_locked
@@ -21,6 +29,6 @@
     - service: notify.mobile_app_echelon
       data:
         title: "Home Assistant Alerts"
-        message: "Away mode, doors locked."
+        message: "Away mode, all doors have been locked."
         data:
           subtitle: "Away mode"

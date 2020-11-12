@@ -1,0 +1,26 @@
+#####################################################################################
+# Automation for when we're away
+#####################################################################################
+
+- alias: 'Lock doors when away'
+  trigger:
+      platform: state
+      entity_id: group.all_devices
+      to: 'not_home'
+  condition:
+      condition: and
+      conditions:
+          - condition: state
+            entity_id: sensor.michael_to_home_five_minutes
+            state: "True"
+  action:
+    - service_template: "lock.lock"
+      entity_id: lock.schlage_allegion_unknown_type_0001_id_0468_locked
+    - service_template: "lock.lock"
+      entity_id: lock.schlage_allegion_be469zp_connect_smart_deadbolt_locked
+    - service: notify.mobile_app_echelon
+      data:
+        title: "Home Assistant Alerts"
+        message: "Away mode, doors locked."
+        data:
+          subtitle: "Away mode"

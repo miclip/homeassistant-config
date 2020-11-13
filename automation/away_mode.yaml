@@ -5,7 +5,7 @@
 - alias: 'Lock doors when away'
   trigger:
       platform: state
-      entity_id: group.all_devices
+      entity_id: group.mobile_trackers
       to: 'not_home'
   condition:
       condition: and

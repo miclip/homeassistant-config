@@ -1,11 +1,11 @@
 #####################################################################################
-# Automation for when we're away
+# Automation for when we're five minutes away
 #####################################################################################
 
-- alias: 'Lock doors when away'
+- alias: 'Automation five minutes away'
   trigger:
       platform: state
-      entity_id: sensor.michael_to_home_five_minutes
+      entity_id: sensor.michael_to_home_greater_five_minutes
       to: "True"
   condition:
       condition: and
@@ -32,3 +32,10 @@
         message: "Detected you are greater then five minutes from home, any unlocked doors have been locked."
         data:
           subtitle: "Away mode Automation"
+
+#####################################################################################
+# Automation for when we're more then an hour away
+#####################################################################################
+#####################################################################################
+# Automation for when we're heading home after being an hour away
+#####################################################################################

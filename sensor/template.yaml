@@ -26,12 +26,18 @@
 
   - platform: template
     sensors:
-      michael_to_home_one_hour:
+      michael_to_home_greater_one_hour:
         friendly_name: "Michael to home over one hour"
         value_template: "{{ states.sensor.michael_to_home | float > 60 }}"
 
   - platform: template
     sensors:
-      michael_to_home_five_minutes:
+      michael_to_home_greater_five_minutes:
         friendly_name: "Michael to home over five minutes"
         value_template: "{{ states.sensor.michael_to_home | float > 5 }}"
+
+  - platform: template
+    sensors:
+      michael_to_home_less_ten_minutes:
+        friendly_name: "Michael to home less then ten minutes"
+        value_template: "{{ states.sensor.michael_to_home | float < 10 }}"

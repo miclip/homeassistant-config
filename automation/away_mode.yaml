@@ -30,7 +30,7 @@
     - service: notify.mobile_app_echelon
       data:
         title: "Home Assistant Alerts"
-        message: "Detected you are greater then five minutes from home, any unlocked doors have been locked."
+        message: "Detected you are greater than five minutes from home, running away automations"
         data:
           subtitle: "Away mode Automation"
 

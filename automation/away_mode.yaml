@@ -4,9 +4,10 @@
 
 - alias: 'Automation five minutes away'
   trigger:
-      platform: state
-      entity_id: sensor.michael_to_home_greater_five_minutes
-      to: "True"
+      platform: numeric_state
+      entity_id: sensor.michael_to_home
+      above: 5
+      for: "00:01:00"
   condition:
       condition: and
       conditions:

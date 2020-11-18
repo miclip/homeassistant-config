@@ -8,6 +8,7 @@
       to: 'on'
   condition:
     condition: time
+    after: '09:00:00'
     before: '22:00:00'
   action:
     - service: notify.alexa_media_kitchen_dot
@@ -30,6 +31,7 @@
       to: 'on'
   condition:
     condition: time
+    after: '09:00:00'
     before: '22:00:00'
   action:
     - service: notify.alexa_media_kitchen_dot

@@ -74,18 +74,18 @@ views:
               service_data:
                 entity_id: lock.schlage_allegion_unknown_type_0001_id_0468_locked
           - type: entity-button
-            entity: lock.schlage_allegion_be469zp_connect_smart_deadbolt_locked
+            entity: lock.touchscreen_deadbolt_z_wave_plus_current_lock_mode
             name: Garage
             tap_action:
               action: call-service
               service: lock.lock
               service_data:
-                entity_id: lock.schlage_allegion_be469zp_connect_smart_deadbolt_locked
+                entity_id: lock.touchscreen_deadbolt_z_wave_plus_current_lock_mode
             hold_action:
               action: call-service
               service: lock.unlock
               service_data:
-                entity_id: lock.schlage_allegion_be469zp_connect_smart_deadbolt_locked
+                entity_id: lock.touchscreen_deadbolt_z_wave_plus_current_lock_mode
           - type: entity-button
             entity: cover.garage_door_small
             name: Garage Small
@@ -123,33 +123,33 @@ views:
       - type: horizontal-stack
         cards:
           - type: entity-button
-            entity: switch.jasco_products_unknown_type_4952_id_3231_switch
+            entity: switch.in_wall_smart_toggle_switch_120_277vac_current_value
             icon: mdi:lightbulb
             name: Garage Ext
             tap_action:
               action: call-service
               service: switch.turn_on
               service_data:
-                entity_id: switch.jasco_products_unknown_type_4952_id_3231_switch
+                entity_id: switch.in_wall_smart_toggle_switch_120_277vac_current_value
             hold_action:
               action: call-service
               service: switch.turn_off
               service_data:
-                entity_id: switch.jasco_products_unknown_type_4952_id_3231_switch
+                entity_id: switch.in_wall_smart_toggle_switch_120_277vac_current_value
           - type: entity-button
-            entity: switch.jasco_products_unknown_type_4952_id_3231_switch_2
+            entity: switch.in_wall_smart_toggle_switch_120_277vac_current_value_2
             icon: mdi:lightbulb
             name: Front Patio
             tap_action:
               action: call-service
               service: switch.turn_on
               service_data:
-                entity_id: switch.jasco_products_unknown_type_4952_id_3231_switch_2
+                entity_id: switch.in_wall_smart_toggle_switch_120_277vac_current_value_2
             hold_action:
               action: call-service
               service: switch.turn_off
               service_data:
-                entity_id: switch.jasco_products_unknown_type_4952_id_3231_switch_2
+                entity_id: switch.in_wall_smart_toggle_switch_120_277vac_current_value_2
       - type: vertical-stack
         cards:
           - type: thermostat

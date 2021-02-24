@@ -7,14 +7,14 @@
       event: sunset
   action:
     - service_template: "switch.turn_on"
-      entity_id: switch.jasco_products_unknown_type_4952_id_3231_switch
+      entity_id: switch.in_wall_smart_toggle_switch_120_277vac_current_value
 - alias: 'Garage External Lights Off'
   trigger:
     - platform: sun
       event: sunrise
   action:
     - service_template: "switch.turn_off"
-      entity_id: switch.jasco_products_unknown_type_4952_id_3231_switch
+      entity_id: switch.in_wall_smart_toggle_switch_120_277vac_current_value
 #####################################################################################
 ###  Front Patio Lights
 #####################################################################################
@@ -24,11 +24,11 @@
       event: sunset
   action:
     - service_template: "switch.turn_on"
-      entity_id: switch.jasco_products_unknown_type_4952_id_3231_switch_2
+      entity_id: switch.in_wall_smart_toggle_switch_120_277vac_current_value_2
 - alias: 'Front Patio Lights Off'
   trigger:
     - platform: sun
       event: sunrise
   action:
     - service_template: "switch.turn_off"
-      entity_id: switch.jasco_products_unknown_type_4952_id_3231_switch_2
+      entity_id: switch.in_wall_smart_toggle_switch_120_277vac_current_value_2

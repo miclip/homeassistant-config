@@ -14,7 +14,7 @@
           state: 'home'
   action:
     service_template: "switch.turn_on"
-    entity_id: switch.jasco_products_28169_plug_in_one_outlet_smart_switch_switch
+    entity_id: switch.28169_plug_in_one_outlet_smart_switch_switch
 - alias: 'Espresso Machine Off'
   trigger:
     - platform: time
@@ -23,11 +23,11 @@
       condition: and
       conditions:
         - condition: state
-          entity_id: switch.jasco_products_28169_plug_in_one_outlet_smart_switch_switch
+          entity_id: switch.28169_plug_in_one_outlet_smart_switch_switch
           state: 'on'
   action:
     - service_template: "switch.turn_off"
-      entity_id: switch.jasco_products_28169_plug_in_one_outlet_smart_switch_switch
+      entity_id: switch.28169_plug_in_one_outlet_smart_switch_switch
     - service: notify.alexa_media_kitchen_dot
       data:
         message: "The Espresso Machine was turned off"
@@ -46,11 +46,11 @@
           for:
             hours: 1
         - condition: state
-          entity_id: switch.jasco_products_28169_plug_in_one_outlet_smart_switch_switch
+          entity_id: switch.28169_plug_in_one_outlet_smart_switch_switch
           state: 'on'
   action:
     - service_template: "switch.turn_off"
-      entity_id: switch.jasco_products_28169_plug_in_one_outlet_smart_switch_switch
+      entity_id: switch.28169_plug_in_one_outlet_smart_switch_switch
     - service: notify.mobile_app_echelon
       data:
         title: "Home Assistant Alerts"

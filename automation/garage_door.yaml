@@ -12,11 +12,11 @@
       condition: and
       conditions:
         - condition: state
-          entity_id: cover.garage_door_main
+          entity_id: cover.garage_door
           state: open
   action:
     - service_template: "cover.close_cover"
-      entity_id: cover.garage_door_main
+      entity_id: cover.garage_door
     - delay:
         seconds: 5
     - service: notify.mobile_app_echelon
@@ -71,7 +71,7 @@
 - alias: 'Main Garage Door Obstructed'
   trigger:
     - platform: state
-      entity_id: sensor.garage_door_main_obs
+      entity_id: sensor.garage_door_obs
       to: obstruction-detected
   action:
     - service: notify.alexa_media_kitchen_dot

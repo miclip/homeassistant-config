@@ -102,18 +102,18 @@ views:
       - type: horizontal-stack
         cards:
           - type: entity-button
-            entity: cover.garage_door_main
+            entity: cover.garage_door
             name: Garage Main
             tap_action:
               action: call-service
               service: cover.open_cover
               service_data:
-                entity_id: cover.garage_door_main
+                entity_id: cover.garage_door
             hold_action:
               action: call-service
               service: cover.close_cover
               service_data:
-                entity_id: cover.garage_door_main
+                entity_id: cover.garage_door
           - type: entity-button
             entity: switch.hannah_heater
             name: Heater

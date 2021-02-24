@@ -43,14 +43,10 @@ cover:
     password: !secret myq_password
     type: liftmaster
 
-rachio:
-  api_key: !secret rachio_api_key
-
 http:
   ssl_certificate: !secret ssl_certificate
   ssl_key: !secret ssl_key
   login_attempts_threshold: 3
-  base_url: !secret ha_url
   ip_ban_enabled: false
 
 updater:

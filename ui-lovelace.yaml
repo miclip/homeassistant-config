@@ -61,18 +61,18 @@ views:
             tap_action:
               action: toggle
           - type: entity-button
-            entity: lock.schlage_allegion_unknown_type_0001_id_0468_locked
+            entity: lock.none_current_lock_mode
             name: Front
             tap_action:
               action: call-service
               service: lock.lock
               service_data:
-                entity_id: lock.schlage_allegion_unknown_type_0001_id_0468_locked
+                entity_id: lock.none_current_lock_mode
             hold_action:
               action: call-service
               service: lock.unlock
               service_data:
-                entity_id: lock.schlage_allegion_unknown_type_0001_id_0468_locked
+                entity_id: lock.none_current_lock_mode
           - type: entity-button
             entity: lock.touchscreen_deadbolt_z_wave_plus_current_lock_mode
             name: Garage

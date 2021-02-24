@@ -12,11 +12,11 @@
       condition: and
       conditions:
         - condition: state
-          entity_id: lock.schlage_allegion_unknown_type_0001_id_0468_locked
+          entity_id: lock.none_current_lock_mode
           state: unlocked
   action:
     - service_template: "lock.lock"
-      entity_id: lock.schlage_allegion_unknown_type_0001_id_0468_locked
+      entity_id: lock.none_current_lock_mode
     - delay:
         seconds: 5
     - service: notify.alexa_media_kitchen_dot

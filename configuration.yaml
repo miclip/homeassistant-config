@@ -31,14 +31,6 @@ remote:
     host: !secret broadlink_ip
     mac: !secret broadlink_mac
 
-alexa_media:
-  accounts:
-    - email: !secret amazon_user
-      password: !secret amazon_password
-      url: amazon.com
-      exclude_devices:
-        - "This Device"
-        - "Michael's Alexa Apps"
 
 
 ring:

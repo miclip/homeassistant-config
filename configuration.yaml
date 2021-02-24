@@ -43,11 +43,6 @@ cover:
     password: !secret myq_password
     type: liftmaster
 
-zwave:
-  usb_path: /dev/ttyACM0
-  network_key: !secret zwave_network_key
-  device_config: !include zwave_device_config.yaml
-
 rachio:
   api_key: !secret rachio_api_key
 
@@ -58,16 +53,23 @@ http:
   base_url: !secret ha_url
   ip_ban_enabled: false
 
-
 updater:
   include_used_components: true
-
 
 mqtt:
   broker: 127.0.0.1
   port: 1883
   username: !secret MQTT_username
   password: !secret MQTT_password
+
+alexa_media:
+  accounts:
+    - email: !secret amazon_user
+      password: !secret amazon_password
+      url: amazon.com
+      exclude_devices:
+        - "This Device"
+        - "Michael's Alexa Apps"
 
 sun:
 

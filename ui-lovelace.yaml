@@ -276,4 +276,3 @@ views:
           - automation.front_door_locked
           - automation.front_door_unlocked
         show_header_toggle: true
-i

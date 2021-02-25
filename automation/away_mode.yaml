@@ -27,7 +27,7 @@
       entity_id: lock.schlage_allegion_unknown_type_0001_id_0468_locked
     - service_template: "lock.lock"
       entity_id: lock.schlage_allegion_be469zp_connect_smart_deadbolt_locked
-    - service: notify.mobile_app_echelon
+    - service: notify.mobile_app_iphone
       data:
         title: "Home Assistant Alerts"
         message: "Detected you are greater than five minutes from home, running away automations"

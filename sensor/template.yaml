@@ -9,7 +9,7 @@
     sensors:
       michael_phone_battery:
         friendly_name: 'Michael Phone Battery'
-        value_template: '{{states.device_tracker.echelon.attributes.battery}}'
+        value_template: '{{states.device_tracker.iphone.attributes.battery}}'
         unit_of_measurement: '%'
 
   - platform: template

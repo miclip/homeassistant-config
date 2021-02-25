@@ -1,6 +1,6 @@
   - platform: google_travel_time
     api_key: !secret google_maps_api
     name: Michael to Home
-    origin: device_tracker.echelon
+    origin: device_tracker.iphone
     destination: zone.home
     scan_interval: 600

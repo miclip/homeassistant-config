@@ -17,16 +17,16 @@
           - condition: or
             conditions:
                 - condition: state
-                  entity_id: lock.schlage_allegion_unknown_type_0001_id_0468_locked
+                  entity_id: lock.none_current_lock_mode
                   state: "unlocked"
                 - condition: state
-                  entity_id: lock.schlage_allegion_be469zp_connect_smart_deadbolt_locked
+                  entity_id: lock.touchscreen_deadbolt_z_wave_plus_current_lock_mode
                   state: "unlocked"
   action:
     - service_template: "lock.lock"
-      entity_id: lock.schlage_allegion_unknown_type_0001_id_0468_locked
+      entity_id: lock.none_current_lock_mode
     - service_template: "lock.lock"
-      entity_id: lock.schlage_allegion_be469zp_connect_smart_deadbolt_locked
+      entity_id: lock.touchscreen_deadbolt_z_wave_plus_current_lock_mode
     - service: notify.mobile_app_iphone
       data:
         title: "Home Assistant Alerts"

@@ -25,22 +25,9 @@ climate:
     password: !secret honeywell_password
     scan_interval: 600
 
-remote:
-  - platform: broadlink
-    host: !secret broadlink_ip
-    mac: !secret broadlink_mac
-
-
-
 ring:
   username: !secret ring_username
   password: !secret ring_password
-
-cover:
-  - platform: myq
-    username: !secret myq_username
-    password: !secret myq_password
-    type: liftmaster
 
 http:
   ssl_certificate: !secret ssl_certificate

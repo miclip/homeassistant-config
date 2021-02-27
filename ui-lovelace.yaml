@@ -154,6 +154,24 @@ views:
         cards:
           - type: alarm-panel
             entity: alarm_control_panel.410_highlands_cir_alarm_control_panel
+      - type: horizontal-stack
+        cards:
+          - camera_image: camera.driveway
+            entities:
+              - binary_sensor.motion_driveway
+            type: picture-glance
+          - camera_image: camera.garage
+            entities:
+              - binary_sensor.motion_garage
+            type: picture-glance
+          - camera_image: camera.basement
+            entities:
+              - binary_sensor.motion_basement
+            type: picture-glance
+          - camera_image: camera.gym
+            entities:
+              - binary_sensor.motion_gym
+            type: picture-glance
       - type: vertical-stack
         cards:
           - type: thermostat
@@ -169,13 +187,6 @@ views:
 
       - type: vertical-stack
         cards:
-          # - type: custom:simple-weather-card
-          #   entity: weather.dark_sky
-          #   name: " "
-          #   secondary_info: humidity
-          #   backdrop:
-          #     day: "#2980b9"
-          #     night: "#022F4C"
           - type: weather-forecast
             entity: weather.dark_sky
           - type: horizontal-stack
@@ -192,34 +203,6 @@ views:
                   - sensor.dark_sky_precip_probability
                 line_color: '#2980b9'
                 line_width: 4
-          - camera_image: camera.driveway
-            entities:
-              #  - switch.camera_frontdoor_ir_lights
-              #  - switch.camera_frontdoor_email
-              #  - switch.camera_frontdoor_ftp
-              - binary_sensor.motion_driveway
-            type: picture-glance
-          - camera_image: camera.garage
-            entities:
-              #  - switch.camera_frontdoor_ir_lights
-              #  - switch.camera_frontdoor_email
-              #  - switch.camera_frontdoor_ftp
-              - binary_sensor.motion_garage
-            type: picture-glance
-          - camera_image: camera.basement
-            entities:
-              #  - switch.camera_frontdoor_ir_lights
-              #  - switch.camera_frontdoor_email
-              #  - switch.camera_frontdoor_ftp
-              - binary_sensor.motion_basement
-            type: picture-glance
-          - camera_image: camera.gym
-            entities:
-              #  - switch.camera_frontdoor_ir_lights
-              #  - switch.camera_frontdoor_email
-              #  - switch.camera_frontdoor_ftp
-              - binary_sensor.motion_gym
-            type: picture-glance
   - path: greatroom
     title: Living Room
     icon: 'mdi:sofa'

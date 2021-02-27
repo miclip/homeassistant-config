@@ -99,8 +99,6 @@ views:
               service: cover.close_cover
               service_data:
                 entity_id: cover.garage_door_small
-      - type: horizontal-stack
-        cards:
           - type: entity-button
             entity: cover.garage_door
             name: Garage Main

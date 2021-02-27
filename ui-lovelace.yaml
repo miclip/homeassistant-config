@@ -152,6 +152,10 @@ views:
                 entity_id: switch.in_wall_smart_toggle_switch_120_277vac_current_value_2
       - type: vertical-stack
         cards:
+          - type: alarm-panel
+            entity: alarm_control_panel.410_highlands_cir_alarm_control_panel
+      - type: vertical-stack
+        cards:
           - type: thermostat
             entity: climate.thermostat
           - type: horizontal-stack

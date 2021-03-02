@@ -54,7 +54,7 @@
     - service: notify.mobile_app_iphone
       data:
         title: "Home Assistant Alerts"
-        message: "Espresso Machine was turned off as no one is home."
+        message: "Espresso Machine has been turned off as no one was home."
         data:
           subtitle: "Away"
 

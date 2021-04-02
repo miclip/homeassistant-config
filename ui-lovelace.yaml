@@ -201,6 +201,12 @@ views:
                   - sensor.dark_sky_precip_probability
                 line_color: '#2980b9'
                 line_width: 4
+      - type: vertical-stack
+        cards:
+          - type: weather-forecast
+            entity: weather.dark_sky
+          - type: horizontal-stack
+            cards:
               - type: custom:mini-graph-card
                 name: Humidity
                 entities:

@@ -210,13 +210,13 @@ views:
               - type: custom:mini-graph-card
                 name: Humidity
                 entities:
-                  - sensor.humidity
+                  - sensor.dark_sky_humidity
                 line_color: '#2980b9'
                 line_width: 4
               - type: custom:mini-graph-card
                 name: Pressure
                 entities:
-                  - sensor.pressure
+                  - sensor.dark_sky_pressure
                 line_color: '#2980b9'
                 line_width: 4
   - path: greatroom

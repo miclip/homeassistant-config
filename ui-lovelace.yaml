@@ -201,6 +201,18 @@ views:
                   - sensor.dark_sky_precip_probability
                 line_color: '#2980b9'
                 line_width: 4
+              - type: custom:mini-graph-card
+                name: Humidity
+                entities:
+                  - sensor.humidity
+                line_color: '#2980b9'
+                line_width: 4
+              - type: custom:mini-graph-card
+                name: Pressure
+                entities:
+                  - sensor.pressure
+                line_color: '#2980b9'
+                line_width: 4
   - path: greatroom
     title: Living Room
     icon: 'mdi:sofa'

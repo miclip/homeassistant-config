@@ -47,22 +47,20 @@
 
 - alias: 'Automation arriving home in vehicle'
   trigger:
-      - platform: numeric_state
-        entity_id: sensor.michael_to_home
-        below: 5
-        for: "00:01:00"
+      - platform: state
+        entity_id: group.mobile_trackers
+        to: home
+        from: not_home
 
   condition:
       condition: and
       conditions:
           - condition: state
-            entity_id: group.mobile_trackers
-            state: "home"
-          - condition: and
-            conditions:
-                - condition: state
-                  entity_id: sensor.iphone_activity
-                  state: "Automotive"
+            entity_id: sensor.iphone_activity
+            state: "Automotive"
+          - condition: state
+            entity_id: cover.garage_door
+            state: "closed"
   action:
     - service: cover.open_cover
       target:

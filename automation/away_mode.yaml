@@ -40,3 +40,36 @@
 #####################################################################################
 # Automation for when we're heading home after being an hour away
 #####################################################################################
+
+#####################################################################################
+# Automation for when arriving home in vehicle
+#####################################################################################
+
+- alias: 'Automation arriving home in vehicle'
+  trigger:
+      - platform: numeric_state
+        entity_id: sensor.michael_to_home
+        below: 5
+        for: "00:01:00"
+
+  condition:
+      condition: and
+      conditions:
+          - condition: state
+            entity_id: group.mobile_trackers
+            state: "home"
+          - condition: and
+            conditions:
+                - condition: state
+                  entity_id: sensor.iphone_activity
+                  state: "Automotive"
+  action:
+    - service: cover.open_cover
+      target:
+          entity_id: cover.garage_door
+    - service: notify.mobile_app_iphone
+      data:
+        title: "Home Assistant Alerts"
+        message: "Detected you arriving home, opening garage door"
+        data:
+          subtitle: "Away mode Automation"

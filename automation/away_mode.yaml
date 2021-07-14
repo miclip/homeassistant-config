@@ -69,3 +69,32 @@
         message: "Detected you arriving home, opening garage door"
         data:
           subtitle: "Away mode Automation"
+
+#####################################################################################
+# Automation for when leaving home in vehicle
+#####################################################################################
+
+- alias: 'Automation leaving home in vehicle'
+  trigger:
+      - platform: state
+        entity_id: group.mobile_trackers
+        to: not_home
+        from: home
+  condition:
+      - condition: and
+        conditions:
+            - condition: state
+              entity_id: sensor.iphone_activity
+              state: "Automotive"
+            - condition: state
+              entity_id: cover.garage_door
+              state: "open"
+  action:
+    - service_template: cover.close_cover
+      entity_id: cover.garage_door
+    - service: notify.mobile_app_iphone
+      data:
+        title: "Home Assistant Alerts"
+        message: "Detected you leaving home, closing garage door"
+        data:
+          subtitle: "Away mode Automation"

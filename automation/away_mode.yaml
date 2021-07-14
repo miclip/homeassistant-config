@@ -51,20 +51,18 @@
         entity_id: group.mobile_trackers
         to: home
         from: not_home
-
   condition:
-      condition: and
-      conditions:
-          - condition: state
-            entity_id: sensor.iphone_activity
-            state: "Automotive"
-          - condition: state
-            entity_id: cover.garage_door
-            state: "closed"
+      - condition: and
+        conditions:
+            - condition: state
+              entity_id: sensor.iphone_activity
+              state: "Automotive"
+            - condition: state
+              entity_id: cover.garage_door
+              state: "closed"
   action:
-    - service: cover.open_cover
-      target:
-          entity_id: cover.garage_door
+    - service_template: cover.open_cover
+      entity_id: cover.garage_door
     - service: notify.mobile_app_iphone
       data:
         title: "Home Assistant Alerts"

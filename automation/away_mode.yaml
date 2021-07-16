@@ -13,7 +13,7 @@
       conditions:
           - condition: state
             entity_id: group.mobile_trackers
-            state: "not_home"
+            state: "away"
           - condition: or
             conditions:
                 - condition: state
@@ -50,7 +50,7 @@
       - platform: state
         entity_id: group.mobile_trackers
         to: home
-        from: not_home
+        from: away
   condition:
       - condition: and
         conditions:
@@ -78,7 +78,7 @@
   trigger:
       - platform: state
         entity_id: group.mobile_trackers
-        to: not_home
+        to: away
         from: home
   condition:
       - condition: and

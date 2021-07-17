@@ -49,8 +49,8 @@
   trigger:
       - platform: state
         entity_id: group.mobile_trackers
-        to: "home"
-        from: "not_home"
+        to: home
+        from: not_home
   condition:
       - condition: and
         conditions:
@@ -78,8 +78,8 @@
   trigger:
       - platform: state
         entity_id: group.mobile_trackers
-        to: "not_home"
-        from: "home"
+        to: not_home
+        from: home
   condition:
       - condition: and
         conditions:

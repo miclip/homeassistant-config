@@ -76,10 +76,10 @@
 
 - alias: 'Automation leaving home in vehicle'
   trigger:
-      - platform: state
-        entity_id: group.mobile_trackers
-        to: not_home
-        from: home
+      platform: numeric_state
+      entity_id: sensor.michael_to_home
+      above: 5
+      for: "00:01:00"
   condition:
       - condition: and
         conditions:

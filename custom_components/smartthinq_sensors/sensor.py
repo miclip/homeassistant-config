@@ -1,359 +1,537 @@
 # REQUIREMENTS = ['wideq']
 # DEPENDENCIES = ['smartthinq']
 
+from __future__ import annotations
+
+from dataclasses import dataclass
 import logging
-from datetime import timedelta
+from typing import Any, Callable, Tuple
 
-from .wideq.device import (
-    STATE_OPTIONITEM_OFF,
-    STATE_OPTIONITEM_ON,
-    UNIT_TEMP_CELSIUS,
-    UNIT_TEMP_FAHRENHEIT,
-    DeviceType,
+from .wideq import (
+    FEAT_DRYLEVEL,
+    FEAT_ENERGY_CURRENT,
+    FEAT_ERROR_MSG,
+    FEAT_HALFLOAD,
+    FEAT_HOT_WATER_TEMP,
+    FEAT_IN_WATER_TEMP,
+    FEAT_LOWER_FILTER_LIFE,
+    FEAT_OUT_WATER_TEMP,
+    FEAT_PRE_STATE,
+    FEAT_PROCESS_STATE,
+    FEAT_RUN_STATE,
+    FEAT_SPINSPEED,
+    FEAT_TUBCLEAN_COUNT,
+    FEAT_TEMPCONTROL,
+    FEAT_UPPER_FILTER_LIFE,
+    FEAT_WATERTEMP,
+    FEAT_COOKTOP_LEFT_FRONT_STATE,
+    FEAT_COOKTOP_LEFT_REAR_STATE,
+    FEAT_COOKTOP_CENTER_STATE,
+    FEAT_COOKTOP_RIGHT_FRONT_STATE,
+    FEAT_COOKTOP_RIGHT_REAR_STATE,
+    FEAT_OVEN_LOWER_CURRENT_TEMP,
+    FEAT_OVEN_LOWER_STATE,
+    FEAT_OVEN_UPPER_CURRENT_TEMP,
+    FEAT_OVEN_UPPER_STATE,
 )
+from .wideq.device import WM_DEVICE_TYPES, DeviceType
 
-from homeassistant.components.binary_sensor import DEVICE_CLASS_PROBLEM, DEVICE_CLASS_OPENING
-from homeassistant.helpers.dispatcher import async_dispatcher_connect, dispatcher_send
-from homeassistant.helpers.entity import Entity
-
-from homeassistant.const import (
+from homeassistant.components.sensor import (
+    DEVICE_CLASS_PM1,
+    DEVICE_CLASS_PM10,
+    DEVICE_CLASS_PM25,
+    DEVICE_CLASS_POWER,
     DEVICE_CLASS_TEMPERATURE,
-    STATE_ON,
-    STATE_OFF,
+    STATE_CLASS_MEASUREMENT,
+    SensorEntity,
+    SensorEntityDescription,
+)
+from homeassistant.const import (
+    CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
+    PERCENTAGE,
+    POWER_WATT,
     STATE_UNAVAILABLE,
-    TEMP_CELSIUS,
-    TEMP_FAHRENHEIT
+)
+from homeassistant.helpers import entity_platform
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
+
+from . import LGEDevice
+from .const import DEFAULT_ICON, DEFAULT_SENSOR, DOMAIN, LGE_DEVICES
+from .device_helpers import (
+    DEVICE_ICONS,
+    WASH_DEVICE_TYPES,
+    LGEACDevice,
+    LGEAirPurifierDevice,
+    LGERangeDevice,
+    LGERefrigeratorDevice,
+    LGEWashDevice,
+    get_entity_name,
 )
 
-from .const import DOMAIN, LGE_DEVICES
-from . import LGEDevice
-
-# sensor definition
-ATTR_MEASUREMENT_NAME = "measurement_name"
-ATTR_ICON = "icon"
-ATTR_UNIT_FN = "unit_fn"
-ATTR_DEVICE_CLASS = "device_class"
-ATTR_VALUE_FN = "value_fn"
-ATTR_ENABLED_FN = "enabled"
+# service definition
+SERVICE_REMOTE_START = "remote_start"
+SERVICE_WAKE_UP = "wake_up"
 
 # general sensor attributes
-ATTR_CURRENT_STATUS = "current_status"
-ATTR_RUN_STATE = "run_state"
-ATTR_PRE_STATE = "pre_state"
-ATTR_RUN_COMPLETED = "run_completed"
-ATTR_REMAIN_TIME = "remain_time"
-ATTR_INITIAL_TIME = "initial_time"
-ATTR_RESERVE_TIME = "reserve_time"
 ATTR_CURRENT_COURSE = "current_course"
 ATTR_ERROR_STATE = "error_state"
-ATTR_ERROR_MSG = "error_message"
-
-# washer sensor attributes
-ATTR_SPIN_OPTION_STATE = "spin_option_state"
-ATTR_WATERTEMP_OPTION_STATE = "watertemp_option_state"
-ATTR_CREASECARE_MODE = "creasecare_mode"
-ATTR_CHILDLOCK_MODE = "childlock_mode"
-ATTR_STEAM_MODE = "steam_mode"
-ATTR_STEAM_SOFTENER_MODE = "steam_softener_mode"
-ATTR_DOORLOCK_MODE = "doorlock_mode"
-ATTR_DOORCLOSE_MODE = "doorclose_mode"
-ATTR_PREWASH_MODE = "prewash_mode"
-ATTR_REMOTESTART_MODE = "remotestart_mode"
-ATTR_TURBOWASH_MODE = "turbowash_mode"
-ATTR_TUBCLEAN_COUNT = "tubclean_count"
-
-# dryer sensor attributes
-ATTR_TEMPCONTROL_OPTION_STATE = "tempcontrol_option_state"
-ATTR_DRYLEVEL_OPTION_STATE = "drylevel_option_state"
-ATTR_TIMEDRY_OPTION_STATE = "timedry_option_state"
-
-# dishwasher sensor attributes
-ATTR_PROCESS_STATE = "process_state"
-ATTR_DELAYSTART_MODE = "delay_start_mode"
-ATTR_ENERGYSAVER_MODE = "energy_saver_mode"
-ATTR_DUALZONE_MODE = "dual_zone_mode"
-ATTR_HALFLOAD_MODE = "half_load_mode"
-ATTR_RINSEREFILL_STATE = "rinse_refill_state"
-ATTR_SALTREFILL_STATE = "salt_refill_state"
+ATTR_INITIAL_TIME = "initial_time"
+ATTR_REMAIN_TIME = "remain_time"
+ATTR_RESERVE_TIME = "reserve_time"
+ATTR_RUN_COMPLETED = "run_completed"
 
 # refrigerator sensor attributes
-ATTR_REFRIGERATOR_TEMP = "refrigerator_temp"
+ATTR_DOOR_OPEN = "door_open"
+ATTR_FRIDGE_TEMP = "fridge_temp"
 ATTR_FREEZER_TEMP = "freezer_temp"
 ATTR_TEMP_UNIT = "temp_unit"
-ATTR_DOOROPEN_STATE = "door_open_state"
 
-STATE_LOOKUP = {
-    STATE_OPTIONITEM_OFF: STATE_OFF,
-    STATE_OPTIONITEM_ON: STATE_ON,
-}
+# ac sensor attributes
+ATTR_ROOM_TEMP = "room_temperature"
 
-TEMP_UNIT_LOOKUP = {
-    UNIT_TEMP_CELSIUS: TEMP_CELSIUS,
-    UNIT_TEMP_FAHRENHEIT: TEMP_FAHRENHEIT,
-}
+# range sensor attributes
+ATTR_OVEN_LOWER_TARGET_TEMP = "oven_lower_target_temp"
+ATTR_OVEN_UPPER_TARGET_TEMP = "oven_upper_target_temp"
+ATTR_OVEN_TEMP_UNIT = "oven_temp_unit"
 
-DEFAULT_SENSOR = "default"
-DISPATCHER_REMOTE_UPDATE = "thinq_remote_update"
+# air purifier sensor attributes
+ATTR_PM1 = "pm1"
+ATTR_PM10 = "pm10"
+ATTR_PM25 = "pm25"
+
+# supported features
+SUPPORT_REMOTE_START = 1
+SUPPORT_WAKE_UP = 2
 
 _LOGGER = logging.getLogger(__name__)
-SCAN_INTERVAL = timedelta(seconds=30)
-
-WASHER_SENSORS = {
-    DEFAULT_SENSOR: {
-        ATTR_MEASUREMENT_NAME: "Default",
-        ATTR_ICON: "mdi:washing-machine",
-        ATTR_UNIT_FN: lambda x: None,
-        # ATTR_UNIT_FN: lambda x: "dBm",
-        ATTR_DEVICE_CLASS: None,
-        ATTR_VALUE_FN: lambda x: x._power_state,
-        ATTR_ENABLED_FN: lambda x: True,
-    },
-}
-
-WASHER_BINARY_SENSORS = {
-    ATTR_RUN_COMPLETED: {
-        ATTR_MEASUREMENT_NAME: "Wash Completed",
-        ATTR_ICON: None,
-        ATTR_UNIT_FN: lambda x: None,
-        ATTR_DEVICE_CLASS: None,
-        ATTR_VALUE_FN: lambda x: x._run_completed,
-        ATTR_ENABLED_FN: lambda x: True,
-    },
-    ATTR_ERROR_STATE: {
-        ATTR_MEASUREMENT_NAME: "Error State",
-        ATTR_ICON: None,
-        ATTR_UNIT_FN: lambda x: None,
-        ATTR_DEVICE_CLASS: DEVICE_CLASS_PROBLEM,
-        ATTR_VALUE_FN: lambda x: x._error_state,
-        ATTR_ENABLED_FN: lambda x: True,
-    },
-}
-
-DRYER_SENSORS = {
-    DEFAULT_SENSOR: {
-        ATTR_MEASUREMENT_NAME: "Default",
-        ATTR_ICON: "mdi:tumble-dryer",
-        ATTR_UNIT_FN: lambda x: None,
-        ATTR_DEVICE_CLASS: None,
-        ATTR_VALUE_FN: lambda x: x._power_state,
-        ATTR_ENABLED_FN: lambda x: True,
-    },
-}
-
-DRYER_BINARY_SENSORS = {
-    ATTR_RUN_COMPLETED: {
-        ATTR_MEASUREMENT_NAME: "Dry Completed",
-        ATTR_ICON: None,
-        ATTR_UNIT_FN: lambda x: None,
-        ATTR_DEVICE_CLASS: None,
-        ATTR_VALUE_FN: lambda x: x._run_completed,
-        ATTR_ENABLED_FN: lambda x: True,
-    },
-    ATTR_ERROR_STATE: {
-        ATTR_MEASUREMENT_NAME: "Error State",
-        ATTR_ICON: None,
-        ATTR_UNIT_FN: lambda x: None,
-        ATTR_DEVICE_CLASS: DEVICE_CLASS_PROBLEM,
-        ATTR_VALUE_FN: lambda x: x._error_state,
-        ATTR_ENABLED_FN: lambda x: True,
-    },
-}
-
-DISHWASHER_SENSORS = {
-    DEFAULT_SENSOR: {
-        ATTR_MEASUREMENT_NAME: "Default",
-        ATTR_ICON: "mdi:dishwasher",
-        ATTR_UNIT_FN: lambda x: None,
-        ATTR_DEVICE_CLASS: None,
-        ATTR_VALUE_FN: lambda x: x._power_state,
-        ATTR_ENABLED_FN: lambda x: True,
-    },
-}
-
-DISHWASHER_BINARY_SENSORS = {
-    ATTR_RUN_COMPLETED: {
-        ATTR_MEASUREMENT_NAME: "Wash Completed",
-        ATTR_ICON: None,
-        ATTR_UNIT_FN: lambda x: None,
-        ATTR_DEVICE_CLASS: None,
-        ATTR_VALUE_FN: lambda x: x._run_completed,
-        ATTR_ENABLED_FN: lambda x: True,
-    },
-    ATTR_ERROR_STATE: {
-        ATTR_MEASUREMENT_NAME: "Error State",
-        ATTR_ICON: None,
-        ATTR_UNIT_FN: lambda x: None,
-        ATTR_DEVICE_CLASS: DEVICE_CLASS_PROBLEM,
-        ATTR_VALUE_FN: lambda x: x._error_state,
-        ATTR_ENABLED_FN: lambda x: True,
-    },
-}
-
-REFRIGERATOR_SENSORS = {
-    DEFAULT_SENSOR: {
-        ATTR_MEASUREMENT_NAME: "Default",
-        ATTR_ICON: "mdi:fridge-outline",
-        ATTR_UNIT_FN: lambda x: None,
-        ATTR_DEVICE_CLASS: None,
-        ATTR_VALUE_FN: lambda x: x._power_state,
-        ATTR_ENABLED_FN: lambda x: True,
-    },
-    ATTR_REFRIGERATOR_TEMP: {
-        ATTR_MEASUREMENT_NAME: "Refrigerator Temp",
-        ATTR_ICON: None,
-        ATTR_UNIT_FN: lambda x: x._temp_unit,
-        ATTR_DEVICE_CLASS: DEVICE_CLASS_TEMPERATURE,
-        ATTR_VALUE_FN: lambda x: x._temp_refrigerator,
-        ATTR_ENABLED_FN: lambda x: True,
-    },
-    ATTR_FREEZER_TEMP: {
-        ATTR_MEASUREMENT_NAME: "Freezer Temp",
-        ATTR_ICON: None,
-        ATTR_UNIT_FN: lambda x: x._temp_unit,
-        ATTR_DEVICE_CLASS: DEVICE_CLASS_TEMPERATURE,
-        ATTR_VALUE_FN: lambda x: x._temp_freezer,
-        ATTR_ENABLED_FN: lambda x: True,
-    },
-}
-
-REFRIGERATOR_BINARY_SENSORS = {
-    ATTR_DOOROPEN_STATE: {
-        ATTR_MEASUREMENT_NAME: "Door Open",
-        ATTR_ICON: None,
-        ATTR_UNIT_FN: lambda x: None,
-        ATTR_DEVICE_CLASS: DEVICE_CLASS_OPENING,
-        ATTR_VALUE_FN: lambda x: x._dooropen_state,
-        ATTR_ENABLED_FN: lambda x: True,
-    },
-}
 
 
-def setup_platform(hass, config, async_add_entities, discovery_info=None):
-    pass
+@dataclass
+class ThinQSensorEntityDescription(SensorEntityDescription):
+    """A class that describes ThinQ sensor entities."""
+
+    unit_fn: Callable[[Any], str] | None = None
+    value_fn: Callable[[Any], float | str] | None = None
 
 
-async def async_setup_sensors(hass, config_entry, async_add_entities, type_binary):
-    """Set up LGE device sensors and bynary sensor based on config_entry."""
-    lge_sensors = []
-    washer_sensors = WASHER_BINARY_SENSORS if type_binary else WASHER_SENSORS
-    dryer_sensors = DRYER_BINARY_SENSORS if type_binary else DRYER_SENSORS
-    dishwasher_sensors = DISHWASHER_BINARY_SENSORS if type_binary else DISHWASHER_SENSORS
-    refrigerator_sensors = REFRIGERATOR_BINARY_SENSORS if type_binary else REFRIGERATOR_SENSORS
+WASH_DEV_SENSORS: Tuple[ThinQSensorEntityDescription, ...] = (
+    ThinQSensorEntityDescription(
+        key=DEFAULT_SENSOR,
+        icon=DEFAULT_ICON,
+        value_fn=lambda x: x.power_state,
+    ),
+    ThinQSensorEntityDescription(
+        key=ATTR_CURRENT_COURSE,
+        name="Current course",
+        icon="mdi:pin-outline",
+        value_fn=lambda x: x.current_course,
+    ),
+    ThinQSensorEntityDescription(
+        key=FEAT_RUN_STATE,
+        name="Run state",
+        icon=DEFAULT_ICON,
+    ),
+    ThinQSensorEntityDescription(
+        key=FEAT_PROCESS_STATE,
+        name="Process state",
+        icon=DEFAULT_ICON,
+    ),
+    ThinQSensorEntityDescription(
+        key=FEAT_SPINSPEED,
+        name="Spin speed",
+        icon="mdi:rotate-3d",
+    ),
+    ThinQSensorEntityDescription(
+        key=FEAT_WATERTEMP,
+        name="Water temp",
+        icon="mdi:thermometer-lines",
+    ),
+    ThinQSensorEntityDescription(
+        key=FEAT_TEMPCONTROL,
+        name="Temp control",
+        icon="mdi:thermometer-lines",
+    ),
+    ThinQSensorEntityDescription(
+        key=FEAT_DRYLEVEL,
+        name="Dry level",
+        icon="mdi:tumble-dryer",
+    ),
+    ThinQSensorEntityDescription(
+        key=FEAT_ERROR_MSG,
+        name="Error message",
+        icon="mdi:alert-circle-outline",
+    ),
+    ThinQSensorEntityDescription(
+        key=FEAT_PRE_STATE,
+        name="Pre state",
+        icon=DEFAULT_ICON,
+        entity_registry_enabled_default=False,
+    ),
+    ThinQSensorEntityDescription(
+        key=FEAT_TUBCLEAN_COUNT,
+        name="Tube clean counter",
+        icon=DEFAULT_ICON,
+        entity_registry_enabled_default=False,
+    ),
+    ThinQSensorEntityDescription(
+        key=FEAT_HALFLOAD,
+        name="Half load",
+        icon="mdi:circle-half-full",
+        entity_registry_enabled_default=False,
+    ),
+    ThinQSensorEntityDescription(
+        key=ATTR_INITIAL_TIME,
+        name="Initial time",
+        icon="mdi:clock-outline",
+        value_fn=lambda x: x.initial_time,
+        entity_registry_enabled_default=False,
+    ),
+    ThinQSensorEntityDescription(
+        key=ATTR_REMAIN_TIME,
+        name="Remain time",
+        icon="mdi:clock-outline",
+        value_fn=lambda x: x.remain_time,
+        entity_registry_enabled_default=False,
+    ),
+    ThinQSensorEntityDescription(
+        key=ATTR_RESERVE_TIME,
+        name="Reserve time",
+        icon="mdi:clock-outline",
+        value_fn=lambda x: x.reserve_time,
+        entity_registry_enabled_default=False,
+    ),
+)
+REFRIGERATOR_SENSORS: Tuple[ThinQSensorEntityDescription, ...] = (
+    ThinQSensorEntityDescription(
+        key=DEFAULT_SENSOR,
+        icon=DEFAULT_ICON,
+        value_fn=lambda x: x.power_state,
+    ),
+    ThinQSensorEntityDescription(
+        key=ATTR_FRIDGE_TEMP,
+        name="Fridge temp",
+        state_class=STATE_CLASS_MEASUREMENT,
+        device_class=DEVICE_CLASS_TEMPERATURE,
+        unit_fn=lambda x: x.temp_unit,
+        value_fn=lambda x: x.temp_fridge,
+    ),
+    ThinQSensorEntityDescription(
+        key=ATTR_FREEZER_TEMP,
+        name="Freezer temp",
+        state_class=STATE_CLASS_MEASUREMENT,
+        device_class=DEVICE_CLASS_TEMPERATURE,
+        unit_fn=lambda x: x.temp_unit,
+        value_fn=lambda x: x.temp_freezer,
+    ),
+)
+AC_SENSORS: Tuple[ThinQSensorEntityDescription, ...] = (
+    ThinQSensorEntityDescription(
+        key=ATTR_ROOM_TEMP,
+        name="Room temperature",
+        state_class=STATE_CLASS_MEASUREMENT,
+        device_class=DEVICE_CLASS_TEMPERATURE,
+        unit_fn=lambda x: x.temp_unit,
+        value_fn=lambda x: x.curr_temp,
+        entity_registry_enabled_default=False,
+    ),
+    ThinQSensorEntityDescription(
+        key=FEAT_HOT_WATER_TEMP,
+        name="Hot water temperature",
+        state_class=STATE_CLASS_MEASUREMENT,
+        device_class=DEVICE_CLASS_TEMPERATURE,
+        unit_fn=lambda x: x.temp_unit,
+        entity_registry_enabled_default=False,
+    ),
+    ThinQSensorEntityDescription(
+        key=FEAT_IN_WATER_TEMP,
+        name="In water temperature",
+        state_class=STATE_CLASS_MEASUREMENT,
+        device_class=DEVICE_CLASS_TEMPERATURE,
+        unit_fn=lambda x: x.temp_unit,
+        entity_registry_enabled_default=False,
+    ),
+    ThinQSensorEntityDescription(
+        key=FEAT_OUT_WATER_TEMP,
+        name="Out water temperature",
+        state_class=STATE_CLASS_MEASUREMENT,
+        device_class=DEVICE_CLASS_TEMPERATURE,
+        unit_fn=lambda x: x.temp_unit,
+        entity_registry_enabled_default=False,
+    ),
+    ThinQSensorEntityDescription(
+        key=FEAT_ENERGY_CURRENT,
+        name="Energy current",
+        state_class=STATE_CLASS_MEASUREMENT,
+        device_class=DEVICE_CLASS_POWER,
+        native_unit_of_measurement=POWER_WATT,
+        entity_registry_enabled_default=False,
+    ),
+)
+RANGE_SENSORS: Tuple[ThinQSensorEntityDescription, ...] = (
+    ThinQSensorEntityDescription(
+        key=DEFAULT_SENSOR,
+        icon=DEFAULT_ICON,
+        value_fn=lambda x: x.power_state,
+    ),
+    ThinQSensorEntityDescription(
+        key=FEAT_COOKTOP_LEFT_FRONT_STATE,
+        name="Cooktop left front state",
+        icon="mdi:arrow-left-bold-box-outline",
+        entity_registry_enabled_default=False,
+    ),
+    ThinQSensorEntityDescription(
+        key=FEAT_COOKTOP_LEFT_REAR_STATE,
+        name="Cooktop left rear state",
+        icon="mdi:arrow-left-bold-box",
+        entity_registry_enabled_default=False,
+    ),
+    ThinQSensorEntityDescription(
+        key=FEAT_COOKTOP_CENTER_STATE,
+        name="Cooktop center state",
+        icon="mdi:minus-box-outline",
+        entity_registry_enabled_default=False,
+    ),
+    ThinQSensorEntityDescription(
+        key=FEAT_COOKTOP_RIGHT_FRONT_STATE,
+        name="Cooktop right front state",
+        icon="mdi:arrow-right-bold-box-outline",
+        entity_registry_enabled_default=False,
+    ),
+    ThinQSensorEntityDescription(
+        key=FEAT_COOKTOP_RIGHT_REAR_STATE,
+        name="Cooktop right rear state",
+        icon="mdi:arrow-right-bold-box",
+        entity_registry_enabled_default=False,
+    ),
+    ThinQSensorEntityDescription(
+        key=FEAT_OVEN_LOWER_STATE,
+        name="Oven lower state",
+        icon="mdi:inbox-arrow-down",
+    ),
+    ThinQSensorEntityDescription(
+        key=FEAT_OVEN_UPPER_STATE,
+        name="Oven upper state",
+        icon="mdi:inbox-arrow-up",
+    ),
+    ThinQSensorEntityDescription(
+        key=ATTR_OVEN_LOWER_TARGET_TEMP,
+        name="Oven lower target temperature",
+        state_class=STATE_CLASS_MEASUREMENT,
+        device_class=DEVICE_CLASS_TEMPERATURE,
+        unit_fn=lambda x: x.oven_temp_unit,
+        value_fn=lambda x: x.oven_lower_target_temp,
+    ),
+    ThinQSensorEntityDescription(
+        key=FEAT_OVEN_LOWER_CURRENT_TEMP,
+        name="Oven lower current temperature",
+        state_class=STATE_CLASS_MEASUREMENT,
+        device_class=DEVICE_CLASS_TEMPERATURE,
+        unit_fn=lambda x: x.oven_temp_unit,
+    ),
+    ThinQSensorEntityDescription(
+        key=ATTR_OVEN_UPPER_TARGET_TEMP,
+        name="Oven upper target temperature",
+        state_class=STATE_CLASS_MEASUREMENT,
+        device_class=DEVICE_CLASS_TEMPERATURE,
+        unit_fn=lambda x: x.oven_temp_unit,
+        value_fn=lambda x: x.oven_upper_target_temp,
+    ),
+    ThinQSensorEntityDescription(
+        key=FEAT_OVEN_UPPER_CURRENT_TEMP,
+        name="Oven upper current temperature",
+        state_class=STATE_CLASS_MEASUREMENT,
+        device_class=DEVICE_CLASS_TEMPERATURE,
+        unit_fn=lambda x: x.oven_temp_unit,
+    ),
+)
+AIR_PURIFIER_SENSORS: Tuple[ThinQSensorEntityDescription, ...] = (
+    ThinQSensorEntityDescription(
+        key=ATTR_PM1,
+        name="PM1",
+        state_class=STATE_CLASS_MEASUREMENT,
+        device_class=DEVICE_CLASS_PM1,
+        value_fn=lambda x: x.pm1,
+        native_unit_of_measurement=CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
+    ),
+    ThinQSensorEntityDescription(
+        key=ATTR_PM25,
+        name="PM2.5",
+        state_class=STATE_CLASS_MEASUREMENT,
+        device_class=DEVICE_CLASS_PM25,
+        value_fn=lambda x: x.pm25,
+        native_unit_of_measurement=CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
+    ),
+    ThinQSensorEntityDescription(
+        key=ATTR_PM10,
+        name="PM10",
+        state_class=STATE_CLASS_MEASUREMENT,
+        device_class=DEVICE_CLASS_PM10,
+        value_fn=lambda x: x.pm10,
+        native_unit_of_measurement=CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
+    ),
+    ThinQSensorEntityDescription(
+        key=FEAT_LOWER_FILTER_LIFE,
+        name="Filter Remaining Life (Bottom)",
+        icon="mdi:air-filter",
+        state_class=STATE_CLASS_MEASUREMENT,
+        native_unit_of_measurement=PERCENTAGE,
+    ),
+    ThinQSensorEntityDescription(
+        key=FEAT_UPPER_FILTER_LIFE,
+        name="Filter Remaining Life (Top)",
+        icon="mdi:air-filter",
+        state_class=STATE_CLASS_MEASUREMENT,
+        native_unit_of_measurement=PERCENTAGE,
+    ),
+)
 
-    entry_config = hass.data[DOMAIN]
-    lge_devices = entry_config.get(LGE_DEVICES, [])
 
-    lge_sensors.extend(
-        [
-            LGEWasherSensor(lge_device, measurement, definition, type_binary)
-            for measurement, definition in washer_sensors.items()
-            for lge_device in lge_devices.get(DeviceType.WASHER, [])
-            if definition[ATTR_ENABLED_FN](lge_device)
-        ]
-    )
-    lge_sensors.extend(
-        [
-            LGEDryerSensor(lge_device, measurement, definition, type_binary)
-            for measurement, definition in dryer_sensors.items()
-            for lge_device in lge_devices.get(DeviceType.DRYER, [])
-            if definition[ATTR_ENABLED_FN](lge_device)
-        ]
-    )
-    lge_sensors.extend(
-        [
-            LGEDishWasherSensor(lge_device, measurement, definition, type_binary)
-            for measurement, definition in dishwasher_sensors.items()
-            for lge_device in lge_devices.get(DeviceType.DISHWASHER, [])
-            if definition[ATTR_ENABLED_FN](lge_device)
-        ]
-    )
-    lge_sensors.extend(
-        [
-            LGERefrigeratorSensor(lge_device, measurement, definition, type_binary)
-            for measurement, definition in refrigerator_sensors.items()
-            for lge_device in lge_devices.get(DeviceType.REFRIGERATOR, [])
-            if definition[ATTR_ENABLED_FN](lge_device)
-        ]
-    )
+def _sensor_exist(lge_device: LGEDevice, sensor_desc: ThinQSensorEntityDescription):
+    """Check if a sensor exist for device."""
+    if sensor_desc.value_fn is not None:
+        return True
 
-    async_add_entities(lge_sensors, True)
+    feature = sensor_desc.key
+    for feat_name in lge_device.available_features.keys():
+        if feat_name == feature:
+            return True
+
+    return False
 
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
     """Set up the LGE sensors."""
     _LOGGER.info("Starting LGE ThinQ sensors...")
-    await async_setup_sensors(hass, config_entry, async_add_entities, False)
+
+    lge_sensors = []
+    entry_config = hass.data[DOMAIN]
+    lge_devices = entry_config.get(LGE_DEVICES)
+    if not lge_devices:
+        return
+
+    # add wash devices
+    wash_devices = []
+    for dev_type, devices in lge_devices.items():
+        if dev_type in WASH_DEVICE_TYPES:
+            wash_devices.extend(devices)
+
+    lge_sensors.extend(
+        [
+            LGEWashDeviceSensor(lge_device, sensor_desc)
+            for sensor_desc in WASH_DEV_SENSORS
+            for lge_device in wash_devices
+            if _sensor_exist(lge_device, sensor_desc)
+        ]
+    )
+
+    # add refrigerators
+    lge_sensors.extend(
+        [
+            LGERefrigeratorSensor(lge_device, sensor_desc)
+            for sensor_desc in REFRIGERATOR_SENSORS
+            for lge_device in lge_devices.get(DeviceType.REFRIGERATOR, [])
+            if _sensor_exist(lge_device, sensor_desc)
+        ]
+    )
+
+    # add AC
+    lge_sensors.extend(
+        [
+            LGESensor(lge_device, sensor_desc, LGEACDevice(lge_device))
+            for sensor_desc in AC_SENSORS
+            for lge_device in lge_devices.get(DeviceType.AC, [])
+            if _sensor_exist(lge_device, sensor_desc)
+        ]
+    )
+
+    # add ranges
+    lge_sensors.extend(
+        [
+            LGERangeSensor(lge_device, sensor_desc)
+            for sensor_desc in RANGE_SENSORS
+            for lge_device in lge_devices.get(DeviceType.RANGE, [])
+            if _sensor_exist(lge_device, sensor_desc)
+        ]
+    )
+
+    # add air purifiers
+    lge_sensors.extend(
+        [
+            LGESensor(lge_device, sensor_desc, LGEAirPurifierDevice(lge_device))
+            for sensor_desc in AIR_PURIFIER_SENSORS
+            for lge_device in lge_devices.get(DeviceType.AIR_PURIFIER, [])
+            if _sensor_exist(lge_device, sensor_desc)
+        ]
+    )
+
+    async_add_entities(lge_sensors)
+
+    # register services
+    platform = entity_platform.current_platform.get()
+    platform.async_register_entity_service(
+        SERVICE_REMOTE_START,
+        {},
+        "async_remote_start",
+        [SUPPORT_REMOTE_START],
+    )
+    platform.async_register_entity_service(
+        SERVICE_WAKE_UP,
+        {},
+        "async_wake_up",
+        [SUPPORT_WAKE_UP],
+    )
 
 
-class LGESensor(Entity):
-    def __init__(self, device: LGEDevice, measurement, definition, is_binary):
+class LGESensor(CoordinatorEntity, SensorEntity):
+    """Class to monitor sensors for LGE device"""
+
+    entity_description = ThinQSensorEntityDescription
+
+    def __init__(
+            self,
+            api: LGEDevice,
+            description: ThinQSensorEntityDescription,
+            wrapped_device,
+    ):
         """Initialize the sensor."""
-        self._api = device
-        self._name_slug = device.name
-        self._measurement = measurement
-        self._def = definition
-        self._is_binary = is_binary
-        self._is_default = self._measurement == DEFAULT_SENSOR
-        self._unsub_dispatcher = None
-        self._dispatcher_queue = f"{DISPATCHER_REMOTE_UPDATE}-{self._name_slug}"
-
-    @staticmethod
-    def format_time(hours, minutes):
-        if not (hours and minutes):
-            return "0:00"
-        remain_time = [hours, minutes]
-        if int(minutes) < 10:
-            return ":0".join(remain_time)
-        else:
-            return ":".join(remain_time)
+        super().__init__(api.coordinator)
+        self._api = api
+        self._wrap_device = wrapped_device
+        self.entity_description = description
+        self._attr_name = get_entity_name(api, description.key, description.name)
+        self._attr_unique_id = api.unique_id
+        if description.key != DEFAULT_SENSOR:
+            self._attr_unique_id += f"-{description.key}"
+        self._attr_device_info = api.device_info
+        self._is_default = description.key == DEFAULT_SENSOR
 
     @property
-    def name(self) -> str:
-        """Return the name of the sensor."""
-        if self._is_default:
-            return self._name_slug
-        return f"{self._name_slug} {self._def[ATTR_MEASUREMENT_NAME]}"
+    def supported_features(self):
+        if self._is_default and self._api.type in WM_DEVICE_TYPES:
+            return SUPPORT_REMOTE_START | SUPPORT_WAKE_UP
+        return None
 
     @property
-    def unique_id(self) -> str:
-        """Return a unique ID."""
-        if self._is_default:
-            return self._api.unique_id
-        return f"{self._api.unique_id}-{self._measurement}"
+    def native_value(self) -> float | str | None:
+        """Return the state of the sensor."""
+        if not self.available:
+            return STATE_UNAVAILABLE
+        return self._get_sensor_state()
 
     @property
-    def unit_of_measurement(self):
-        """Return the unit of measurement."""
-        return self._def[ATTR_UNIT_FN](self)
-
-    @property
-    def device_class(self):
-        """Return device class."""
-        return self._def[ATTR_DEVICE_CLASS]
+    def native_unit_of_measurement(self) -> str | None:
+        """Return the unit of measurement of the sensor, if any."""
+        if self.entity_description.unit_fn is not None:
+            return self.entity_description.unit_fn(self._wrap_device)
+        return super().native_unit_of_measurement
 
     @property
     def icon(self):
         """Return the icon to use in the frontend, if any."""
-        return self._def[ATTR_ICON]
-
-    @property
-    def is_on(self):
-        """Return the state of the binary sensor."""
-        if self._is_binary:
-            ret_val = self._def[ATTR_VALUE_FN](self)
-            if isinstance(ret_val, bool):
-                return ret_val
-            return True if ret_val == STATE_ON else False
-        return False
-
-    @property
-    def state(self):
-        """Return the state of the sensor."""
-        if not self.available:
-            return STATE_UNAVAILABLE
-        if self._is_binary:
-            return STATE_ON if self.is_on else STATE_OFF
-        return self._def[ATTR_VALUE_FN](self)
+        ent_icon = self.entity_description.icon
+        if ent_icon and ent_icon == DEFAULT_ICON:
+            return DEVICE_ICONS.get(self._api.type)
+        return super().icon
 
     @property
     def available(self) -> bool:
@@ -365,614 +543,115 @@ class LGESensor(Entity):
         """Return True if unable to access real state of the entity."""
         return self._api.assumed_state
 
-    @property
-    def state_attributes(self):
-        """Return the optional state attributes."""
-        return self._api.state_attributes
+    def _get_sensor_state(self):
+        """Get current sensor state"""
+        if self.entity_description.value_fn is not None:
+            return self.entity_description.value_fn(self._wrap_device)
 
-    @property
-    def device_info(self):
-        """Return the device info."""
-        return self._api.device_info
-
-    @property
-    def should_poll(self) -> bool:
-        """ This sensors must be polled only by default entity """
-        return self._is_default
-
-    def update(self):
-        """Update the device status"""
-        self._api.device_update()
-        dispatcher_send(self.hass, self._dispatcher_queue)
-
-    async def async_added_to_hass(self):
-        """Register update dispatcher."""
-
-        async def async_state_update():
-            """Update callback."""
-            _LOGGER.debug("Updating %s state by dispatch", self.name)
-            self.async_write_ha_state()
-
-        if not self._is_default:
-            self._unsub_dispatcher = async_dispatcher_connect(
-                self.hass, self._dispatcher_queue, async_state_update
-            )
-
-    async def async_will_remove_from_hass(self):
-        """Unregister update dispatcher."""
-        if self._unsub_dispatcher is not None:
-            self._unsub_dispatcher()
-            self._unsub_dispatcher = None
-
-    @property
-    def _power_state(self):
-        """Current power state"""
         if self._api.state:
-            if self._api.state.is_on:
-                return STATE_ON
-        return STATE_OFF
+            feature = self.entity_description.key
+            return self._api.state.device_features.get(feature)
+
+        return None
+
+    async def async_remote_start(self):
+        """Call the remote start command for WM devices."""
+        if self._api.type not in WM_DEVICE_TYPES:
+            raise NotImplementedError()
+        await self.hass.async_add_executor_job(self._api.device.remote_start)
+
+    async def async_wake_up(self):
+        """Call the wakeup command for WM devices."""
+        if self._api.type not in WM_DEVICE_TYPES:
+            raise NotImplementedError()
+        await self.hass.async_add_executor_job(self._api.device.wake_up)
 
 
-class LGEWasherSensor(LGESensor):
-    """A sensor to monitor LGE Washer devices"""
+class LGEWashDeviceSensor(LGESensor):
+    """A sensor to monitor LGE Wash devices"""
+
+    def __init__(
+            self,
+            api: LGEDevice,
+            description: ThinQSensorEntityDescription,
+    ):
+        """Initialize the sensor."""
+        super().__init__(api, description, LGEWashDevice(api))
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the optional state attributes."""
         if not self._is_default:
             return None
 
         data = {
-            ATTR_RUN_COMPLETED: self._run_completed,
-            ATTR_ERROR_STATE: self._error_state,
-            ATTR_ERROR_MSG: self._error_msg,
-            ATTR_RUN_STATE: self._current_run_state,
-            ATTR_PRE_STATE: self._pre_state,
-            ATTR_CURRENT_COURSE: self._current_course,
-            ATTR_SPIN_OPTION_STATE: self._spin_option_state,
-            ATTR_WATERTEMP_OPTION_STATE: self._watertemp_option_state,
-            ATTR_DRYLEVEL_OPTION_STATE: self._drylevel_option_state,
-            ATTR_TUBCLEAN_COUNT: self._tubclean_count,
-            ATTR_REMAIN_TIME: self._remain_time,
-            ATTR_INITIAL_TIME: self._initial_time,
-            ATTR_RESERVE_TIME: self._reserve_time,
-            ATTR_DOORLOCK_MODE: self._doorlock_mode,
-            ATTR_DOORCLOSE_MODE: self._doorclose_mode,
-            ATTR_CHILDLOCK_MODE: self._childlock_mode,
-            ATTR_REMOTESTART_MODE: self._remotestart_mode,
-            ATTR_CREASECARE_MODE: self._creasecare_mode,
-            ATTR_STEAM_MODE: self._steam_mode,
-            ATTR_STEAM_SOFTENER_MODE: self._steam_softener_mode,
-            ATTR_PREWASH_MODE: self._prewash_mode,
-            ATTR_TURBOWASH_MODE: self._turbowash_mode,
+            ATTR_RUN_COMPLETED: self._wrap_device.run_completed,
+            ATTR_ERROR_STATE: self._wrap_device.error_state,
+            ATTR_INITIAL_TIME: self._wrap_device.initial_time,
+            ATTR_REMAIN_TIME: self._wrap_device.remain_time,
+            ATTR_RESERVE_TIME: self._wrap_device.reserve_time,
+            ATTR_CURRENT_COURSE: self._wrap_device.current_course,
         }
+        features = self._wrap_device.get_features_attributes()
+        data.update(features)
+
         return data
-
-    @property
-    def _run_completed(self):
-        if self._api.state:
-            if self._api.state.is_run_completed:
-                return STATE_ON
-        return STATE_OFF
-
-    @property
-    def _current_run_state(self):
-        if self._api.state:
-            run_state = self._api.state.run_state
-            return run_state
-        return "-"
-
-    @property
-    def _pre_state(self):
-        if self._api.state:
-            pre_state = self._api.state.pre_state
-            return pre_state
-        return "-"
-
-    @property
-    def _remain_time(self):
-        if self._api.state:
-            if self._api.state.is_on:
-                return LGESensor.format_time(
-                    self._api.state.remaintime_hour,
-                    self._api.state.remaintime_min
-                )
-        return "0:00"
-
-    @property
-    def _initial_time(self):
-        if self._api.state:
-            if self._api.state.is_on:
-                return LGESensor.format_time(
-                    self._api.state.initialtime_hour,
-                    self._api.state.initialtime_min
-                )
-        return "0:00"
-
-    @property
-    def _reserve_time(self):
-        if self._api.state:
-            if self._api.state.is_on:
-                return LGESensor.format_time(
-                    self._api.state.reservetime_hour,
-                    self._api.state.reservetime_min
-                )
-        return "0:00"
-
-    @property
-    def _current_course(self):
-        if self._api.state:
-            if self._api.state.is_on:
-                course = self._api.state.current_course
-                if course:
-                    return course
-                smartcourse = self._api.state.current_smartcourse
-                if smartcourse:
-                    return smartcourse
-        return "-"
-
-    @property
-    def _error_state(self):
-        if self._api.state:
-            if self._api.state.is_error:
-                return STATE_ON
-        return STATE_OFF
-
-    @property
-    def _error_msg(self):
-        if self._api.state:
-            error = self._api.state.error_state
-            return error
-        return "-"
-
-    @property
-    def _spin_option_state(self):
-        if self._api.state:
-            spin_option = self._api.state.spin_option_state
-            return spin_option
-        return "-"
-
-    @property
-    def _watertemp_option_state(self):
-        if self._api.state:
-            watertemp_option = self._api.state.water_temp_option_state
-            return watertemp_option
-        return "-"
-
-    @property
-    def _drylevel_option_state(self):
-        if self._api.state:
-            drylevel_option = self._api.state.dry_level_option_state
-            return drylevel_option
-        return "-"
-
-    @property
-    def _tubclean_count(self):
-        if self._api.state:
-            tubclean_count = self._api.state.tubclean_count
-            return tubclean_count
-        return "N/A"
-
-    @property
-    def _doorlock_mode(self):
-        if self._api.state:
-            mode = self._api.state.doorlock_state
-            return mode
-        return None
-
-    @property
-    def _doorclose_mode(self):
-        if self._api.state:
-            mode = self._api.state.doorclose_state
-            return mode
-        return None
-
-    @property
-    def _childlock_mode(self):
-        if self._api.state:
-            mode = self._api.state.childlock_state
-            return mode
-        return None
-
-    @property
-    def _remotestart_mode(self):
-        if self._api.state:
-            mode = self._api.state.remotestart_state
-            return mode
-        return None
-
-    @property
-    def _creasecare_mode(self):
-        if self._api.state:
-            mode = self._api.state.creasecare_state
-            return mode
-        return None
-
-    @property
-    def _steam_mode(self):
-        if self._api.state:
-            mode = self._api.state.steam_state
-            return mode
-        return None
-
-    @property
-    def _steam_softener_mode(self):
-        if self._api.state:
-            mode = self._api.state.steam_softener_state
-            return mode
-        return None
-
-    @property
-    def _prewash_mode(self):
-        if self._api.state:
-            mode = self._api.state.prewash_state
-            return mode
-        return None
-
-    @property
-    def _turbowash_mode(self):
-        if self._api.state:
-            mode = self._api.state.turbowash_state
-            return mode
-        return None
-
-
-class LGEDryerSensor(LGESensor):
-    """A sensor to monitor LGE Dryer devices"""
-
-    @property
-    def device_state_attributes(self):
-        """Return the optional state attributes."""
-        if not self._is_default:
-            return None
-
-        data = {
-            ATTR_RUN_COMPLETED: self._run_completed,
-            ATTR_ERROR_STATE: self._error_state,
-            ATTR_ERROR_MSG: self._error_msg,
-            ATTR_RUN_STATE: self._current_run_state,
-            ATTR_PRE_STATE: self._pre_state,
-            ATTR_CURRENT_COURSE: self._current_course,
-            ATTR_TEMPCONTROL_OPTION_STATE: self._tempcontrol_option_state,
-            ATTR_DRYLEVEL_OPTION_STATE: self._drylevel_option_state,
-            # ATTR_TIMEDRY_OPTION_STATE: self._timedry_option_state,
-            ATTR_REMAIN_TIME: self._remain_time,
-            ATTR_INITIAL_TIME: self._initial_time,
-            ATTR_RESERVE_TIME: self._reserve_time,
-            ATTR_DOORLOCK_MODE: self._doorlock_mode,
-            ATTR_CHILDLOCK_MODE: self._childlock_mode,
-        }
-        return data
-
-    @property
-    def _run_completed(self):
-        if self._api.state:
-            if self._api.state.is_run_completed:
-                return STATE_ON
-        return STATE_OFF
-
-    @property
-    def _current_run_state(self):
-        if self._api.state:
-            run_state = self._api.state.run_state
-            return run_state
-        return "-"
-
-    @property
-    def _pre_state(self):
-        if self._api.state:
-            pre_state = self._api.state.pre_state
-            return pre_state
-        return "-"
-
-    @property
-    def _remain_time(self):
-        if self._api.state:
-            if self._api.state.is_on:
-                return LGESensor.format_time(
-                    self._api.state.remaintime_hour,
-                    self._api.state.remaintime_min
-                )
-        return "0:00"
-
-    @property
-    def _initial_time(self):
-        if self._api.state:
-            if self._api.state.is_on:
-                return LGESensor.format_time(
-                    self._api.state.initialtime_hour,
-                    self._api.state.initialtime_min
-                )
-        return "0:00"
-
-    @property
-    def _reserve_time(self):
-        if self._api.state:
-            if self._api.state.is_on:
-                return LGESensor.format_time(
-                    self._api.state.reservetime_hour,
-                    self._api.state.reservetime_min
-                )
-        return "0:00"
-
-    @property
-    def _current_course(self):
-        if self._api.state:
-            if self._api.state.is_on:
-                course = self._api.state.current_course
-                if course:
-                    return course
-                smartcourse = self._api.state.current_smartcourse
-                if smartcourse:
-                    return smartcourse
-        return "-"
-
-    @property
-    def _error_state(self):
-        if self._api.state:
-            if self._api.state.is_error:
-                return STATE_ON
-        return STATE_OFF
-
-    @property
-    def _error_msg(self):
-        if self._api.state:
-            error = self._api.state.error_state
-            return error
-        return "-"
-
-    @property
-    def _tempcontrol_option_state(self):
-        if self._api.state:
-            temp_option = self._api.state.temp_control_option_state
-            return temp_option
-        return "-"
-
-    @property
-    def _drylevel_option_state(self):
-        if self._api.state:
-            drylevel_option = self._api.state.dry_level_option_state
-            return drylevel_option
-        return "-"
-
-    @property
-    def _timedry_option_state(self):
-        if self._api.state:
-            timedry_option = self._api.state.time_dry_option_state
-            return timedry_option
-        return "-"
-
-    @property
-    def _doorlock_mode(self):
-        if self._api.state:
-            mode = self._api.state.doorlock_state
-            return mode
-        return None
-
-    @property
-    def _childlock_mode(self):
-        if self._api.state:
-            mode = self._api.state.childlock_state
-            return mode
-        return None
-
-
-class LGEDishWasherSensor(LGESensor):
-    """A sensor to monitor LGE DishWasher devices"""
-
-    @property
-    def device_state_attributes(self):
-        """Return the optional state attributes."""
-        if not self._is_default:
-            return None
-
-        data = {
-            ATTR_RUN_COMPLETED: self._run_completed,
-            ATTR_ERROR_STATE: self._error_state,
-            ATTR_ERROR_MSG: self._error_msg,
-            ATTR_DOOROPEN_STATE: self._dooropen_state,
-            ATTR_RINSEREFILL_STATE: self._rinserefill_state,
-            ATTR_SALTREFILL_STATE: self._saltrefill_state,
-            ATTR_RUN_STATE: self._current_run_state,
-            ATTR_PROCESS_STATE: self._process_state,
-            ATTR_CURRENT_COURSE: self._current_course,
-            ATTR_TUBCLEAN_COUNT: self._tubclean_count,
-            ATTR_REMAIN_TIME: self._remain_time,
-            ATTR_INITIAL_TIME: self._initial_time,
-            ATTR_RESERVE_TIME: self._reserve_time,
-            ATTR_HALFLOAD_MODE: self._halfload_mode,
-            ATTR_CHILDLOCK_MODE: self._childlock_mode,
-            ATTR_DELAYSTART_MODE: self._delaystart_mode,
-            ATTR_ENERGYSAVER_MODE: self._energysaver_mode,
-            ATTR_DUALZONE_MODE: self._dualzone_mode,
-        }
-        return data
-
-    @property
-    def _run_completed(self):
-        if self._api.state:
-            if self._api.state.is_run_completed:
-                return STATE_ON
-        return STATE_OFF
-
-    @property
-    def _current_run_state(self):
-        if self._api.state:
-            run_state = self._api.state.run_state
-            return run_state
-        return "-"
-
-    @property
-    def _process_state(self):
-        if self._api.state:
-            process = self._api.state.process_state
-            return process
-        return "-"
-
-    @property
-    def _remain_time(self):
-        if self._api.state:
-            if self._api.state.is_on:
-                return LGESensor.format_time(
-                    self._api.state.remaintime_hour,
-                    self._api.state.remaintime_min
-                )
-        return "0:00"
-
-    @property
-    def _initial_time(self):
-        if self._api.state:
-            if self._api.state.is_on:
-                return LGESensor.format_time(
-                    self._api.state.initialtime_hour,
-                    self._api.state.initialtime_min
-                )
-        return "0:00"
-
-    @property
-    def _reserve_time(self):
-        if self._api.state:
-            if self._api.state.is_on:
-                return LGESensor.format_time(
-                    self._api.state.reservetime_hour,
-                    self._api.state.reservetime_min
-                )
-        return "0:00"
-
-    @property
-    def _current_course(self):
-        if self._api.state:
-            if self._api.state.is_on:
-                course = self._api.state.current_course
-                if course:
-                    return course
-                smartcourse = self._api.state.current_smartcourse
-                if smartcourse:
-                    return smartcourse
-        return "-"
-
-    @property
-    def _error_state(self):
-        if self._api.state:
-            if self._api.state.is_error:
-                return STATE_ON
-        return STATE_OFF
-
-    @property
-    def _error_msg(self):
-        if self._api.state:
-            error = self._api.state.error_state
-            return error
-        return "-"
-
-    @property
-    def _tubclean_count(self):
-        if self._api.state:
-            tubclean_count = self._api.state.tubclean_count
-            return tubclean_count
-        return "N/A"
-
-    @property
-    def _dooropen_state(self):
-        if self._api.state:
-            state = self._api.state.door_opened_state
-            return STATE_LOOKUP.get(state, STATE_OFF)
-        return None
-
-    @property
-    def _rinserefill_state(self):
-        if self._api.state:
-            state = self._api.state.rinserefill_state
-            return STATE_LOOKUP.get(state, STATE_OFF)
-        return STATE_OFF
-
-    @property
-    def _saltrefill_state(self):
-        if self._api.state:
-            state = self._api.state.saltrefill_state
-            return STATE_LOOKUP.get(state, STATE_OFF)
-        return STATE_OFF
-
-    @property
-    def _halfload_mode(self):
-        if self._api.state:
-            mode = self._api.state.halfload_state
-            return mode
-        return None
-
-    @property
-    def _childlock_mode(self):
-        if self._api.state:
-            mode = self._api.state.childlock_state
-            return mode
-        return None
-
-    @property
-    def _delaystart_mode(self):
-        if self._api.state:
-            mode = self._api.state.delaystart_state
-            return mode
-        return None
-
-    @property
-    def _energysaver_mode(self):
-        if self._api.state:
-            mode = self._api.state.energysaver_state
-            return mode
-        return None
-
-    @property
-    def _dualzone_mode(self):
-        if self._api.state:
-            mode = self._api.state.dualzone_state
-            return mode
-        return None
 
 
 class LGERefrigeratorSensor(LGESensor):
     """A sensor to monitor LGE Refrigerator devices"""
 
+    def __init__(
+            self,
+            api: LGEDevice,
+            description: ThinQSensorEntityDescription,
+    ):
+        """Initialize the sensor."""
+        super().__init__(api, description, LGERefrigeratorDevice(api))
+
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the optional state attributes."""
         if not self._is_default:
             return None
 
         data = {
-            ATTR_REFRIGERATOR_TEMP: self._temp_refrigerator,
-            ATTR_FREEZER_TEMP: self._temp_freezer,
-            ATTR_TEMP_UNIT: self._temp_unit,
-            ATTR_DOOROPEN_STATE: self._dooropen_state,
+            ATTR_FRIDGE_TEMP: self._wrap_device.temp_fridge,
+            ATTR_FREEZER_TEMP: self._wrap_device.temp_freezer,
+            ATTR_TEMP_UNIT: self._wrap_device.temp_unit,
+            ATTR_DOOR_OPEN: self._wrap_device.dooropen_state,
         }
 
         if self._api.state:
-            for name, value in self._api.state.device_features.items():
-                data[name] = value
+            features = self._wrap_device.get_features_attributes()
+            data.update(features)
 
         return data
 
-    @property
-    def _temp_refrigerator(self):
-        if self._api.state:
-            return self._api.state.temp_refrigerator
-        return None
+
+class LGERangeSensor(LGESensor):
+    """A sensor to monitor LGE range devices"""
+
+    def __init__(
+            self,
+            api: LGEDevice,
+            description: ThinQSensorEntityDescription,
+    ):
+        """Initialize the sensor."""
+        super().__init__(api, description, LGERangeDevice(api))
 
     @property
-    def _temp_freezer(self):
-        if self._api.state:
-            return self._api.state.temp_freezer
-        return None
+    def extra_state_attributes(self):
+        """Return the optional state attributes."""
+        if not self._is_default:
+            return None
 
-    @property
-    def _temp_unit(self):
-        if self._api.state:
-            unit = self._api.state.temp_unit
-            return TEMP_UNIT_LOOKUP.get(unit, TEMP_CELSIUS)
-        return TEMP_CELSIUS
+        data = {
+            ATTR_OVEN_LOWER_TARGET_TEMP: self._wrap_device.oven_lower_target_temp,
+            ATTR_OVEN_UPPER_TARGET_TEMP: self._wrap_device.oven_upper_target_temp,
+            ATTR_OVEN_TEMP_UNIT: self._wrap_device.oven_temp_unit,
+        }
+        features = self._wrap_device.get_features_attributes()
+        data.update(features)
 
-    @property
-    def _dooropen_state(self):
-        if self._api.state:
-            state = self._api.state.door_opened_state
-            return STATE_LOOKUP.get(state, STATE_OFF)
-        return STATE_OFF
+        return data

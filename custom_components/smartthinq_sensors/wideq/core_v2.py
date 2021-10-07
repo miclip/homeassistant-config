@@ -1,22 +1,32 @@
 """A low-level, general abstraction for the LG SmartThinQ API.
 """
-import requests
 import base64
-import uuid
-from urllib.parse import urljoin, urlencode, urlparse, parse_qs
 import hashlib
 import hmac
+import json
 import logging
-from datetime import datetime
-from typing import Any, Dict, Generator, Optional
+import os
+import requests
+import uuid
 
-from . import as_list, gen_uuid
+from datetime import datetime
+from threading import Lock
+from typing import Any, Dict, Generator, Optional
+from urllib.parse import urljoin, urlencode, urlparse, parse_qs
+
+from . import(
+    as_list,
+    gen_uuid,
+    AuthHTTPAdapter,
+    CoreVersion,
+    DATA_ROOT,
+    DEFAULT_COUNTRY,
+    DEFAULT_LANGUAGE,
+)
 from . import core_exceptions as exc
-from . import core
 from .device import DeviceInfo, DEFAULT_TIMEOUT
 
-import os
-import json
+CORE_VERSION = CoreVersion.CoreV2
 
 # v2
 V2_API_KEY = "VGhpblEyLjAgU0VSVklDRQ=="
@@ -41,6 +51,7 @@ OAUTH_SECRET_KEY = "c053c2a6ddeb7ad97cb0eed0dcb31cf8"
 DATE_FORMAT = "%a, %d %b %Y %H:%M:%S +0000"
 
 API2_ERRORS = {
+    "0101": exc.DeviceNotFound,
     "0102": exc.NotLoggedInError,
     "0106": exc.NotConnectedError,
     "0100": exc.FailedRequestError,
@@ -51,6 +62,20 @@ API2_ERRORS = {
 LOG_AUTH_INFO = False
 MIN_TIME_BETWEEN_UPDATE = 25  # seconds
 _LOGGER = logging.getLogger(__name__)
+
+
+class CoreV2HttpAdapter:
+
+    http_adapter = None
+
+    @staticmethod
+    def init_http_adapter(use_tls_v1=False, exclude_dh=False):
+        if not (use_tls_v1 or exclude_dh):
+            CoreV2HttpAdapter.http_adapter = None
+            return
+        CoreV2HttpAdapter.http_adapter = AuthHTTPAdapter(
+            use_tls_v1=use_tls_v1, exclude_dh=exclude_dh
+        )
 
 
 def oauth2_signature(message, secret):
@@ -71,8 +96,8 @@ def thinq2_headers(
     extra_headers={},
     access_token=None,
     user_number=None,
-    country=core.DEFAULT_COUNTRY,
-    language=core.DEFAULT_LANGUAGE,
+    country=DEFAULT_COUNTRY,
+    language=DEFAULT_LANGUAGE,
 ):
     """Prepare API2 header."""
 
@@ -107,26 +132,18 @@ def thinq2_get(
     access_token=None,
     user_number=None,
     headers={},
-    country=core.DEFAULT_COUNTRY,
-    language=core.DEFAULT_LANGUAGE,
+    country=DEFAULT_COUNTRY,
+    language=DEFAULT_LANGUAGE,
 ):
     """Make an HTTP request in the format used by the API2 servers."""
 
-    # this code to avoid ssl error 'dh key too small'
-    requests.packages.urllib3.disable_warnings()
-    requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS += "HIGH:!DH:!aNULL"
-    try:
-        requests.packages.urllib3.contrib.pyopenssl.DEFAULT_SSL_CIPHER_LIST += (
-            "HIGH:!DH:!aNULL"
-        )
-    except AttributeError:
-        # no pyopenssl support used / needed / available
-        pass
-    # this code to avoid ssl error 'dh key too small'
-
     _LOGGER.debug("thinq2_get before: %s", url)
 
-    res = requests.get(
+    s = requests.Session()
+    if CoreV2HttpAdapter.http_adapter:
+        s.mount(url, CoreV2HttpAdapter.http_adapter)
+
+    res = s.get(
         url,
         headers=thinq2_headers(
             access_token=access_token,
@@ -144,11 +161,7 @@ def thinq2_get(
     if "resultCode" not in out:
         raise exc.APIError("-1", out)
 
-    code = out["resultCode"]
-    if code != "0000":
-        if code in API2_ERRORS:
-            raise API2_ERRORS[code]()
-        raise exc.APIError(code, "error")
+    manage_lge_result(out, True)
     return out["result"]
 
 
@@ -158,20 +171,21 @@ def lgedm2_post(
     access_token=None,
     user_number=None,
     headers={},
-    country=core.DEFAULT_COUNTRY,
-    language=core.DEFAULT_LANGUAGE,
-    use_tlsv1=True,
+    country=DEFAULT_COUNTRY,
+    language=DEFAULT_LANGUAGE,
+    is_api_v2=False,
 ):
     """Make an HTTP request in the format used by the API servers."""
 
     _LOGGER.debug("lgedm2_post before: %s", url)
 
     s = requests.Session()
-    if use_tlsv1:
-        s.mount(url, core.Tlsv1HttpAdapter())
+    if CoreV2HttpAdapter.http_adapter:
+        s.mount(url, CoreV2HttpAdapter.http_adapter)
+
     res = s.post(
         url,
-        json={core.DATA_ROOT: data},
+        json=data if is_api_v2 else {DATA_ROOT: data},
         headers=thinq2_headers(
             access_token=access_token,
             user_number=user_number,
@@ -185,16 +199,33 @@ def lgedm2_post(
     out = res.json()
     _LOGGER.debug("lgedm2_post after: %s", out)
 
-    msg = out.get(core.DATA_ROOT)
+    return manage_lge_result(out, is_api_v2)
+
+
+def manage_lge_result(result, is_api_v2=False):
+    """Manage the result from a get or a post to lge server."""
+
+    if is_api_v2:
+        if "resultCode" in result:
+            code = result["resultCode"]
+            if code != "0000":
+                if code in API2_ERRORS:
+                    raise API2_ERRORS[code]()
+                message = result.get("result", "error")
+                raise exc.APIError(code, message)
+
+        return result
+
+    msg = result.get(DATA_ROOT)
     if not msg:
-        raise exc.APIError("-1", out)
+        raise exc.APIError("-1", result)
 
     if "returnCd" in msg:
         code = msg["returnCd"]
         if code != "0000":
-            message = msg["returnMsg"]
             if code in API2_ERRORS:
                 raise API2_ERRORS[code]()
+            message = msg["returnMsg"]
             raise exc.APIError(code, message)
 
     return msg
@@ -232,7 +263,11 @@ def auth_request(oauth_url, data, *, log_auth_info=False):
         "Accept": "application/json",
     }
 
-    res = requests.post(url, headers=headers, data=data, timeout=DEFAULT_TIMEOUT)
+    s = requests.Session()
+    if CoreV2HttpAdapter.http_adapter:
+        s.mount(url, CoreV2HttpAdapter.http_adapter)
+
+    res = s.post(url, headers=headers, data=data, timeout=DEFAULT_TIMEOUT)
 
     if res.status_code != 200:
         raise exc.TokenError()
@@ -292,7 +327,7 @@ class Gateway(object):
         gw = gateway_info(country, language)
         return cls(gw["empUri"], gw["thinq1Uri"], gw["thinq2Uri"], country, language)
 
-    def oauth_url(self):
+    def oauth_url(self, *, redirect_uri=None, state=None):
         """Construct the URL for users to log in (in a browser) to start an
         authenticated session.
         """
@@ -305,8 +340,8 @@ class Gateway(object):
                 "svc_list": SVC_CODE,
                 "client_id": CLIENT_ID,
                 "division": "ha",
-                "redirect_uri": OAUTH_REDIRECT_URI,
-                "state": uuid.uuid1().hex,
+                "redirect_uri": redirect_uri or OAUTH_REDIRECT_URI,
+                "state": state or uuid.uuid1().hex,
                 "show_thirdparty_login": "GGL,AMZ,FBK",
             }
         )
@@ -407,6 +442,24 @@ class Session(object):
             self.auth.user_number,
             country=self.auth.gateway.country,
             language=self.auth.gateway.language,
+            is_api_v2=False,
+        )
+
+    def post2(self, path, data=None):
+        """Make a POST request to the APIv2 server.
+
+        This is like `lgedm_post`, but it pulls the context for the
+        request from an active Session.
+        """
+        url = urljoin(self.auth.gateway.api2_root + "/", path)
+        return lgedm2_post(
+            url,
+            data,
+            self.auth.access_token,
+            self.auth.user_number,
+            country=self.auth.gateway.country,
+            language=self.auth.gateway.language,
+            is_api_v2=True,
         )
 
     def get(self, path):
@@ -504,23 +557,54 @@ class Session(object):
             {"cmd": "Mon", "cmdOpt": "Stop", "deviceId": device_id, "workId": work_id},
         )
 
-    def set_device_controls(self, device_id, values):
+    def set_device_controls(self, device_id, ctrl_key, command=None, value=None, data=None):
         """Control a device's settings.
 
         `values` is a key/value map containing the settings to update.
         """
+        res = {}
+        payload = None
+        if isinstance(ctrl_key, dict):
+            payload = ctrl_key
+        elif command is not None:
+            payload = {
+                "cmd": ctrl_key,
+                "cmdOpt": command,
+                "value": value or "",
+                "data": data or "",
+            }
 
-        return self.post(
-            "rti/rtiControl",
-            {
-                "cmd": "Control",
-                "cmdOpt": "Set",
-                "value": values,
+        if payload:
+            payload.update({
                 "deviceId": device_id,
                 "workId": gen_uuid(),
-                "data": "",
-            },
-        )
+            })
+            res = self.post("rti/rtiControl", payload)
+            _LOGGER.debug("Set V1 result: %s", str(res))
+
+        return res
+
+    def set_device_v2_controls(self, device_id, ctrl_key, command=None, key=None, value=None):
+        """Control a device's settings based on api V2."""
+
+        res = {}
+        payload = None
+        path = f"service/devices/{device_id}/control-sync"
+        if isinstance(ctrl_key, dict):
+            payload = ctrl_key
+        elif command is not None:
+            payload = {
+                "ctrlKey": ctrl_key,
+                "command": command,
+                "dataKey": key or "",
+                "dataValue": value or "",
+            }
+
+        if payload:
+            res = self.post2(path, payload)
+            _LOGGER.debug("Set V2 result: %s", str(res))
+
+        return res
 
     def get_device_config(self, device_id, key, category="Config"):
         """Get a device configuration option.
@@ -542,7 +626,12 @@ class Session(object):
         )
         return res["returnData"]
 
+    def get_device_v2_settings(self, device_id):
+        """Get a device's settings based on api V2."""
+        return self.get2(f"service/devices/{device_id}")
+
     def delete_permission(self, device_id):
+        """Delete permission on V1 device after a control command"""
         self.post("rti/delControlPermission", {"deviceId": device_id})
 
 
@@ -556,14 +645,15 @@ class ClientV2(object):
         gateway: Optional[Gateway] = None,
         auth: Optional[Auth] = None,
         session: Optional[Session] = None,
-        country: str = core.DEFAULT_COUNTRY,
-        language: str = core.DEFAULT_LANGUAGE,
+        country: str = DEFAULT_COUNTRY,
+        language: str = DEFAULT_LANGUAGE,
     ) -> None:
         # The three steps required to get access to call the API.
         self._gateway: Optional[Gateway] = gateway
         self._auth: Optional[Auth] = auth
         self._session: Optional[Session] = session
         self._last_device_update = datetime.now()
+        self._lock = Lock()
 
         # The last list of devices we got from the server. This is the
         # raw JSON list data describing the devices.
@@ -581,8 +671,11 @@ class ClientV2(object):
     def _inject_thinq2_device(self):
         """This is used only for debug"""
         data_file = os.path.dirname(os.path.realpath(__file__)) + "/deviceV2.txt"
-        with open(data_file, "r") as f:
-            device_v2 = json.load(f)
+        try:
+            with open(data_file, "r") as f:
+                device_v2 = json.load(f)
+        except FileNotFoundError:
+            return
         for d in device_v2:
             self._devices.append(d)
             _LOGGER.debug("Injected debug device: %s", d)
@@ -593,6 +686,11 @@ class ClientV2(object):
             # for debug
             # self._inject_thinq2_device()
             # for debug
+
+    @property
+    def api_version(self):
+        """Return core API version"""
+        return CORE_VERSION
 
     @property
     def gateway(self) -> Gateway:
@@ -626,9 +724,12 @@ class ClientV2(object):
         return (DeviceInfo(d) for d in self._devices)
 
     def refresh_devices(self):
-        call_time = datetime.now()
-        difference = (call_time - self._last_device_update).total_seconds()
-        if difference > MIN_TIME_BETWEEN_UPDATE:
+        """Refresh the devices information for this client"""
+        with self._lock:
+            call_time = datetime.now()
+            difference = (call_time - self._last_device_update).total_seconds()
+            if difference <= MIN_TIME_BETWEEN_UPDATE:
+                return
             self._load_devices(True)
             self._last_device_update = call_time
 
@@ -655,8 +756,8 @@ class ClientV2(object):
                 data["auth_base"],
                 data["api_root"],
                 data["api2_root"],
-                data.get("country", core.DEFAULT_COUNTRY),
-                data.get("language", core.DEFAULT_LANGUAGE),
+                data.get("country", DEFAULT_COUNTRY),
+                data.get("language", DEFAULT_LANGUAGE),
             )
 
         if "auth" in state:
@@ -729,8 +830,8 @@ class ClientV2(object):
             """
 
         client = cls(
-            country=country or core.DEFAULT_COUNTRY,
-            language=language or core.DEFAULT_LANGUAGE,
+            country=country or DEFAULT_COUNTRY,
+            language=language or DEFAULT_LANGUAGE,
         )
         client._auth = Auth(client.gateway, oauth_url, None, refresh_token, user_number)
         client.refresh()
@@ -756,7 +857,9 @@ class ClientV2(object):
         """
         if not info_url:
             return {}
-        return requests.get(info_url, timeout=DEFAULT_TIMEOUT).json()
+        resp = requests.get(info_url, timeout=DEFAULT_TIMEOUT).text
+        enc_resp = resp.encode()
+        return json.loads(enc_resp)
 
     def common_lang_pack(self):
         """Load JSON common lang pack from specific url.

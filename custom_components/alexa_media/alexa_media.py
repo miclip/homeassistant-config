@@ -1,8 +1,7 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-#  SPDX-License-Identifier: Apache-2.0
 """
 Alexa Devices Base Class.
+
+SPDX-License-Identifier: Apache-2.0
 
 For more details about this platform, please refer to the documentation at
 https://community.home-assistant.io/t/echo-devices-alexa-as-media-player-testers-needed/58639
@@ -38,12 +37,6 @@ class AlexaMedia:
             login = self.hass.data[DATA_ALEXAMEDIA]["accounts"][self.email]["login_obj"]
         except (AttributeError, KeyError):
             return
-        # _LOGGER.debug("Login object %s closed status: %s", login, login.session.closed)
-        # _LOGGER.debug(
-        #     "Alexaapi %s closed status: %s",
-        #     self.alexa_api,
-        #     self.alexa_api._session.closed,
-        # )
         # _LOGGER.debug("Login object %s closed status: %s", login, login.session.closed)
         # _LOGGER.debug(
         #     "Alexaapi %s closed status: %s",

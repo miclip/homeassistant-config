@@ -16,3 +16,17 @@
   action:
     service_template: "switch.turn_on"
     entity_id: switch.hannah_heater
+- alias: 'Hannah Reading Light Off'
+  trigger:
+    - platform: time
+      at: '23:00:00'
+  action:
+    service_template: "switch.turn_off"
+    entity_id: switch.double_plug
+- alias: 'Hannah Reading Light On'
+  trigger:
+    - platform: time
+      at: '06:00:00'
+  action:
+    service_template: "switch.turn_on"
+    entity_id: switch.double_plug

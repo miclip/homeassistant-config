@@ -11,8 +11,6 @@ resources:
     type: module
   - url: /customcards/github/maykar/compact-custom-header.js?track=true
     type: module
-
-
 views:
   - path: default_view
     title: Home
@@ -148,6 +146,20 @@ views:
               service: switch.turn_off
               service_data:
                 entity_id: switch.in_wall_smart_toggle_switch_120_277vac_current_value_2
+          - type: entity-button
+            entity: switch.double_plug
+            icon: mdi:lightbulb
+            name: Hannah Reading
+            tap_action:
+              action: call-service
+              service: switch.turn_on
+              service_data:
+                entity_id: switch.double_plug
+            hold_action:
+              action: call-service
+              service: switch.turn_off
+              service_data:
+                entity_id: switch.double_plug
       - type: vertical-stack
         cards:
           - type: alarm-panel

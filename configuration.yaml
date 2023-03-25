@@ -35,9 +35,6 @@ http:
   login_attempts_threshold: 3
   ip_ban_enabled: false
 
-updater:
-  include_used_components: true
-
 mqtt:
   broker: 127.0.0.1
   port: 1883

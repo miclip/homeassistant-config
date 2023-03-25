@@ -2,26 +2,41 @@
 import asyncio
 import datetime
 import logging
+import traceback
 
+from homeassistant.core import HomeAssistant, Event
 from homeassistant.components.binary_sensor import BinarySensorEntity
 
-from .entity import ReolinkEntity
+from .entity import ReolinkEntity, CoordinatorEntity
+from .const import BASE, DOMAIN, MOTION_UPDATE_COORDINATOR
+from .base import ReolinkBase
 
 _LOGGER = logging.getLogger(__name__)
 
 DEFAULT_DEVICE_CLASS = "motion"
 
 
-async def async_setup_entry(hass, config_entry, async_add_devices):
+async def async_setup_entry(hass: HomeAssistant, config_entry, async_add_devices):
     """Set up the Reolink IP Camera switches."""
-    sensor = MotionSensor(hass, config_entry)
 
-    person_detected_sensor = ObjectDetectedSensor(hass, config_entry, 'person')
-    vehicle_detected_sensor = ObjectDetectedSensor(hass, config_entry, 'vehicle')
-    pet_detected_sensor = ObjectDetectedSensor(hass, config_entry, 'pet')
+    base: ReolinkBase = hass.data[DOMAIN][config_entry.entry_id][BASE]
 
-    async_add_devices([sensor, person_detected_sensor, vehicle_detected_sensor, pet_detected_sensor],
-                      update_before_add=False)
+    base.sensor_motion_detection = MotionSensor(hass, config_entry)
+
+    new_sensors = [base.sensor_motion_detection]
+
+    if base.api.is_ia_enabled:
+        _LOGGER.debug("Camera '{}' model '{}' is AI enabled so object detection sensors will be created".
+                      format(base.name, base.api.model))
+        base.sensor_person_detection = ObjectDetectedSensor(hass, config_entry, "person")
+        base.sensor_vehicle_detection = ObjectDetectedSensor(hass, config_entry, "vehicle")
+        base.sensor_pet_detection = ObjectDetectedSensor(hass, config_entry, "pet")
+
+        new_sensors.append(base.sensor_person_detection)
+        new_sensors.append(base.sensor_vehicle_detection)
+        new_sensors.append(base.sensor_pet_detection)
+
+    async_add_devices(new_sensors, update_before_add=False)
 
 
 class MotionSensor(ReolinkEntity, BinarySensorEntity):
@@ -31,6 +46,7 @@ class MotionSensor(ReolinkEntity, BinarySensorEntity):
         """Initialize a the switch."""
         ReolinkEntity.__init__(self, hass, config)
         BinarySensorEntity.__init__(self)
+        CoordinatorEntity.__init__(self, hass.data[DOMAIN][config.entry_id][MOTION_UPDATE_COORDINATOR])
 
         self._available = False
         self._event_state = False
@@ -69,7 +85,9 @@ class MotionSensor(ReolinkEntity, BinarySensorEntity):
 
     @property
     def available(self):
-        """Return True if entity is available."""
+        # in case detection solely relies on callback, availability relies on active session state
+        if self._base.motion_states_update_fallback_delay is None or self._base.motion_states_update_fallback_delay <= 0:
+            return self._base.api.session_active
         return self._available
 
     @property
@@ -87,11 +105,19 @@ class MotionSensor(ReolinkEntity, BinarySensorEntity):
 
         try:
             self._available = event.data["available"]
-            return
         except KeyError:
             pass
 
         if not self._available:
+            if self._base.sensor_person_detection is not None and self._base.sensor_person_detection.available:
+                await self._base.sensor_person_detection.handle_event(
+                    Event(self._base.event_id, {"available": False}))
+            if self._base.sensor_vehicle_detection is not None and self._base.sensor_vehicle_detection.available:
+                await self._base.sensor_vehicle_detection.handle_event(
+                    Event(self._base.event_id, {"available": False}))
+            if self._base.sensor_pet_detection is not None and self._base.sensor_pet_detection.available:
+                await self._base.sensor_pet_detection.handle_event(
+                    Event(self._base.event_id, {"available": False}))
             return
 
         try:
@@ -100,23 +126,49 @@ class MotionSensor(ReolinkEntity, BinarySensorEntity):
         except KeyError:
             return
 
-        if self._base.api.channels > 1:
-            # Pull the motion state for the NVR channel, it has only 1 event
-            self._event_state = await self._base.api.get_motion_state()
+        try:
+            await self._base.api.get_all_motion_states()
+            self._event_state = self._base.api.motion_state
+        except:
+            _LOGGER.error("Motion states could not be queried from API")
+            _LOGGER.error(traceback.format_exc())
+            self._available = False
+            if self._base.sensor_person_detection is not None:
+                await self._base.sensor_person_detection.handle_event(
+                    Event(self._base.event_id, {"available": False}))
+            if self._base.sensor_vehicle_detection is not None:
+                await self._base.sensor_vehicle_detection.handle_event(
+                    Event(self._base.event_id, {"available": False}))
+            if self._base.sensor_pet_detection is not None:
+                await self._base.sensor_pet_detection.handle_event(
+                    Event(self._base.event_id, {"available": False}))
+            self.async_schedule_update_ha_state()
+            return
+
+        if not self._available:
+            self._available = True
+            self.async_schedule_update_ha_state()
 
         if self._event_state:
             self._last_motion = datetime.datetime.now()
-
-            if self._base.api.ai_state:
-                # Pull the AI state only at motion detection
-                await self._base.api.get_ai_state()
-                # send an event to AI based motion sensor entities
-                self._hass.bus.async_fire(self._base.event_id, {"ai_refreshed": True})
         else:
             if self._base.motion_off_delay > 0:
                 await asyncio.sleep(self._base.motion_off_delay)
 
-        self.async_schedule_update_ha_state()
+        if self._base.api.ai_state:
+            # send an event to AI based motion sensor entities
+            if self._base.sensor_person_detection is not None:
+                await self._base.sensor_person_detection.handle_event(
+                    Event(self._base.event_id, {"ai_refreshed": True, "available": True}))
+            if self._base.sensor_vehicle_detection is not None:
+                await self._base.sensor_vehicle_detection.handle_event(
+                    Event(self._base.event_id, {"ai_refreshed": True, "available": True}))
+            if self._base.sensor_pet_detection is not None:
+                await self._base.sensor_pet_detection.handle_event(
+                    Event(self._base.event_id, {"ai_refreshed": True, "available": True}))
+
+        if self.enabled:
+            self.async_schedule_update_ha_state()
 
     @property
     def extra_state_attributes(self):
@@ -166,6 +218,10 @@ class MotionSensor(ReolinkEntity, BinarySensorEntity):
 
         return attrs
 
+    async def request_refresh(self):
+        """Call the coordinator to update the API."""
+        await self.coordinator.async_request_refresh()
+
 
 class ObjectDetectedSensor(ReolinkEntity, BinarySensorEntity):
     """An implementation of a Reolink IP camera object motion sensor."""
@@ -181,6 +237,24 @@ class ObjectDetectedSensor(ReolinkEntity, BinarySensorEntity):
         self._last_motion = datetime.datetime.min
         self._object_type = object_type
 
+    @property
+    def icon(self):
+        """Icon of the sensor."""
+
+        if self._object_type == "pet":
+            if self._state:
+                return "mdi:dog-side"
+            else:
+                return "mdi:dog-side-off"
+        if self._object_type == "vehicle":
+            if self._state:
+                return "mdi:car"
+            else:
+                return "mdi:car-off"
+
+        if self._state:
+            return "mdi:motion-sensor"
+        return "mdi:motion-sensor-off"
 
     @property
     def unique_id(self):
@@ -196,12 +270,13 @@ class ObjectDetectedSensor(ReolinkEntity, BinarySensorEntity):
     def is_on(self):
         """Return the state of the sensor."""
         self._state = self._event_state
-
         return self._state
 
     @property
     def available(self):
         """Return True if entity is available."""
+        if self._base.motion_states_update_fallback_delay is None or self._base.motion_states_update_fallback_delay <= 0:
+            return self._base.api.ai_state and self._base.api.session_active
         return self._available
 
     @property
@@ -217,11 +292,22 @@ class ObjectDetectedSensor(ReolinkEntity, BinarySensorEntity):
     async def handle_event(self, event):
         """Handle incoming event for motion detection and availability."""
 
+        new_availability = self._available
+
         try:
-            self._available = event.data["available"]
-            return
+            new_availability = event.data["available"]
+            if not new_availability:
+                if new_availability != self._available:
+                    self._available = new_availability
+                    self.async_schedule_update_ha_state()
+                return
         except KeyError:
             pass
+
+        if event.data.get("smtp") is self._object_type:
+            self._event_state = True
+            if self.enabled:
+                self.async_schedule_update_ha_state()
 
         if event.data.get("ai_refreshed") is not True:
             return
@@ -242,12 +328,17 @@ class ObjectDetectedSensor(ReolinkEntity, BinarySensorEntity):
                         self._event_state = value.get('alarm_state', 0) == 1
                         self._available = value.get('support', 0) == 1
 
-                    self.async_schedule_update_ha_state()
+                    if self.enabled:
+                        self.async_schedule_update_ha_state()
                     object_found = True
                     break
 
             if not object_found:
-                self._available = False
+                new_availability = False
+
+        if new_availability != self._available:
+            self._available = new_availability
+            self.async_schedule_update_ha_state()
 
 
 

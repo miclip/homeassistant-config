@@ -14,7 +14,8 @@ from homeassistant.const import (
     CONF_USERNAME,
     EVENT_HOMEASSISTANT_STOP,
 )
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, Event
+from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers import device_registry
 from homeassistant.helpers.storage import STORAGE_DIR
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
@@ -23,13 +24,19 @@ from .base import ReolinkBase, ReolinkPush
 from .const import (
     BASE,
     CONF_CHANNEL,
+    CONF_USE_HTTPS,
+    CONF_SMTP_PORT,
     CONF_MOTION_OFF_DELAY,
     CONF_PLAYBACK_MONTHS,
     CONF_PROTOCOL,
     CONF_STREAM,
     CONF_THUMBNAIL_PATH,
     CONF_STREAM_FORMAT,
+    CONF_MOTION_STATES_UPDATE_FALLBACK_DELAY,
+    CONF_ONVIF_SUBSCRIPTION_DISABLED,
+    DEFAULT_SMTP_PORT,
     COORDINATOR,
+    MOTION_UPDATE_COORDINATOR,
     DOMAIN,
     EVENT_DATA_RECEIVED,
     PUSH_MANAGER,
@@ -69,8 +76,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     base = ReolinkBase(hass, entry.data, entry.options)
     base.sync_functions.append(entry.add_update_listener(update_listener))
 
-    if not await base.connect_api():
-        return False
+    try:
+        if not await base.connect_api():
+            raise ConfigEntryNotReady(f"Error while trying to setup {base.name}, API failed to provide required data")
+    except:
+        raise ConfigEntryNotReady(f"Error while trying to setup {base.name}, API had hard error")
+
     hass.data[DOMAIN][entry.entry_id] = {BASE: base}
 
     try:
@@ -84,20 +95,24 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             entry.data[CONF_USERNAME],
             entry.data[CONF_PASSWORD],
         )
-        await push.subscribe(base.event_id)
+        if not base.onvif_subscription_disabled:
+            await push.subscribe(base.event_id)
+
+        await push.set_smtp_port(entry.options.get(CONF_SMTP_PORT, DEFAULT_SMTP_PORT))
         hass.data[DOMAIN][base.push_manager] = push
 
     async def async_update_data():
         """Perform the actual updates."""
 
         async with async_timeout.timeout(base.timeout):
-            await push.renew()
+            if not base.onvif_subscription_disabled:
+                await push.renew()
             await base.update_states()
 
     coordinator = DataUpdateCoordinator(
         hass,
         _LOGGER,
-        name="reolink",
+        name="reolink.{}".format(base.name),
         update_method=async_update_data,
         update_interval=SCAN_INTERVAL,
     )
@@ -105,12 +120,34 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # Fetch initial data so we have data when entities subscribe
     await coordinator.async_refresh()
 
+    async def async_update_motion_states():
+        """Perform motion state updates in case webhooks are not functional"""
+        # _LOGGER.debug("Refreshing motion states for camera ({}/{})".format(base.name, base.api.host))
+
+        async with async_timeout.timeout(base.timeout):
+            # Force a refresh of motion sensors (in case Webhook is broken)
+            if base.sensor_motion_detection is not None:
+                # hass.bus.async_fire(base.event_id, {"motion": False})
+                await base.sensor_motion_detection.handle_event(Event(base.event_id, {"motion": True, "available": True}))
+
+    coordinator_motion_update = DataUpdateCoordinator(
+        hass,
+        _LOGGER,
+        name="reolink.{}.motion_states".format(base.name),
+        update_method=async_update_motion_states,
+        update_interval=timedelta(seconds=base.motion_states_update_fallback_delay),
+    )
+
+    # Fetch initial data so we have data when entities subscribe
+    await coordinator_motion_update.async_refresh()
+
     for component in PLATFORMS:
         hass.async_create_task(
             hass.config_entries.async_forward_entry_setup(entry, component)
         )
 
     hass.data[DOMAIN][entry.entry_id][COORDINATOR] = coordinator
+    hass.data[DOMAIN][entry.entry_id][MOTION_UPDATE_COORDINATOR] = coordinator_motion_update
 
     hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, base.stop())
 
@@ -129,12 +166,32 @@ async def update_listener(hass: HomeAssistant, entry: ConfigEntry):
     await base.set_protocol(entry.options[CONF_PROTOCOL])
     await base.set_stream(entry.options[CONF_STREAM])
     await base.set_stream_format(entry.options[CONF_STREAM_FORMAT])
+    await base.set_smtp_port(entry.options[CONF_SMTP_PORT])
+
+    motion_state_coordinator: DataUpdateCoordinator = hass.data[DOMAIN][entry.entry_id][MOTION_UPDATE_COORDINATOR]
+
+    base.motion_states_update_fallback_delay = entry.options[CONF_MOTION_STATES_UPDATE_FALLBACK_DELAY]
+    base.onvif_subscription_disabled = entry.options[CONF_ONVIF_SUBSCRIPTION_DISABLED]
+
+    if motion_state_coordinator.update_interval != base.motion_states_update_fallback_delay:
+        if base.motion_states_update_fallback_delay is None or base.motion_states_update_fallback_delay <= 0:
+            # _LOGGER.debug("Motion state fallback delay disabled".format(motion_state_coordinator.update_interval))
+            motion_state_coordinator.update_interval = None
+        else:
+            motion_state_coordinator.update_interval = timedelta(seconds=base.motion_states_update_fallback_delay)
+            # _LOGGER.debug("Motion state fallback delay changed to {}".format(motion_state_coordinator.update_interval))
+            await motion_state_coordinator.async_refresh()
+    else:
+        # _LOGGER.debug("Motion state fallback delay is unchanged ({})".format(motion_state_coordinator.update_interval))
+        pass
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Unload a config entry."""
     base = hass.data[DOMAIN][entry.entry_id][BASE]
     push = hass.data[DOMAIN][base.push_manager]
+
+    await base.set_smtp_port(0) # Stop SMTP server
 
     if not await push.count_members() > 1:
         await push.unsubscribe()

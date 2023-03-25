@@ -28,9 +28,7 @@ from .typings import VoDEvent, VoDEventThumbnail
 
 _LOGGER = logging.getLogger(__name__)
 
-
-@asyncio.coroutine
-async def async_setup_entry(hass, config_entry, async_add_devices):
+async def async_setup_entry(hass: HomeAssistant, config_entry, async_add_devices):
     """Set up the Reolink IP Camera switches."""
     devices = []
     base: ReolinkBase = hass.data[DOMAIN][config_entry.entry_id][BASE]
@@ -122,8 +120,12 @@ class LastEventSensor(ReolinkEntity, SensorEntity):
         end = dt.datetime.combine(start.date(), dt.time.max, tzinfo=end.tzinfo)
         _, files = await self._base.send_search(start, end)
         file = files[-1] if files and len(files) > 0 else None
-        if not file:
+        if file is None:
             return
+
+        filename = file.get("name", "")
+        if len(filename) == 0:
+            _LOGGER.info("Search command provided a file record without a name: %s", str(file))
 
         end = searchtime_to_datetime(file["EndTime"], start.tzinfo)
         start = searchtime_to_datetime(file["StartTime"], end.tzinfo)
@@ -131,10 +133,10 @@ class LastEventSensor(ReolinkEntity, SensorEntity):
             str(start.timestamp()),
             start,
             end - start,
-            file["name"],
+            filename,
         )
         last.url = VOD_URL.format(
-            camera_id=self._entry_id, event_id=quote_plus(file["name"])
+            camera_id=self._entry_id, event_id=quote_plus(filename)
         )
         thumbnail = last.thumbnail = VoDEventThumbnail(
             THUMBNAIL_URL.format(camera_id=self._entry_id, event_id=last.event_id),
@@ -153,10 +155,10 @@ class LastEventSensor(ReolinkEntity, SensorEntity):
     async def handle_event(self, event):
         """Handle incoming event for VoD update"""
 
-        if not "motion" in event.data:
+        if "motion" not in event.data:
             return
 
-        self._hass.async_add_job(self._update_event_range)
+        await self._hass.async_add_job(self._update_event_range)
 
     @property
     def unique_id(self):

@@ -14,23 +14,33 @@ from homeassistant.const import (
 from homeassistant.core import callback
 from homeassistant.helpers import config_validation as cv
 
+from reolink.exceptions import CredentialsInvalidError
+
 from .base import ReolinkBase
 from .const import (
     BASE,
     CONF_CHANNEL,
+    CONF_USE_HTTPS,
+    CONF_SMTP_PORT,
     CONF_MOTION_OFF_DELAY,
     CONF_PLAYBACK_MONTHS,
     CONF_PROTOCOL,
     CONF_STREAM,
     CONF_STREAM_FORMAT,
     CONF_THUMBNAIL_PATH,
+    CONF_MOTION_STATES_UPDATE_FALLBACK_DELAY,
+    CONF_ONVIF_SUBSCRIPTION_DISABLED,
+    DEFAULT_SMTP_PORT,
     DEFAULT_MOTION_OFF_DELAY,
+    DEFAULT_USE_HTTPS,
     DEFAULT_PLAYBACK_MONTHS,
     DEFAULT_PROTOCOL,
     DEFAULT_STREAM,
     DEFAULT_STREAM_FORMAT,
     DEFAULT_THUMBNAIL_PATH,
     DEFAULT_TIMEOUT,
+    DEFAULT_MOTION_STATES_UPDATE_FALLBACK_DELAY,
+    DEFAULT_ONVIF_SUBSCRIPTION_DISABLED,
     DOMAIN,
 )
 
@@ -77,6 +87,8 @@ class ReolinkFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 errors["base"] = "cannot_connect"
             except InvalidHost:
                 errors["host"] = "cannot_connect"
+            except InvalidCredentials:
+                errors["host"] = "invalid_auth"
             except Exception:  # pylint: disable=broad-except
                 _LOGGER.exception("Unexpected exception")
                 errors["base"] = "unknown"
@@ -86,7 +98,8 @@ class ReolinkFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             data_schema=vol.Schema(
                 {
                     vol.Required(CONF_HOST): str,
-                    vol.Optional(CONF_PORT, default=80): cv.positive_int,
+                    vol.Required(CONF_PORT, default=443): cv.positive_int,
+                    vol.Required(CONF_USE_HTTPS, default=DEFAULT_USE_HTTPS): bool,
                     vol.Required(CONF_USERNAME): str,
                     vol.Required(CONF_PASSWORD): str,
                 }
@@ -124,7 +137,7 @@ class ReolinkFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_validate_input(self, hass: core.HomeAssistant, user_input: dict):
         """Validate the user input allows us to connect."""
-        self.base = ReolinkBase(hass, user_input, [])
+        self.base = ReolinkBase(hass, user_input, {})
 
         if not await self.base.connect_api():
             raise CannotConnect
@@ -138,7 +151,7 @@ class ReolinkFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     async def async_finish_flow(self, flow, result):
         """Finish flow."""
         # if result['type'] == data_entry_flow.RESULT_TYPE_ABORT:
-        self.base.disconnect_api()
+        await self.base.disconnect_api()
 
 
 class ReolinkOptionsFlowHandler(config_entries.OptionsFlow):
@@ -169,21 +182,38 @@ class ReolinkOptionsFlowHandler(config_entries.OptionsFlow):
                         default=self.config_entry.options.get(
                             CONF_STREAM, DEFAULT_STREAM
                         ),): vol.In(
-                        ["main", "sub"]
+                        ["main", "sub", "ext"]
                     ),
-                    vol.Required(CONF_STREAM_FORMAT, 
-                    default=self.config_entry.options.get(
-                            CONF_STREAM_FORMAT, DEFAULT_STREAM_FORMAT
-                        ),): vol.In(
+                    vol.Required(CONF_STREAM_FORMAT,
+                                 default=self.config_entry.options.get(
+                                     CONF_STREAM_FORMAT, DEFAULT_STREAM_FORMAT
+                                 ), ): vol.In(
                         ["h264", "h265"]
                     ),
-
+                    vol.Required(
+                        CONF_SMTP_PORT,
+                        default=self.config_entry.options.get(
+                            CONF_SMTP_PORT, DEFAULT_SMTP_PORT
+                        ),
+                    ): cv.positive_int,
                     vol.Required(
                         CONF_MOTION_OFF_DELAY,
                         default=self.config_entry.options.get(
                             CONF_MOTION_OFF_DELAY, DEFAULT_MOTION_OFF_DELAY
                         ),
                     ): vol.All(vol.Coerce(int), vol.Range(min=0)),
+                    vol.Required(
+                        CONF_ONVIF_SUBSCRIPTION_DISABLED,
+                        default=self.config_entry.options.get(
+                            CONF_ONVIF_SUBSCRIPTION_DISABLED, DEFAULT_ONVIF_SUBSCRIPTION_DISABLED
+                        ),
+                    ): vol.All(vol.Coerce(bool)),
+                    vol.Required(
+                        CONF_MOTION_STATES_UPDATE_FALLBACK_DELAY,
+                        default=self.config_entry.options.get(
+                            CONF_MOTION_STATES_UPDATE_FALLBACK_DELAY, DEFAULT_MOTION_STATES_UPDATE_FALLBACK_DELAY
+                        ),
+                    ): vol.All(vol.Coerce(int), vol.Range(min=0, max=60)),
                     vol.Required(
                         CONF_PLAYBACK_MONTHS,
                         default=self.config_entry.options.get(
@@ -217,3 +247,7 @@ class CannotConnect(exceptions.HomeAssistantError):
 
 class InvalidHost(exceptions.HomeAssistantError):
     """Error to indicate there is an invalid hostname."""
+
+
+class InvalidCredentials(exceptions.HomeAssistantError):
+    """Error to indicate invalid credentials."""

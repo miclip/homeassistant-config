@@ -30,16 +30,8 @@ ring:
   password: !secret ring_password
 
 http:
-  ssl_certificate: !secret ssl_certificate
-  ssl_key: !secret ssl_key
   login_attempts_threshold: 3
   ip_ban_enabled: false
-
-mqtt:
-  broker: 127.0.0.1
-  port: 1883
-  username: !secret MQTT_username
-  password: !secret MQTT_password
 
 alexa_media:
   accounts:
@@ -62,9 +54,6 @@ frontend:
   themes: !include themes.yaml
 
 weather:
-  - platform: darksky
-    api_key: !secret darksky_api_key
-    mode: daily
 
 camera: !include_dir_merge_list camera
 recorder: !include recorder.yaml

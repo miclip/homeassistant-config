@@ -12,11 +12,11 @@
       condition: and
       conditions:
         - condition: state
-          entity_id: lock.none_current_lock_mode
+          entity_id: lock.schlage_connect_smart_deadbolt
           state: unlocked
   action:
     - service_template: "lock.lock"
-      entity_id: lock.none_current_lock_mode
+      entity_id: lock.schlage_connect_smart_deadbolt
     - delay:
         seconds: 5
     - service: notify.alexa_media_kitchen_dot

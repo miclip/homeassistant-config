@@ -59,18 +59,18 @@ views:
             tap_action:
               action: toggle
           - type: entity-button
-            entity: lock.none_current_lock_mode
+            entity: lock.schlage_connect_smart_deadbolt
             name: Front
             tap_action:
               action: call-service
               service: lock.lock
               service_data:
-                entity_id: lock.none_current_lock_mode
+                entity_id: lock.schlage_connect_smart_deadbolt
             hold_action:
               action: call-service
               service: lock.unlock
               service_data:
-                entity_id: lock.none_current_lock_mode
+                entity_id: lock.schlage_connect_smart_deadbolt
           - type: entity-button
             entity: lock.touchscreen_deadbolt_z_wave_plus_current_lock_mode
             name: Garage
@@ -119,33 +119,33 @@ views:
       - type: horizontal-stack
         cards:
           - type: entity-button
-            entity: switch.in_wall_smart_toggle_switch_120_277vac_current_value
+            entity: switch.switch.in_wall_toggle_switch_120_277_qfsw_500s
             icon: mdi:lightbulb
             name: Garage Ext
             tap_action:
               action: call-service
               service: switch.turn_on
               service_data:
-                entity_id: switch.in_wall_smart_toggle_switch_120_277vac_current_value
+                entity_id: switch.switch.in_wall_toggle_switch_120_277_qfsw_500s
             hold_action:
               action: call-service
               service: switch.turn_off
               service_data:
-                entity_id: switch.in_wall_smart_toggle_switch_120_277vac_current_value
+                entity_id: switch.switch.in_wall_toggle_switch_120_277_qfsw_500s
           - type: entity-button
-            entity: switch.in_wall_smart_toggle_switch_120_277vac_current_value_2
+            entity: switch.switch.in_wall_toggle_switch_120_277_qfsw_500s_2
             icon: mdi:lightbulb
             name: Front Patio
             tap_action:
               action: call-service
               service: switch.turn_on
               service_data:
-                entity_id: switch.in_wall_smart_toggle_switch_120_277vac_current_value_2
+                entity_id: switch.switch.in_wall_toggle_switch_120_277_qfsw_500s_2
             hold_action:
               action: call-service
               service: switch.turn_off
               service_data:
-                entity_id: switch.in_wall_smart_toggle_switch_120_277vac_current_value_2
+                entity_id: switch.switch.in_wall_toggle_switch_120_277_qfsw_500s_2
           - type: entity-button
             entity: switch.double_plug_2
             icon: mdi:lightbulb

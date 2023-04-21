@@ -7,7 +7,7 @@
       event: sunset
   action:
     - service_template: "switch.turn_on"
-      entity_id: switch.in_wall_smart_toggle_switch_120_277vac_current_value
+      entity_id: switch.switch.in_wall_toggle_switch_120_277_qfsw_500s
 - alias: 'Garage External Lights Off'
   trigger:
     - platform: sun
@@ -15,7 +15,7 @@
       offset: "-05:00:00"
   action:
     - service_template: "switch.turn_off"
-      entity_id: switch.in_wall_smart_toggle_switch_120_277vac_current_value
+      entity_id: switch.switch.in_wall_toggle_switch_120_277_qfsw_500s
 #####################################################################################
 ###  Front Patio Lights
 #####################################################################################
@@ -25,7 +25,7 @@
       event: sunset
   action:
     - service_template: "switch.turn_on"
-      entity_id: switch.in_wall_smart_toggle_switch_120_277vac_current_value_2
+      entity_id: switch.switch.in_wall_toggle_switch_120_277_qfsw_500s_2
 - alias: 'Front Patio Lights Off'
   trigger:
     - platform: sun
@@ -33,4 +33,4 @@
       offset: "-05:00:00"
   action:
     - service_template: "switch.turn_off"
-      entity_id: switch.in_wall_smart_toggle_switch_120_277vac_current_value_2
+      entity_id: switch.switch.in_wall_toggle_switch_120_277_qfsw_500s_2

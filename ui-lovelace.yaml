@@ -53,7 +53,7 @@ views:
       - type: horizontal-stack
         cards:
           - type: entity-button
-            entity: switch.plug_in_smart_switch_current_value
+            entity: switch.plug_in_1_outlet_switch_500s
             name: Espresso
             icon: mdi:coffee
             tap_action:

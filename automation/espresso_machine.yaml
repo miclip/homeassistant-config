@@ -14,7 +14,7 @@
           state: 'home'
   action:
     service_template: "switch.turn_on"
-    entity_id: switch.plug_in_smart_switch_current_value
+    entity_id: switch.plug_in_1_outlet_switch_500s
 - alias: 'Espresso Machine Off'
   trigger:
     - platform: time
@@ -23,11 +23,11 @@
       condition: and
       conditions:
         - condition: state
-          entity_id: switch.plug_in_smart_switch_current_value
+          entity_id: switch.plug_in_1_outlet_switch_500s
           state: 'on'
   action:
     - service_template: "switch.turn_off"
-      entity_id: switch.plug_in_smart_switch_current_value
+      entity_id: switch.plug_in_1_outlet_switch_500s
     - service: notify.alexa_media_kitchen_dot
       data:
         message: "The Espresso Machine was turned off"
@@ -46,11 +46,11 @@
           for:
             hours: 1
         - condition: state
-          entity_id: switch.plug_in_smart_switch_current_value
+          entity_id: switch.plug_in_1_outlet_switch_500s
           state: 'on'
   action:
     - service_template: "switch.turn_off"
-      entity_id: switch.plug_in_smart_switch_current_value
+      entity_id: switch.plug_in_1_outlet_switch_500s
     - service: notify.mobile_app_iphone
       data:
         title: "Home Assistant Alerts"

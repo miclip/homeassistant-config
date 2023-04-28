@@ -1,5 +1,5 @@
 - platform: reolink_dev
-  host: 192.168.2.41
+  host: 192.168.2.2
   name: gym
   channel: 0
   username: admin
@@ -7,7 +7,7 @@
   stream: main
   protocol: rtsp
 - platform: reolink_dev
-  host: 192.168.2.41
+  host: 192.168.2.2
   name: garage
   channel: 1
   username: admin
@@ -15,7 +15,7 @@
   stream: main
   protocol: rtsp
 - platform: reolink_dev
-  host: 192.168.2.41
+  host: 192.168.2.2
   name: driveway
   channel: 2
   username: admin
@@ -23,7 +23,7 @@
   stream: main
   protocol: rtsp
 - platform: reolink_dev
-  host: 192.168.2.41
+  host: 192.168.2.2
   name: basement
   channel: 3
   username: admin

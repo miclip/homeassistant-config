@@ -25,10 +25,6 @@ climate:
     password: !secret honeywell_password
     scan_interval: 600
 
-ring:
-  username: !secret ring_username
-  password: !secret ring_password
-
 http:
   login_attempts_threshold: 3
   ip_ban_enabled: false

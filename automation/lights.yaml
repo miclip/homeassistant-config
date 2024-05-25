@@ -11,8 +11,8 @@
 - alias: 'Garage External Lights Off'
   trigger:
     - platform: sun
-      event: sunrise
-      offset: "-09:00:00"
+      event: sunset
+      offset: "03:00:00"
   action:
     - service_template: "switch.turn_off"
       entity_id: switch.in_wall_toggle_switch_120_277_qfsw_500s
@@ -29,8 +29,8 @@
 - alias: 'Front Patio Lights Off'
   trigger:
     - platform: sun
-      event: sunrise
-      offset: "-09:00:00"
+      event: sunset
+      offset: "03:00:00"
   action:
     - service_template: "switch.turn_off"
       entity_id: switch.in_wall_toggle_switch_120_277_qfsw_500s_2

@@ -53,7 +53,7 @@ views:
       - type: horizontal-stack
         cards:
           - type: entity-button
-            entity: switch.plug_in_1_outlet_switch_500s
+            entity: switch.espresso_machine
             name: Espresso
             icon: mdi:coffee
             tap_action:

@@ -34,10 +34,12 @@
           "debug": "Débogage avancé",
           "email": "Adresse Email",
           "exclude_devices": "Appareil exclu (séparé par des virgules)",
+          "extended_entity_discovery": "Inclure les appareils connectés via Echo",
           "hass_url": "URL pour accéder à Home Assistant",
           "include_devices": "Appareil inclus (séparé par des virgules)",
-          "otp_secret": "Clé d'application 2FA  (2 facteurs) intégrée (génère automatiquement des codes 2FA). Il ne s'agit pas d'un code à six chiffres.",
+          "otp_secret": "Clé d'application 2FA (2 facteurs) intégrée (génère automatiquement des codes 2FA). Il ne s'agit pas d'un code à six chiffres.",
           "password": "Mot de passe",
+          "queue_delay": "Secondes à attendre pour mettre les commandes en file d'attente ensemble",
           "scan_interval": "Secondes entre les analyses",
           "securitycode": "Code 2FA (recommandé pour éviter les problèmes de connexion)",
           "url": "Domaine de la région Amazon (exemple, amazon.fr)"
@@ -51,10 +53,54 @@
     "step": {
       "init": {
         "data": {
+          "debug": "Débogage avancé",
+          "exclude_devices": "Appareil exclu (séparé par des virgules)",
           "extended_entity_discovery": "Inclure les appareils connectés via Echo",
-          "queue_delay": "Secondes à attendre pour mettre les commandes en file d'attente ensemble"
-        }
+          "hass_url": "URL publique pour accéder à Home Assistant (y compris le '/' final)",
+          "include_devices": "Appareil inclus (séparé par des virgules)",
+          "public_url": "URL publique pour accéder à Home Assistant (y compris le '/' final)",
+          "queue_delay": "Secondes à attendre pour mettre les commandes en file d'attente ensemble",
+          "scan_interval": "Secondes entre les analyses"
+        },
+        "description": "Requis *",
+        "title": "Alexa Media Player – Reconfiguration"
       }
+    }
+  },
+  "services": {
+    "clear_history": {
+      "description": "Effacez les dernières entrées de l'historique Alexa Voice pour chaque compte Alexa.",
+      "fields": {
+        "email": {
+          "description": "Comptes à effacer. Si vide, cela effacera tout.",
+          "name": "Adresse email"
+        },
+        "entries": {
+          "description": "Nombre d'entrées à effacer de 1 à 50. Si vide, cela en effacera 50.",
+          "name": "Nombre d'entrées"
+        }
+      },
+      "name": "Effacer l'historique vocal d'Amazon"
+    },
+    "force_logout": {
+      "description": "Forcer le compte à se déconnecter. Utilisé principalement pour le débogage.",
+      "fields": {
+        "email": {
+          "description": "Comptes à effacer. Laisser à vide effacera tout.",
+          "name": "Adresse email"
+        }
+      },
+      "name": "Forcer la déconnexion"
+    },
+    "update_last_called": {
+      "description": "Force la mise à jour du dernier périphérique Echo appelé pour chaque compte Alexa.",
+      "fields": {
+        "email": {
+          "description": "Liste des comptes Alexa à mettre à jour. Si vide, mettra à jour tous les comptes connus.",
+          "name": "Adresse email"
+        }
+      },
+      "name": "Mettre à jour le dernier capteur appelé"
     }
   }
 }

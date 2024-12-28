@@ -11,8 +11,8 @@
       "identifier_exists": "Correo electrónico para la URL de Alexa ya registrado",
       "invalid_credentials": "Credenciales no válidas",
       "invalid_url": "La URL no es válida: {message}",
-      "unable_to_connect_hass_url": "No se puede conectar con la URL de Home Assistant. Verifique la URL externa en Configuración - > General",
-      "unknown_error": "Error desconocido: {mensaje}"
+      "unable_to_connect_hass_url": "No se puede conectar con la URL de Home Assistant. Verifique la URL externa en Configuración -> General",
+      "unknown_error": "Error desconocido: {message}"
     },
     "step": {
       "proxy_warning": {
@@ -34,10 +34,12 @@
           "debug": "Depuración avanzada",
           "email": "Dirección de correo electrónico",
           "exclude_devices": "Dispositivo excluido (separado por comas)",
+          "extended_entity_discovery": "Incluir dispositivos conectados vía Echo",
           "hass_url": "Url para acceder a Home Assistant",
           "include_devices": "Dispositivo incluido (separado por comas)",
           "otp_secret": "Clave de aplicación 2FA incorporada (genera automáticamente códigos 2FA). Esto no tiene seis dígitos.",
           "password": "Contraseña",
+          "queue_delay": "Segundos a esperar para agrupar comandos",
           "scan_interval": "Segundos entre escaneos",
           "securitycode": "Código 2FA (recomendado para evitar problemas de inicio de sesión)",
           "url": "Región del dominio de Amazon (por ejemplo, amazon.es)"
@@ -51,10 +53,54 @@
     "step": {
       "init": {
         "data": {
+          "debug": "Depuración avanzada",
+          "exclude_devices": "Dispositivo excluido (separado por comas)",
           "extended_entity_discovery": "Incluir dispositivos conectados a través de Echo",
-          "queue_delay": "Segundos a esperar para agrupar comandos"
-        }
+          "hass_url": "URL pública para acceder a Home Assistant (incluyendo la '/' final)",
+          "include_devices": "Dispositivo incluido (separado por comas)",
+          "public_url": "URL pública para acceder a Home Assistant (incluyendo la '/' final)",
+          "queue_delay": "Segundos a esperar para agrupar comandos",
+          "scan_interval": "Segundos entre escaneos"
+        },
+        "description": "Obligatorio*",
+        "title": "Alexa Media Player - Reconfiguración"
       }
+    }
+  },
+  "services": {
+    "clear_history": {
+      "description": "Borrar las últimas entradas del historial de voz de Alexa para cada cuenta.",
+      "fields": {
+        "email": {
+          "description": "Cuentas a borrar. Si se deja vacío se borraran todas.",
+          "name": "Dirección de correo electrónico"
+        },
+        "entries": {
+          "description": "Número de entradas a borrar del 1 al 50. Si se deja vacío, se borraran 50.",
+          "name": "Número de entradas"
+        }
+      },
+      "name": "Borrar el historial de voz de Amazon"
+    },
+    "force_logout": {
+      "description": "Obligar el cierre de sesión de la cuenta. Usar principalmente para depuración.",
+      "fields": {
+        "email": {
+          "description": "Cuentas a borrar. Si se deja vacío se borraran todas.",
+          "name": "Dirección de correo electrónico"
+        }
+      },
+      "name": "Obligar cierre de sesión"
+    },
+    "update_last_called": {
+      "description": "Obligar la actualización del último dispositivo Echo llamado para cada cuenta Alexa.",
+      "fields": {
+        "email": {
+          "description": "Cuentas de Alexa para actualizar. Si se deja vacío, se actualizaran todas las cuentas.",
+          "name": "Dirección de correo electrónico"
+        }
+      },
+      "name": "Actualizar el último sensor utilizado"
     }
   }
 }

@@ -6,6 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 For more details about this platform, please refer to the documentation at
 https://community.home-assistant.io/t/echo-devices-alexa-as-media-player-testers-needed/58639
 """
+
 import asyncio
 import json
 import logging
@@ -20,6 +21,7 @@ from homeassistant.components.notify import (
     BaseNotificationService,
 )
 from homeassistant.const import CONF_EMAIL
+from homeassistant.helpers.group import expand_entity_ids
 import voluptuous as vol
 
 from .const import (
@@ -64,8 +66,11 @@ async def async_unload_entry(hass, entry) -> bool:
             if "entities" not in account_dict:
                 continue
             for device in account_dict["entities"]["media_player"].values():
-                entity_id = device.entity_id.split(".")
-                hass.services.async_remove(SERVICE_NOTIFY, f"{DOMAIN}_{entity_id[1]}")
+                if device.entity_id:
+                    entity_id = device.entity_id.split(".")
+                    hass.services.async_remove(
+                        SERVICE_NOTIFY, f"{DOMAIN}_{entity_id[1]}"
+                    )
         else:
             other_accounts = True
     if not other_accounts:
@@ -149,6 +154,8 @@ class AlexaNotificationService(BaseNotificationService):
                 return devices
             last_called_entity = None
             for _, entity in account_dict["entities"]["media_player"].items():
+                if entity is None or entity.entity_id is None:
+                    continue
                 entity_name = (entity.entity_id).split(".")[1]
                 devices[entity_name] = entity.unique_id
                 if self.last_called and entity.extra_state_attributes.get(
@@ -232,7 +239,7 @@ class AlexaNotificationService(BaseNotificationService):
                     _LOGGER.debug("Processed Target by string: %s", processed_targets)
         entities = self.convert(processed_targets, type_="entities")
         try:
-            entities.extend(self.hass.components.group.expand_entity_ids(entities))
+            entities.extend(expand_entity_ids(self.hass, entities))
         except ValueError:
             _LOGGER.debug("Invalid Home Assistant entity in %s", entities)
         tasks = []

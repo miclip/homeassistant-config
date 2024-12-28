@@ -6,6 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 For more details about this platform, please refer to the documentation at
 https://community.home-assistant.io/t/echo-devices-alexa-as-media-player-testers-needed/58639
 """
+
 from datetime import datetime
 import json
 import logging
@@ -63,6 +64,16 @@ def is_local(appliance: dict[str, Any]) -> bool:
     There is probably a better way to prevent that, but this works.
     """
 
+    if appliance.get("manufacturerName") == "t0bst4r":
+        # Home-Assistant-Matter-Hub is a new add-on (2024-10-27) which exposes selected
+        # HA entities to Alexa as Matter devices connected locally via Amazon Echo.
+        # "connectedVia" is not None so they need to be ignored to prevent duplicating them back into HA.
+        _LOGGER.debug(
+            'alexa_entity is_local: Return False for Home-Assistant-Matter-Hub manufacturer: "%s"',
+            appliance.get("manufacturerName"),
+        )
+        return False
+
     if appliance.get("connectedVia"):
         # connectedVia is a flag that determines which Echo devices holds the connection. Its blank for
         # skill derived devices and includes an Echo name for zigbee and local devices.
@@ -73,9 +84,11 @@ def is_local(appliance: dict[str, Any]) -> bool:
     if "ALEXA_VOICE_ENABLED" in appliance.get("applianceTypes", []):
         return not is_skill(appliance)
 
-    # Ledvance bulbs connected via bluetooth are hard to detect as locally connected
+    # Ledvance/Sengled bulbs connected via bluetooth are hard to detect as locally connected
+    # Amazon devices are not local but bypassing the local check allows for control by the integration
     # There is probably a better way, but this works for now.
-    if appliance.get("manufacturerName") == "Ledvance":
+    manufacturerNames = ["Ledvance", "Sengled", "Amazon"]
+    if appliance.get("manufacturerName") in manufacturerNames:
         return not is_skill(appliance)
 
     # Zigbee devices are guaranteed to be local and have a particular pattern of id
@@ -94,8 +107,10 @@ def is_alexa_guard(appliance: dict[str, Any]) -> bool:
 
 def is_temperature_sensor(appliance: dict[str, Any]) -> bool:
     """Is the given appliance the temperature sensor of an Echo."""
-    return is_local(appliance) and has_capability(
-        appliance, "Alexa.TemperatureSensor", "temperature"
+    return (
+        is_local(appliance)
+        and has_capability(appliance, "Alexa.TemperatureSensor", "temperature")
+        and appliance["friendlyDescription"] != "Amazon Indoor Air Quality Monitor"
     )
 
 
@@ -114,7 +129,13 @@ def is_light(appliance: dict[str, Any]) -> bool:
     """Is the given appliance a light controlled locally by an Echo."""
     return (
         is_local(appliance)
-        and "LIGHT" in appliance.get("applianceTypes", [])
+        and (
+            "LIGHT" in appliance.get("applianceTypes", [])
+            or (
+                "SMARTPLUG" in appliance.get("applianceTypes", [])
+                and appliance.get("customerDefinedDeviceType") == "LIGHT"
+            )
+        )
         and has_capability(appliance, "Alexa.PowerController", "powerState")
     )
 
@@ -125,6 +146,19 @@ def is_contact_sensor(appliance: dict[str, Any]) -> bool:
         is_local(appliance)
         and "CONTACT_SENSOR" in appliance.get("applianceTypes", [])
         and has_capability(appliance, "Alexa.ContactSensor", "detectionState")
+    )
+
+
+def is_switch(appliance: dict[str, Any]) -> bool:
+    """Is the given appliance a switch controlled locally by an Echo, which is not redeclared as a light."""
+    return (
+        is_local(appliance)
+        and (
+            "SMARTPLUG" in appliance.get("applianceTypes", [])
+            or "SWITCH" in appliance.get("applianceTypes", [])
+        )
+        and appliance.get("customerDefinedDeviceType") != "LIGHT"
+        and has_capability(appliance, "Alexa.PowerController", "powerState")
     )
 
 
@@ -200,6 +234,7 @@ def parse_alexa_entities(network_details: Optional[dict[str, Any]]) -> AlexaEnti
     temperature_sensors = []
     air_quality_sensors = []
     contact_sensors = []
+    switches = []
     location_details = network_details["locationDetails"]["locationDetails"]
     # pylint: disable=too-many-nested-blocks
     for location in location_details.values():
@@ -258,7 +293,8 @@ def parse_alexa_entities(network_details: Optional[dict[str, Any]]) -> AlexaEnti
                     # Add as both temperature and air quality sensor
                     temperature_sensors.append(processed_appliance)
                     air_quality_sensors.append(processed_appliance)
-
+                elif is_switch(appliance):
+                    switches.append(processed_appliance)
                 elif is_light(appliance):
                     processed_appliance["brightness"] = has_capability(
                         appliance, "Alexa.BrightnessController", "brightness"
@@ -286,6 +322,7 @@ def parse_alexa_entities(network_details: Optional[dict[str, Any]]) -> AlexaEnti
         "temperature": temperature_sensors,
         "air_quality": air_quality_sensors,
         "binary_sensor": contact_sensors,
+        "smart_switch": switches,
     }
 
 
@@ -324,10 +361,11 @@ def parse_temperature_from_coordinator(
     coordinator: DataUpdateCoordinator, entity_id: str
 ) -> Optional[str]:
     """Get the temperature of an entity from the coordinator data."""
-    value = parse_value_from_coordinator(
+    temperature = parse_value_from_coordinator(
         coordinator, entity_id, "Alexa.TemperatureSensor", "temperature"
     )
-    return value.get("value") if value and "value" in value else None
+    _LOGGER.debug("parse_temperature_from_coordinator: %s", temperature)
+    return temperature
 
 
 def parse_air_quality_from_coordinator(

@@ -149,19 +149,19 @@ views:
                 entity_id: switch.double_plug_2
       - type: horizontal-stack
         cards:
-          - camera_image: camera.driveway
+          - camera_image: camera.driveway_fluent
             entities:
               - binary_sensor.motion_driveway
             type: picture-glance
-          - camera_image: camera.garage
+          - camera_image: camera.garage_main_fluent
             entities:
               - binary_sensor.motion_garage
             type: picture-glance
-          - camera_image: camera.basement
+          - camera_image: camera.basement_storage_fluent
             entities:
               - binary_sensor.motion_basement
             type: picture-glance
-          - camera_image: camera.gym
+          - camera_image: camera.gym_fluent
             entities:
               - binary_sensor.motion_gym
             type: picture-glance

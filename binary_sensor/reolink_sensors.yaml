@@ -3,7 +3,7 @@
     motion_gym:
       friendly_name: Gym Camera
       device_class: motion
-      value_template: "{{ is_state('camera.gym', 'motion') }}"
+      value_template: "{{ is_state('camera.gym_fluent', 'motion') }}"
       delay_off:
         seconds: 30
 - platform: template
@@ -11,7 +11,7 @@
     motion_garage:
       friendly_name: Garage Camera
       device_class: motion
-      value_template: "{{ is_state('camera.garage', 'motion') }}"
+      value_template: "{{ is_state('camera.garage_main_fluent', 'motion') }}"
       delay_off:
         seconds: 30
 - platform: template
@@ -19,7 +19,7 @@
     motion_driveway:
       friendly_name: Driveway Camera
       device_class: motion
-      value_template: "{{ is_state('camera.driveway', 'motion') }}"
+      value_template: "{{ is_state('camera.driveway_fluent', 'motion') }}"
       delay_off:
         seconds: 30
 - platform: template
@@ -27,6 +27,6 @@
     motion_basement:
       friendly_name: Basement Camera
       device_class: motion
-      value_template: "{{ is_state('camera.basement', 'motion') }}"
+      value_template: "{{ is_state('camera.basement_storage_fluent', 'motion') }}"
       delay_off:
         seconds: 30

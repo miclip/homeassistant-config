@@ -14,8 +14,6 @@ default_config:
 
 ios:
 
-map:
-
 climate:
   - platform: honeywell
     username: !secret honeywell_username

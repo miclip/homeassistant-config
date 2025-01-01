@@ -72,32 +72,6 @@ views:
               service_data:
                 entity_id: lock.schlage_connect_smart_deadbolt
           - type: entity-button
-            entity: cover.garage_door_small
-            name: Garage Small
-            tap_action:
-              action: call-service
-              service: cover.open_cover
-              service_data:
-                entity_id: cover.garage_door_small
-            hold_action:
-              action: call-service
-              service: cover.close_cover
-              service_data:
-                entity_id: cover.garage_door_small
-          - type: entity-button
-            entity: cover.garage_door
-            name: Garage Main
-            tap_action:
-              action: call-service
-              service: cover.open_cover
-              service_data:
-                entity_id: cover.garage_door
-            hold_action:
-              action: call-service
-              service: cover.close_cover
-              service_data:
-                entity_id: cover.garage_door
-          - type: entity-button
             entity: switch.hannah_heater
             name: Heater
             icon: mdi:radiator

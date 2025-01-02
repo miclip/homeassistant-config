@@ -121,6 +121,12 @@ views:
               service: switch.turn_off
               service_data:
                 entity_id: switch.double_plug_2
+          - type: entity-button
+            entity: switch.plug_in_1_outlet_switch_500s
+            name: Lounge
+            icon: mdi:lightbulb
+            tap_action:
+              action: toggle
       - type: horizontal-stack
         cards:
           - camera_image: camera.driveway_fluent

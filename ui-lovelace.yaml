@@ -84,43 +84,19 @@ views:
             icon: mdi:lightbulb
             name: Garage Ext
             tap_action:
-              action: call-service
-              service: switch.turn_on
-              service_data:
-                entity_id: switch.in_wall_toggle_switch_120_277_qfsw_500s
-            hold_action:
-              action: call-service
-              service: switch.turn_off
-              service_data:
-                entity_id: switch.in_wall_toggle_switch_120_277_qfsw_500s
+              action: toggle
           - type: entity-button
             entity: switch.in_wall_toggle_switch_120_277_qfsw_500s_2
             icon: mdi:lightbulb
             name: Front Patio
             tap_action:
-              action: call-service
-              service: switch.turn_on
-              service_data:
-                entity_id: switch.in_wall_toggle_switch_120_277_qfsw_500s_2
-            hold_action:
-              action: call-service
-              service: switch.turn_off
-              service_data:
-                entity_id: switch.in_wall_toggle_switch_120_277_qfsw_500s_2
+              action: toggle
           - type: entity-button
             entity: switch.double_plug_2
             icon: mdi:lightbulb
             name: Hannah Reading
             tap_action:
-              action: call-service
-              service: switch.turn_on
-              service_data:
-                entity_id: switch.double_plug_2
-            hold_action:
-              action: call-service
-              service: switch.turn_off
-              service_data:
-                entity_id: switch.double_plug_2
+              action: toggle
           - type: entity-button
             entity: switch.plug_in_1_outlet_switch_500s
             name: Lounge

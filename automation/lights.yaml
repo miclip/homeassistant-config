@@ -34,7 +34,6 @@
   action:
     - service_template: "switch.turn_off"
       entity_id: switch.in_wall_toggle_switch_120_277_qfsw_500s_2
-
 #####################################################################################
 ###  lounge lights
 #####################################################################################
@@ -53,3 +52,24 @@
   action:
     - service_template: "switch.turn_off"
       entity_id: switch.plug_in_1_outlet_switch_500s
+#####################################################################################
+###  deck light
+#####################################################################################
+- alias: 'Deck Light On'
+  trigger:
+    - platform: sun
+      event: sunset
+      offset: "02:00:00"
+  action:
+    - service: light.turn_on
+      target:
+        entity_id: light.deck 
+- alias: 'Lounge Lights Off'
+  trigger:
+    - platform: sun
+      event: sunset
+      offset: "08:00:00"
+  action:
+    - service: light.turn_off
+      target:
+        entity_id: light.deck 

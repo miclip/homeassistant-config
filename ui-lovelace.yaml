@@ -59,18 +59,18 @@ views:
             tap_action:
               action: toggle
           - type: entity-button
-            entity: lock.schlage_connect_smart_deadbolt
+            entity: lock.node_4
             name: Front
             tap_action:
               action: call-service
               service: lock.lock
               service_data:
-                entity_id: lock.schlage_connect_smart_deadbolt
+                entity_id: lock.node_4
             hold_action:
               action: call-service
               service: lock.unlock
               service_data:
-                entity_id: lock.schlage_connect_smart_deadbolt
+                entity_id: lock.node_4
           - type: entity-button
             entity: switch.hannah_heater
             name: Heater
@@ -89,12 +89,6 @@ views:
             entity: switch.in_wall_toggle_switch_120_277_qfsw_500s_2
             icon: mdi:lightbulb
             name: Front Patio
-            tap_action:
-              action: toggle
-          - type: entity-button
-            entity: switch.double_plug_2
-            icon: mdi:lightbulb
-            name: Hannah Reading
             tap_action:
               action: toggle
           - type: entity-button

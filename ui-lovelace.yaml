@@ -103,6 +103,12 @@ views:
             icon: mdi:lightbulb
             tap_action:
               action: toggle
+          - type: entity-button
+            entity: light.deck
+            name: Deck
+            icon: mdi:lightbulb
+            tap_action:
+              action: toggle
       - type: horizontal-stack
         cards:
           - camera_image: camera.driveway_fluent

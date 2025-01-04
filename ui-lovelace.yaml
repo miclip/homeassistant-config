@@ -39,17 +39,6 @@ views:
               "not_home": /local/images/hannah_away.jpg
             aspect_ratio: 16:9
             entity: person.hannah_lipscombe
-      - type: vertical-stack
-        cards:
-          - type: conditional
-            conditions:
-              - entity: media_player.great_room
-                state_not: "off"
-            card:
-              type: custom:mini-media-player
-              entity: media_player.great_room
-              icon: mdi:speaker-multiple
-              artwork: cover
       - type: horizontal-stack
         cards:
           - type: entity-button

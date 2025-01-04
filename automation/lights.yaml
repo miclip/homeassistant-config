@@ -63,7 +63,7 @@
   action:
     - service: light.turn_on
       target:
-        entity_id: light.deck 
+        entity_id: light.deck_light
 - alias: 'Lounge Lights Off'
   trigger:
     - platform: sun
@@ -72,4 +72,4 @@
   action:
     - service: light.turn_off
       target:
-        entity_id: light.deck 
+        entity_id: light.deck_light

@@ -87,7 +87,7 @@ views:
             tap_action:
               action: toggle
           - type: entity-button
-            entity: light.deck_light
+            entity: light.deck_wall_light
             name: Deck
             icon: mdi:lightbulb
             tap_action:

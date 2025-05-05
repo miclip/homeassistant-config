@@ -48,7 +48,7 @@
   trigger:
     - platform: sun
       event: sunset
-      offset: "08:00:00"
+      offset: "05:00:00"
   action:
     - service_template: "switch.turn_off"
       entity_id: switch.plug_in_1_outlet_switch_500s
@@ -67,7 +67,7 @@
   trigger:
     - platform: sun
       event: sunset
-      offset: "05:00:00"
+      offset: "03:00:00"
   action:
     - service: light.turn_off
       target:

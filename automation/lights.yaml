@@ -6,7 +6,7 @@
     - platform: sun
       event: sunset
   action:
-    - service_template: "switch.turn_on"
+    - service: switch.turn_on
       entity_id: switch.in_wall_toggle_switch_120_277_qfsw_500s
 - alias: 'Garage External Lights Off'
   trigger:
@@ -14,7 +14,7 @@
       event: sunset
       offset: "03:00:00"
   action:
-    - service_template: "switch.turn_off"
+    - service: switch.turn_off
       entity_id: switch.in_wall_toggle_switch_120_277_qfsw_500s
 #####################################################################################
 ###  Front Patio Lights
@@ -24,7 +24,7 @@
     - platform: sun
       event: sunset
   action:
-    - service_template: "switch.turn_on"
+    - service: switch.turn_on
       entity_id: switch.in_wall_toggle_switch_120_277_qfsw_500s_2
 - alias: 'Front Patio Lights Off'
   trigger:
@@ -32,7 +32,7 @@
       event: sunset
       offset: "03:00:00"
   action:
-    - service_template: "switch.turn_off"
+    - service: switch.turn_off
       entity_id: switch.in_wall_toggle_switch_120_277_qfsw_500s_2
 #####################################################################################
 ###  lounge lights

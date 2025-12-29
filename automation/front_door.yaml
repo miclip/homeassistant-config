@@ -15,7 +15,7 @@
           entity_id: lock.node_4
           state: unlocked
   action:
-    - service_template: "lock.lock"
+    - service: lock.lock
       entity_id: lock.node_4
     - delay:
         seconds: 5

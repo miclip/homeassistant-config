@@ -23,9 +23,9 @@
                   entity_id: lock.touchscreen_deadbolt_z_wave_plus_current_lock_mode
                   state: "unlocked"
   action:
-    - service_template: "lock.lock"
+    - service: lock.lock
       entity_id: lock.none_current_lock_mode
-    - service_template: "lock.lock"
+    - service: lock.lock
       entity_id: lock.touchscreen_deadbolt_z_wave_plus_current_lock_mode
     - service: notify.mobile_app_iphone
       data:

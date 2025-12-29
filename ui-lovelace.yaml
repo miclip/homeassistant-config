@@ -92,6 +92,12 @@ views:
             icon: mdi:lightbulb
             tap_action:
               action: toggle
+          - type: entity-button
+            entity: light.sengled_e11_g13_light
+            name: Music Corner
+            icon: mdi:lightbulb
+            tap_action:
+              action: toggle
       - type: horizontal-stack
         cards:
           - camera_image: camera.driveway_fluent

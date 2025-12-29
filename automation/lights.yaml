@@ -42,16 +42,20 @@
     - platform: sun
       event: sunset
   action:
-    - service_template: "switch.turn_on"
+    - service: switch.turn_on
       entity_id: switch.plug_in_1_outlet_switch_500s
+    - service: light.turn_on
+      entity_id: light.sengled_e11_g13_light
 - alias: 'Lounge Lights Off'
   trigger:
     - platform: sun
       event: sunset
       offset: "05:00:00"
   action:
-    - service_template: "switch.turn_off"
+    - service: switch.turn_off
       entity_id: switch.plug_in_1_outlet_switch_500s
+    - service: light.turn_off
+      entity_id: light.sengled_e11_g13_light
 #####################################################################################
 ###  deck light
 #####################################################################################

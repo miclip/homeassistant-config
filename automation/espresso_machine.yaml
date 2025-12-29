@@ -45,7 +45,7 @@
   action:
     - service: switch.turn_off
       entity_id: switch.espresso_machine
-    - service: notify.mobile_app_iphone_90
+    - service: notify.mobile_app_iphone
       data:
         title: "Home Assistant Alerts"
         message: "Espresso Machine has been turned off as no one was home."

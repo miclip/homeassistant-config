@@ -29,7 +29,7 @@
         message: "The front door was unlocked, I locked it."
         data:
           type: tts
-    - service: notify.mobile_app_iphone_90
+    - service: notify.mobile_app_iphone
       data:
         title: "Home Assistant Alerts"
         message: "The front door has been locked."

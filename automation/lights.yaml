@@ -67,7 +67,7 @@
     - service: light.turn_on
       target:
         entity_id: light.deck_wall_light_light
-- alias: 'Lounge Lights Off'
+- alias: 'Deck Wall Light Off'
   trigger:
     - platform: sun
       event: sunset

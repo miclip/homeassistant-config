@@ -6,13 +6,9 @@ homeassistant:
   elevation: !secret home_elevation
   unit_system: us_customary
   time_zone: !secret time_zone
-  customize: !include customize.yaml
 
-
-  # Configure a default setup of Home Assistant (frontend, api, etc)
+# Configure a default setup of Home Assistant (frontend, api, etc)
 default_config:
-
-ios:
 
 climate:
   - platform: honeywell
@@ -34,9 +30,6 @@ alexa_media:
         - "Michael's Alexa Apps"
 
 sun:
-
-
-wemo:
 
 lovelace:
   mode: yaml

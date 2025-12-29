@@ -9,7 +9,7 @@
   action:
     - service: switch.turn_off
       entity_id: switch.hannah_heater
-- alias: 'Hannahs Heater On'
+- alias: 'Hannah Heater On'
   trigger:
     - platform: time
       at: '20:00:00'

@@ -151,44 +151,8 @@ views:
                 name: Protection
               - entity: switch.adguard_home_filtering
                 name: Filtering
-              - entity: switch.adguard_home_safe_browsing
-                name: Safe Browsing
-              - entity: sensor.adguard_home_dns_queries
-                name: DNS Queries
-              - entity: sensor.adguard_home_dns_queries_blocked
-                name: Blocked
               - entity: sensor.adguard_home_dns_queries_blocked_ratio
                 name: Block Rate
-              - entity: sensor.adguard_home_average_processing_speed
-                name: Avg Speed
-          - type: entities
-            title: Rachio
-            icon: mdi:sprinkler-variant
-            entities:
-              - entity: binary_sensor.rachio
-                name: Connectivity
-              - entity: binary_sensor.rachio_rain_sensor
-                name: Rain Detected
-              - entity: switch.rachio_in_standby_mode
-                name: Standby Mode
-              - entity: switch.rachio_rain_delay
-                name: Rain Delay
-              - type: section
-                label: Zones
-              - entity: switch.front_yard
-              - entity: switch.front_strip
-              - entity: switch.front_yard_drip
-              - entity: switch.backyard_south
-              - entity: switch.backyard_west
-              - entity: switch.backyard_east
-              - entity: switch.backyard_inner
-              - entity: switch.shrubs_and_trees_drip
-              - type: section
-                label: Schedules
-              - entity: switch.lawn_schedule_2
-                name: Lawn Schedule
-              - entity: switch.trees_and_shrubs_drip_schedule
-              - entity: switch.vegetable_garden_schedule
               
   - path: greatroom
     title: Living Room
@@ -250,3 +214,47 @@ views:
           - automation.front_door_locked
           - automation.front_door_unlocked
         show_header_toggle: true
+
+  - path: rachio
+    title: Rachio
+    icon: 'mdi:sprinkler-variant'
+    badges: []
+    cards:
+      - type: horizontal-stack
+        cards:
+          - type: entities
+            title: Status
+            entities:
+              - entity: binary_sensor.rachio
+                name: Connectivity
+              - entity: binary_sensor.rachio_rain_sensor
+                name: Rain Detected
+              - entity: switch.rachio_in_standby_mode
+                name: Standby Mode
+              - entity: switch.rachio_rain_delay
+                name: Rain Delay
+          - type: entities
+            title: Schedules
+            entities:
+              - entity: switch.lawn_schedule_2
+                name: Lawn Schedule
+              - entity: switch.trees_and_shrubs_drip_schedule
+                name: Trees & Shrubs
+              - entity: switch.vegetable_garden_schedule
+                name: Vegetable Garden
+      - type: horizontal-stack
+        cards:
+          - type: entities
+            title: Front Yard
+            entities:
+              - entity: switch.front_yard
+              - entity: switch.front_strip
+              - entity: switch.front_yard_drip
+          - type: entities
+            title: Backyard
+            entities:
+              - entity: switch.backyard_south
+              - entity: switch.backyard_west
+              - entity: switch.backyard_east
+              - entity: switch.backyard_inner
+              - entity: switch.shrubs_and_trees_drip

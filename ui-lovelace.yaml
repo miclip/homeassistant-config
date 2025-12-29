@@ -127,6 +127,31 @@ views:
                   - sensor.sun_elevation
                 line_color: '#b58e31'
                 line_width: 4
+              - type: custom:mini-graph-card
+                name: AdGuard Blocked
+                entities:
+                  - sensor.adguard_home_dns_queries_blocked_ratio
+                line_color: '#e74c3c'
+                line_width: 4
+                icon: mdi:shield-check
+      - type: entities
+        title: AdGuard Home
+        icon: mdi:shield-check
+        entities:
+          - entity: switch.adguard_home_protection
+            name: Protection
+          - entity: switch.adguard_home_filtering
+            name: Filtering
+          - entity: switch.adguard_home_safe_browsing
+            name: Safe Browsing
+          - entity: sensor.adguard_home_dns_queries
+            name: DNS Queries
+          - entity: sensor.adguard_home_dns_queries_blocked
+            name: Blocked
+          - entity: sensor.adguard_home_dns_queries_blocked_ratio
+            name: Block Rate
+          - entity: sensor.adguard_home_average_processing_speed
+            name: Avg Speed
               
   - path: greatroom
     title: Living Room

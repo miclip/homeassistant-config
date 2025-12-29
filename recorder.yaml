@@ -6,10 +6,21 @@ exclude:
     - updater
     - script
     - scene
+    - media_player
+    - update
+    - camera
   entity_globs:
     - sensor.sun_*
     - sensor.*_battery
+    - sensor.adguard_home_*
+    - switch.adguard_home_*
+    - binary_sensor.motion_*
+    - binary_sensor.rachio*
+    - switch.rachio_*
+    - switch.*_schedule*
+    - sensor.*_processing_speed
   entities:
     - sun.sun
     - sensor.date
     - sensor.time
+    - sensor.michael_to_home

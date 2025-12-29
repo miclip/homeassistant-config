@@ -7,13 +7,6 @@ update_alexa_media () {
     popd > /dev/null
 }
 
-update_reolink () {
-    pushd ../reolink_dev > /dev/null
-      git pull
-      cp -r ./custom_components/reolink_dev ./custom_components
-    popd > /dev/null
-}
-
 update_smartthinq_sensors () {
     pushd ../ha-smartthinq-sensors > /dev/null
       git pull
@@ -23,7 +16,5 @@ update_smartthinq_sensors () {
 
 echo "Updating alexa_media..."
 update_alexa_media
-echo "Updating reolink_dev..."
-update_reolink
 echo "Updating smartthinq_sensors..."
 update_smartthinq_sensors

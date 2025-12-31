@@ -4,16 +4,3 @@
         friendly_name: Sun Elevation
         value_template: '{{states.sun.sun.attributes.elevation}}'
         unit_of_measurement: '°'
-
-  - platform: template
-    sensors:
-      garage_door_main_obs:
-        friendly_name: "Main Garage Obstruction"
-        value_template: "{{ state_attr('cover.garage_door_main', 'obstruction-detected') }}"
-
-  - platform: template
-    sensors:
-      garage_door_small_obs:
-        friendly_name: "Small Garage Obstruction"
-        value_template: "{{ state_attr('cover.garage_door_small', 'obstruction-detected') }}"
-

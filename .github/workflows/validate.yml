@@ -1,0 +1,30 @@
+name: Validate Home Assistant Config
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create fake secrets.yaml
+        run: |
+          cat > secrets.yaml << 'EOF'
+          home_latitude: 40.0
+          home_longitude: -105.0
+          home_elevation: 1600
+          time_zone: America/Denver
+          database_connection: sqlite:///home-assistant_v2.db
+          EOF
+
+      - name: Home Assistant Config Check
+        uses: frenck/action-home-assistant@v1
+        with:
+          path: "."
+          secrets: secrets.yaml
+          version: stable

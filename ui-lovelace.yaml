@@ -81,14 +81,14 @@ views:
             tap_action:
               action: toggle
           - type: entity-button
-            entity: light.plant_corner
-            name: Plant Corner
+            entity: light.deck_wall_light_light
+            name: Deck
             icon: mdi:lightbulb
             tap_action:
               action: toggle
           - type: entity-button
-            entity: light.deck_wall_light_light
-            name: Deck
+            entity: light.plant_corner
+            name: Plant Corner
             icon: mdi:lightbulb
             tap_action:
               action: toggle

@@ -20,15 +20,6 @@ http:
   login_attempts_threshold: 3
   ip_ban_enabled: false
 
-alexa_media:
-  accounts:
-    - email: !secret amazon_user
-      password: !secret amazon_password
-      url: amazon.com
-      exclude_devices:
-        - "This Device"
-        - "Michael's Alexa Apps"
-
 sun:
 
 lovelace:

@@ -10,12 +10,6 @@ homeassistant:
 # Configure a default setup of Home Assistant (frontend, api, etc)
 default_config:
 
-climate:
-  - platform: honeywell
-    username: !secret honeywell_username
-    password: !secret honeywell_password
-    scan_interval: 600
-
 http:
   login_attempts_threshold: 3
   ip_ban_enabled: false

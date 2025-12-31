@@ -4,8 +4,8 @@
 - alias: 'Washing machine has completed a load'
   trigger:
     - platform: state
-      entity_id: binary_sensor.washer_wash_completed
-      to: 'on'
+      entity_id: sensor.washer_current_status
+      to: 'end'
   condition:
     condition: time
     after: '09:00:00'
@@ -27,8 +27,8 @@
 - alias: 'Dryer has completed a load'
   trigger:
     - platform: state
-      entity_id: binary_sensor.dryer_dry_completed
-      to: 'on'
+      entity_id: sensor.dryer_current_status
+      to: 'end'
   condition:
     condition: time
     after: '09:00:00'

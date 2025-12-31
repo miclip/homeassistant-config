@@ -42,8 +42,8 @@
     - platform: sun
       event: sunset
   action:
-    - service: switch.turn_on
-      entity_id: switch.plug_in_1_outlet_switch_500s
+    - service: light.turn_on
+      entity_id: light.plant_corner
     - service: light.turn_on
       entity_id: light.sengled_e11_g13_light
 - alias: 'Lounge Lights Off'
@@ -52,8 +52,8 @@
       event: sunset
       offset: "05:00:00"
   action:
-    - service: switch.turn_off
-      entity_id: switch.plug_in_1_outlet_switch_500s
+    - service: light.turn_off
+      entity_id: light.plant_corner
     - service: light.turn_off
       entity_id: light.sengled_e11_g13_light
 #####################################################################################

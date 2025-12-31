@@ -81,8 +81,8 @@ views:
             tap_action:
               action: toggle
           - type: entity-button
-            entity: switch.plug_in_1_outlet_switch_500s
-            name: Lounge
+            entity: light.plant_corner
+            name: Plant Corner
             icon: mdi:lightbulb
             tap_action:
               action: toggle

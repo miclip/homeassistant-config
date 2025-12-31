@@ -1,16 +1,5 @@
 title: Home
 
-resources:
-  - url: /local/mini-graph-card-bundle.js?v=0.9.3
-    type: module
-  - url: /local/mini-media-player-bundle.js
-    type: module
-  - url: /local/simple-weather-card.bundle.js
-    type: module
-  - url: /local/simple-thermostat.js
-    type: module
-  - url: /customcards/github/maykar/compact-custom-header.js?track=true
-    type: module
 views:
   - path: default_view
     title: Home
@@ -23,7 +12,7 @@ views:
             title: Room Location
             entities:
               #- sensor._room_status
-              - sensor.michael_phone_battery
+              - sensor.iphone_90_battery_level
             state_image:
               "home": /local/images/michael_home.jpg
               "not_home": /local/images/michael_away.jpg

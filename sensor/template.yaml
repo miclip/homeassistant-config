@@ -7,13 +7,6 @@
 
   - platform: template
     sensors:
-      michael_phone_battery:
-        friendly_name: 'Michael Phone Battery'
-        value_template: '{{states.device_tracker.iphone_90.attributes.battery}}'
-        unit_of_measurement: '%'
-
-  - platform: template
-    sensors:
       garage_door_main_obs:
         friendly_name: "Main Garage Obstruction"
         value_template: "{{ state_attr('cover.garage_door_main', 'obstruction-detected') }}"

@@ -22,16 +22,22 @@ from alexapy import (
     AlexaProxy,
     AlexapyConnectionError,
     AlexapyPyotpInvalidKey,
-    __version__ as alexapy_version,
     hide_email,
     obfuscate,
 )
+from awesomeversion import AwesomeVersion
 from homeassistant import config_entries
 from homeassistant.components.http.view import HomeAssistantView
 from homeassistant.components.persistent_notification import (
     async_dismiss as async_dismiss_persistent_notification,
 )
-from homeassistant.const import CONF_EMAIL, CONF_PASSWORD, CONF_SCAN_INTERVAL, CONF_URL
+from homeassistant.const import (
+    CONF_EMAIL,
+    CONF_PASSWORD,
+    CONF_SCAN_INTERVAL,
+    CONF_URL,
+    __version__ as HAVERSION,
+)
 from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult, UnknownFlow
 from homeassistant.exceptions import Unauthorized
@@ -68,7 +74,6 @@ from .const import (
     DEFAULT_SCAN_INTERVAL,
     DOMAIN,
     ISSUE_URL,
-    STARTUP,
 )
 from .helpers import calculate_uuid
 
@@ -116,9 +121,6 @@ class AlexaMediaFlowHandler(config_entries.ConfigFlow):
 
     def __init__(self):
         """Initialize the config flow."""
-        if self.hass and not self.hass.data.get(DATA_ALEXAMEDIA):
-            _LOGGER.info(STARTUP)
-            _LOGGER.info("Loaded alexapy==%s", alexapy_version)
         self.login = None
         self.securitycode: Optional[str] = None
         self.automatic_steps: int = 0
@@ -300,7 +302,9 @@ class AlexaMediaFlowHandler(config_entries.ConfigFlow):
             return self.async_show_form(
                 step_id="user",
                 errors={"base": "2fa_key_invalid"},
-                description_placeholders={"message": ""},
+                description_placeholders={
+                    "otp_secret": self.config.get(CONF_OTPSECRET, ""),
+                },
             )
         hass_url: str = user_input.get(CONF_HASS_URL)
         if hass_url is None:
@@ -348,7 +352,7 @@ class AlexaMediaFlowHandler(config_entries.ConfigFlow):
         ):
             otp: str = self.login.get_totp_token()
             if otp:
-                _LOGGER.debug("Generating OTP from %s", otp)
+                _LOGGER.debug("Generated TOTP: %s", otp)
                 return self.async_show_form(
                     step_id="totp_register",
                     data_schema=vol.Schema(self.totp_register),
@@ -486,7 +490,7 @@ class AlexaMediaFlowHandler(config_entries.ConfigFlow):
             ):
                 otp: str = self.login.get_totp_token()
                 if otp:
-                    _LOGGER.debug("Generating OTP from %s", otp)
+                    _LOGGER.debug("Generated TOTP: %s", otp)
                     return self.async_show_form(
                         step_id="totp_register",
                         data_schema=vol.Schema(self.totp_register),
@@ -500,7 +504,9 @@ class AlexaMediaFlowHandler(config_entries.ConfigFlow):
                 return self.async_show_form(
                     step_id="user",
                     errors={"base": "2fa_key_invalid"},
-                    description_placeholders={"message": ""},
+                    description_placeholders={
+                        "otp_secret": user_input.get(CONF_OTPSECRET),
+                    },
                 )
             if self.login.status:
                 _LOGGER.debug("Resuming existing flow")
@@ -522,7 +528,9 @@ class AlexaMediaFlowHandler(config_entries.ConfigFlow):
             return self.async_show_form(
                 step_id="user_legacy",
                 errors={"base": "2fa_key_invalid"},
-                description_placeholders={"message": ""},
+                description_placeholders={
+                    "otp_secret": user_input.get(CONF_OTPSECRET),
+                },
             )
         except BaseException as ex:  # pylint: disable=broad-except
             _LOGGER.warning("Unknown error: %s", ex)
@@ -555,7 +563,7 @@ class AlexaMediaFlowHandler(config_entries.ConfigFlow):
             _LOGGER.debug("Not registered, regenerating")
             otp: str = self.login.get_totp_token()
             if otp:
-                _LOGGER.debug("Generating OTP from %s", otp)
+                _LOGGER.debug("Generated TOTP: %s", otp)
                 return self.async_show_form(
                     step_id="totp_register",
                     data_schema=vol.Schema(self.totp_register),
@@ -871,7 +879,8 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
     def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
         """Initialize options flow."""
         self.config = OrderedDict()
-        self._config_entry = config_entry
+        if AwesomeVersion(HAVERSION) < "2024.12":
+            self.config_entry = config_entry
 
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
@@ -883,7 +892,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                 (
                     vol.Optional(
                         CONF_PUBLIC_URL,
-                        default=self._config_entry.data.get(
+                        default=self.config_entry.data.get(
                             CONF_PUBLIC_URL, DEFAULT_PUBLIC_URL
                         ),
                     ),
@@ -892,28 +901,28 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                 (
                     vol.Optional(
                         CONF_INCLUDE_DEVICES,
-                        default=self._config_entry.data.get(CONF_INCLUDE_DEVICES, ""),
+                        default=self.config_entry.data.get(CONF_INCLUDE_DEVICES, ""),
                     ),
                     str,
                 ),
                 (
                     vol.Optional(
                         CONF_EXCLUDE_DEVICES,
-                        default=self._config_entry.data.get(CONF_EXCLUDE_DEVICES, ""),
+                        default=self.config_entry.data.get(CONF_EXCLUDE_DEVICES, ""),
                     ),
                     str,
                 ),
                 (
                     vol.Optional(
                         CONF_SCAN_INTERVAL,
-                        default=self._config_entry.data.get(CONF_SCAN_INTERVAL, 120),
+                        default=self.config_entry.data.get(CONF_SCAN_INTERVAL, 120),
                     ),
                     int,
                 ),
                 (
                     vol.Optional(
                         CONF_QUEUE_DELAY,
-                        default=self._config_entry.data.get(
+                        default=self.config_entry.data.get(
                             CONF_QUEUE_DELAY, DEFAULT_QUEUE_DELAY
                         ),
                     ),
@@ -922,7 +931,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                 (
                     vol.Optional(
                         CONF_EXTENDED_ENTITY_DISCOVERY,
-                        default=self._config_entry.data.get(
+                        default=self.config_entry.data.get(
                             CONF_EXTENDED_ENTITY_DISCOVERY,
                             DEFAULT_EXTENDED_ENTITY_DISCOVERY,
                         ),
@@ -932,7 +941,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                 (
                     vol.Optional(
                         CONF_DEBUG,
-                        default=self._config_entry.data.get(CONF_DEBUG, DEFAULT_DEBUG),
+                        default=self.config_entry.data.get(CONF_DEBUG, DEFAULT_DEBUG),
                     ),
                     bool,
                 ),
@@ -941,36 +950,36 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
 
         if user_input is not None:
             """Preserve these parameters"""
-            if CONF_URL in self._config_entry.data:
-                user_input[CONF_URL] = self._config_entry.data[CONF_URL]
-            if CONF_EMAIL in self._config_entry.data:
-                user_input[CONF_EMAIL] = self._config_entry.data[CONF_EMAIL]
-            if CONF_PASSWORD in self._config_entry.data:
-                user_input[CONF_PASSWORD] = self._config_entry.data[CONF_PASSWORD]
-            if CONF_SECURITYCODE in self._config_entry.data:
-                user_input[CONF_SECURITYCODE] = self._config_entry.data[
+            if CONF_URL in self.config_entry.data:
+                user_input[CONF_URL] = self.config_entry.data[CONF_URL]
+            if CONF_EMAIL in self.config_entry.data:
+                user_input[CONF_EMAIL] = self.config_entry.data[CONF_EMAIL]
+            if CONF_PASSWORD in self.config_entry.data:
+                user_input[CONF_PASSWORD] = self.config_entry.data[CONF_PASSWORD]
+            if CONF_SECURITYCODE in self.config_entry.data:
+                user_input[CONF_SECURITYCODE] = self.config_entry.data[
                     CONF_SECURITYCODE
                 ]
-            if CONF_OTPSECRET in self._config_entry.data:
-                user_input[CONF_OTPSECRET] = self._config_entry.data[CONF_OTPSECRET]
-            if CONF_OAUTH in self._config_entry.data:
-                user_input[CONF_OAUTH] = self._config_entry.data[CONF_OAUTH]
+            if CONF_OTPSECRET in self.config_entry.data:
+                user_input[CONF_OTPSECRET] = self.config_entry.data[CONF_OTPSECRET]
+            if CONF_OAUTH in self.config_entry.data:
+                user_input[CONF_OAUTH] = self.config_entry.data[CONF_OAUTH]
             """Ensure public_url ends with trailing slash"""
-            if CONF_PUBLIC_URL in self._config_entry.data:
+            if CONF_PUBLIC_URL in self.config_entry.data:
                 if not user_input[CONF_PUBLIC_URL].endswith("/"):
                     user_input[CONF_PUBLIC_URL] = user_input[CONF_PUBLIC_URL] + "/"
             """Remove leading/trailing spaces in device strings"""
-            if CONF_INCLUDE_DEVICES in self._config_entry.data:
+            if CONF_INCLUDE_DEVICES in self.config_entry.data:
                 user_input[CONF_INCLUDE_DEVICES] = user_input[
                     CONF_INCLUDE_DEVICES
                 ].strip()
-            if CONF_EXCLUDE_DEVICES in self._config_entry.data:
+            if CONF_EXCLUDE_DEVICES in self.config_entry.data:
                 user_input[CONF_EXCLUDE_DEVICES] = user_input[
                     CONF_EXCLUDE_DEVICES
                 ].strip()
 
             self.hass.config_entries.async_update_entry(
-                self._config_entry, data=user_input, options=self._config_entry.options
+                self.config_entry, data=user_input, options=self.config_entry.options
             )
             return self.async_create_entry(title="", data={})
 

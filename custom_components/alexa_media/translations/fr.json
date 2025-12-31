@@ -9,8 +9,10 @@
       "2fa_key_invalid": "Clé 2FA intégrée non valide",
       "connection_error": "Erreur de connexion; vérifier le réseau et réessayer",
       "identifier_exists": "Email pour l'URL Alexa déjà enregistré",
+      "invalid_auth": "La connexion a échoué. Veuillez vérifier votre adresse e-mail, votre mot de passe et votre clé d'authentification.",
       "invalid_credentials": "Informations d'identification invalides",
       "invalid_url": "L'URL n'est pas valide: {message}",
+      "oauth_error": "Impossible de terminer la connexion OAuth. Veuillez réessayer.",
       "unable_to_connect_hass_url": "Impossible de se connecter à l'URL de Home Assistant. Veuillez vérifier l'URL interne sous Configuration - > Général",
       "unknown_error": "Erreur inconnue, veuillez signaler les informations du journal: {message}"
     },
@@ -39,14 +41,22 @@
           "include_devices": "Appareil inclus (séparé par des virgules)",
           "otp_secret": "Clé d'application 2FA (2 facteurs) intégrée (génère automatiquement des codes 2FA). Il ne s'agit pas d'un code à six chiffres.",
           "password": "Mot de passe",
+          "public_url": "URL publique partagée avec des services hébergés externes",
           "queue_delay": "Secondes à attendre pour mettre les commandes en file d'attente ensemble",
           "scan_interval": "Secondes entre les analyses",
           "securitycode": "Code 2FA (recommandé pour éviter les problèmes de connexion)",
+          "should_get_network": "Découvrez le réseau Alexa",
           "url": "Domaine de la région Amazon (exemple, amazon.fr)"
         },
         "description": "Veuillez confirmer les informations ci-dessous. Pour la configuration héritée, désactivez l'option \"Utiliser la méthode de proxy de connexion\".",
         "title": "Alexa Media Player - Configuration"
       }
+    }
+  },
+  "issues": {
+    "deprecated_yaml_configuration": {
+      "description": "La configuration YAML d'Alexa Media Player est obsolète \n et sera supprimée dans la version 4.14.0. \n Il n'y aura pas d'importation automatique de celle-ci. \n Veuillez la supprimer de votre configuration, redémarrer Home Assistant et utiliser l'interface utilisateur pour la configurer à la place. \n Paramètres > Appareils et services > Intégrations > AJOUTER UNE INTÉGRATION",
+      "title": "La configuration YAML est obsolète"
     }
   },
   "options": {
@@ -56,11 +66,11 @@
           "debug": "Débogage avancé",
           "exclude_devices": "Appareil exclu (séparé par des virgules)",
           "extended_entity_discovery": "Inclure les appareils connectés via Echo",
-          "hass_url": "URL publique pour accéder à Home Assistant (y compris le '/' final)",
           "include_devices": "Appareil inclus (séparé par des virgules)",
           "public_url": "URL publique pour accéder à Home Assistant (y compris le '/' final)",
           "queue_delay": "Secondes à attendre pour mettre les commandes en file d'attente ensemble",
-          "scan_interval": "Secondes entre les analyses"
+          "scan_interval": "Secondes entre les analyses",
+          "should_get_network": "Découvrez le réseau Alexa"
         },
         "description": "Requis *",
         "title": "Alexa Media Player – Reconfiguration"
@@ -68,19 +78,15 @@
     }
   },
   "services": {
-    "clear_history": {
-      "description": "Effacez les dernières entrées de l'historique Alexa Voice pour chaque compte Alexa.",
+    "enable_network_discovery": {
+      "description": "Réactive la découverte du réseau Alexa afin que le prochain cycle d'interrogation redécouvre les appareils Alexa pour les comptes sélectionnés.",
       "fields": {
         "email": {
-          "description": "Comptes à effacer. Si vide, cela effacera tout.",
+          "description": "Adresse e-mail ou liste d'adresses e-mail du compte Alexa (facultatif). Si ces champs sont vides, tous les comptes connus seront mis à jour.",
           "name": "Adresse email"
-        },
-        "entries": {
-          "description": "Nombre d'entrées à effacer de 1 à 50. Si vide, cela en effacera 50.",
-          "name": "Nombre d'entrées"
         }
       },
-      "name": "Effacer l'historique vocal d'Amazon"
+      "name": "Activer la découverte du réseau"
     },
     "force_logout": {
       "description": "Forcer le compte à se déconnecter. Utilisé principalement pour le débogage.",
@@ -91,6 +97,30 @@
         }
       },
       "name": "Forcer la déconnexion"
+    },
+    "get_history_records": {
+      "description": "Analyse les enregistrements d'historique pour le périphérique spécifié",
+      "fields": {
+        "entity_id": {
+          "description": "Entité pour obtenir l'historique",
+          "name": "Sélectionnez le lecteur multimédia :"
+        },
+        "entries": {
+          "description": "Nombre d'entrées à obtenir",
+          "name": "Nombre d'entrées"
+        }
+      },
+      "name": "Obtenir des enregistrements historiques"
+    },
+    "restore_volume": {
+      "description": "Restaurer le niveau de volume précédent sur le lecteur multimédia Alexa",
+      "fields": {
+        "entity_id": {
+          "description": "Entité permettant de restaurer le niveau de volume précédent",
+          "name": "Sélectionnez le lecteur multimédia :"
+        }
+      },
+      "name": "Restaurer le volume précédent"
     },
     "update_last_called": {
       "description": "Force la mise à jour du dernier périphérique Echo appelé pour chaque compte Alexa.",

@@ -9,8 +9,10 @@
       "2fa_key_invalid": "Nieprawidłowy klucz z wbudowanej aplikacji uwierzytelniania dwuskładnikowego",
       "connection_error": "Błąd podczas łączenia; sprawdź sieć i spróbuj ponownie",
       "identifier_exists": "Adres e-mail dla Alexy już jest zarejestrowany",
+      "invalid_auth": "Logowanie nie powiodło się. Sprawdź ponownie swój adres e-mail, hasło i klucz uwierzytelniający.",
       "invalid_credentials": "Nieprawidłowe dane logowania",
       "invalid_url": "URL jest nieprawidłowy: {message}",
+      "oauth_error": "Nie udało się dokończyć logowania OAuth. Spróbuj ponownie.",
       "unable_to_connect_hass_url": "Nie można połączyć się z adresem URL Home Assistanta. Sprawdź wewnętrzny adres URL w sekcji Konfiguracja -> Ogólne",
       "unknown_error": "Nieznany błąd: {message}"
     },
@@ -34,19 +36,27 @@
           "debug": "Zaawansowane debugowanie",
           "email": "Adres e-mail",
           "exclude_devices": "Wykluczone urządzenia (oddzielone przecinkami)",
-          "extended_entity_discovery": "Include devices connected via Echo",
+          "extended_entity_discovery": "Dodaj dodatkowe czujniki, przełączniki i światła",
           "hass_url": "URL dostępu do Home Assistanta",
           "include_devices": "Dodawane urządzenia (oddzielone przecinkami)",
           "otp_secret": "Wbudowana aplikacja kluczy uwierzytelniania dwuskładnikowego (automatycznie generuje kody uwierzytelniania dwuskładnikowego)",
           "password": "Hasło",
+          "public_url": "Publiczny adres URL udostępniany zewnętrznym usługom hostowanym",
           "queue_delay": "Sekundy oczekiwania na kolejkowanie poleceń",
           "scan_interval": "Interwał skanowania (sekundy)",
           "securitycode": "Kod uwierzytelniania dwuskładnikowego (zalecany w celu uniknięcia problemów z logowaniem)",
+          "should_get_network": "Odkryj sieć Alexa",
           "url": "Region/domena Amazon (np. amazon.co.uk)"
         },
         "description": "Potwierdź poniższe informacje.",
         "title": "Alexa Media Player — konfiguracja"
       }
+    }
+  },
+  "issues": {
+    "deprecated_yaml_configuration": {
+      "description": "Konfiguracja YAML Alexa Media Player jest przestarzała \n i zostanie usunięta w wersji 4.14.0. \n Nie będzie automatycznego importowania tej konfiguracji. \n Usuń ją ze swojej konfiguracji, uruchom ponownie Home Assistant i skonfiguruj ją za pomocą interfejsu użytkownika. \n Ustawienia > Urządzenia i usługi > Integracje > DODAJ INTEGRACJĘ",
+      "title": "Konfiguracja YAML jest przestarzała"
     }
   },
   "options": {
@@ -56,31 +66,27 @@
           "debug": "Zaawansowane debugowanie",
           "exclude_devices": "Wykluczone urządzenia (oddzielone przecinkami)",
           "extended_entity_discovery": "Uwzględnij urządzenia podłączone przez Echo",
-          "hass_url": "Publiczny URL do dostępu do Home Assistant (z końcowym '/')",
           "include_devices": "Dodawane urządzenia (oddzielone przecinkami)",
           "public_url": "Publiczny URL do dostępu do Home Assistant (z końcowym '/')",
           "queue_delay": "Sekundy oczekiwania na kolejkowanie poleceń",
-          "scan_interval": "Interwał skanowania (sekundy)"
+          "scan_interval": "Interwał skanowania (sekundy)",
+          "should_get_network": "Odkryj sieć Alexa"
         },
-        "description": "Required *",
+        "description": "* Wymagane wpisy \n Uwaga: **Rozszerzone wykrywanie jednostek** wymaga włączenia opcji **Odkryj sieć Alexa**.",
         "title": "Alexa Media Player - Reconfiguration"
       }
     }
   },
   "services": {
-    "clear_history": {
-      "description": "Clear last entries from Alexa Voice history for each Alexa account.",
+    "enable_network_discovery": {
+      "description": "Ponownie włącza wykrywanie sieci Alexa, dzięki czemu kolejny cykl sondowania ponownie wykryje urządzenia Alexa dla wybranych kont.",
       "fields": {
         "email": {
-          "description": "Accounts to clear. Empty will clear all.",
-          "name": "Email address"
-        },
-        "entries": {
-          "description": "Number of entries to clear from 1 to 50. If empty, clear 50.",
-          "name": "Number of Entries"
+          "description": "Opcjonalny adres e-mail konta Alexa lub lista adresów e-mail. Jeśli jest pusty, wszystkie znane konta zostaną odświeżone.",
+          "name": "Adres e-mail"
         }
       },
-      "name": "Clear Amazon Voice History"
+      "name": "Włącz wykrywanie sieci"
     },
     "force_logout": {
       "description": "Force account to logout. Used mainly for debugging.",
@@ -91,6 +97,30 @@
         }
       },
       "name": "Force Logout"
+    },
+    "get_history_records": {
+      "description": "Analizuje zapisy historii dla określonego urządzenia",
+      "fields": {
+        "entity_id": {
+          "description": "Podmiot, dla którego ma zostać pobrana historia",
+          "name": "Wybierz odtwarzacz multimedialny:"
+        },
+        "entries": {
+          "description": "Liczba wpisów do uzyskania",
+          "name": "Liczba wpisów"
+        }
+      },
+      "name": "Pobierz zapisy historyczne"
+    },
+    "restore_volume": {
+      "description": "Przywróć poprzedni poziom głośności na urządzeniu z odtwarzaczem multimedialnym Alexa",
+      "fields": {
+        "entity_id": {
+          "description": "Podmiot przywracający poprzedni poziom głośności",
+          "name": "Wybierz odtwarzacz multimedialny:"
+        }
+      },
+      "name": "Przywróć poprzednią głośność"
     },
     "update_last_called": {
       "description": "Forces update of last_called echo device for each Alexa account.",

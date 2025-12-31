@@ -1,5 +1,5 @@
 """
-Alexa Devices Sensors.
+Alexa Devices Lights.
 
 SPDX-License-Identifier: Apache-2.0
 
@@ -43,7 +43,7 @@ from .alexa_entity import (
     parse_power_from_coordinator,
 )
 from .const import CONF_EXTENDED_ENTITY_DISCOVERY
-from .helpers import add_devices
+from .helpers import add_devices, safe_get
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -57,7 +57,7 @@ async def async_setup_platform(hass, config, add_devices_callback, discovery_inf
     if config:
         account = config.get(CONF_EMAIL)
     if account is None and discovery_info:
-        account = discovery_info.get("config", {}).get(CONF_EMAIL)
+        account = safe_get(discovery_info, ["config", CONF_EMAIL])
     if account is None:
         raise ConfigEntryNotReady
     account_dict = hass.data[DATA_ALEXAMEDIA]["accounts"][account]
@@ -67,7 +67,7 @@ async def async_setup_platform(hass, config, add_devices_callback, discovery_inf
     hue_emulated_enabled = "emulated_hue" in hass.config.as_dict().get(
         "components", set()
     )
-    light_entities = account_dict.get("devices", {}).get("light", [])
+    light_entities = safe_get(account_dict, ["devices", "light"], [])
     if light_entities and account_dict["options"].get(CONF_EXTENDED_ENTITY_DISCOVERY):
         for light_entity in light_entities:
             if not (light_entity["is_hue_v1"] and hue_emulated_enabled):
@@ -490,7 +490,7 @@ def alexa_color_name_to_rgb(color_name: str) -> tuple[int, int, int]:
 
 
 def rgb_to_alexa_color(
-    rgb: tuple[int, int, int]
+    rgb: tuple[int, int, int],
 ) -> tuple[Optional[tuple[float, float]], Optional[str]]:
     """Convert a given RGB value into the closest Alexa color."""
     (name, alexa_rgb) = min(
@@ -502,7 +502,7 @@ def rgb_to_alexa_color(
 
 
 def hs_to_alexa_color(
-    hs_color: Optional[tuple[float, float]]
+    hs_color: Optional[tuple[float, float]],
 ) -> tuple[Optional[tuple[float, float]], Optional[str]]:
     """Convert a given hue/saturation value into the closest Alexa color."""
     if hs_color is None:
@@ -512,7 +512,7 @@ def hs_to_alexa_color(
 
 
 def hsb_to_alexa_color(
-    hsb: Optional[tuple[float, float, float]]
+    hsb: Optional[tuple[float, float, float]],
 ) -> tuple[Optional[tuple[float, float]], Optional[str]]:
     """Convert a given hue/saturation/brightness value into the closest Alexa color."""
     if hsb is None:

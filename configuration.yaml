@@ -17,6 +17,7 @@ http:
 sun:
 
 lovelace:
+  resource_mode: yaml
   resources:
     - url: /local/mini-graph-card-bundle.js?v=0.9.3
       type: module

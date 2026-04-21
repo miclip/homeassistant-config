@@ -37,26 +37,6 @@ views:
             tap_action:
               action: toggle
           - type: entity-button
-            entity: light.plant_corner
-            name: Plant Corner
-            icon: mdi:lightbulb
-            tap_action:
-              action: toggle
-          - type: entity-button
-            entity: light.sengled_e11_g13_light
-            name: Music Corner
-            icon: mdi:lightbulb
-            tap_action:
-              action: toggle
-      - type: horizontal-stack
-        cards:
-          - type: entity-button
-            entity: switch.espresso_machine
-            name: Espresso
-            icon: mdi:coffee
-            tap_action:
-              action: toggle
-          - type: entity-button
             entity: lock.node_4
             name: Front
             tap_action:

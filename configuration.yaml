@@ -17,7 +17,7 @@ http:
 sun:
 
 lovelace:
-  mode: yaml
+  resource_mode: yaml
   resources:
     - url: /local/mini-graph-card-bundle.js?v=0.9.3
       type: module
@@ -27,6 +27,13 @@ lovelace:
       type: module
     - url: /local/simple-thermostat.js
       type: module
+  dashboards:
+    lovelace:
+      mode: yaml
+      filename: ui-lovelace.yaml
+      title: Overview
+      icon: mdi:view-dashboard
+      show_in_sidebar: true
 
 frontend:
   themes: !include themes.yaml
